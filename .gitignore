@@ -1,0 +1,37 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+*.manifest
+*.pdb
+*.idb
+
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+#*.dll	We need the dlls....
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+#.lib  We need the libs too
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Logs
+*.log
+*.tlog
+
