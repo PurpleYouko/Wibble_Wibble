@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{de945162-0ffc-4ce3-9b95-4ad82554bdc5}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\TriggerVFS">
+      <UniqueIdentifier>{48a2ecfe-c222-4206-b3b3-222e63e7ecc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{11c7e790-2347-459f-9cb4-fdadc355c746}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{5aa646fb-4395-4133-a174-b7dfe549a683}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="__Global.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirTreeCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirTreeDemo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirTreeDemoDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirTreeDemoView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_InuptBox_Number.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FV_Files.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FV_Select.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_patch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LeftView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SortStringArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TriggerVFS\src\BlankInfo.cpp">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TriggerVFS\src\classCRC.cpp">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TriggerVFS\src\ErrorEtc.cpp">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TriggerVFS\src\libCrc.cpp">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TriggerVFS\src\libFile.cpp">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TriggerVFS\src\libString.cpp">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TriggerVFS\src\VFS.cpp">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TriggerVFS\src\VFS_Manager.cpp">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="__Global.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirTreeCtrl.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirTreeDemo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirTreeDemoDoc.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirTreeDemoView.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dlg_InuptBox_Number.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dlg_Main.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FV_Files.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FV_Select.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="g_patch.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LeftView.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib_regexp.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SortStringArray.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeDialog.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TriggerVFS\src\BlankInfo.h">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TriggerVFS\src\classCRC.h">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TriggerVFS\src\ErrorEtc.h">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TriggerVFS\src\libCrc.h">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TriggerVFS\src\libFile.h">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TriggerVFS\src\VFS.h">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TriggerVFS\src\VFS_Manager.h">
+      <Filter>Source Files\TriggerVFS</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DirTreeDemo.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\cursor1.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\DirTreeDemo.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\DirTreeDemo.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\DirTreeDemoDoc.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\Toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ReadMe.txt" />
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib_regexp.lib" />
+  </ItemGroup>
+</Project>

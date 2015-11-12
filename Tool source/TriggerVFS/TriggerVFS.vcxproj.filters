@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source files">
+      <UniqueIdentifier>{5df9c521-c263-48d0-84c1-30fcbb50f1aa}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Header files">
+      <UniqueIdentifier>{281a753e-a113-4306-b238-209faa56b65c}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Resource files">
+      <UniqueIdentifier>{e70bd8f5-4d8a-4ab5-a4df-f0eff36331db}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Sample">
+      <UniqueIdentifier>{d2a0c2cd-4079-4566-9d56-c8bcd1564ab5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\BlankInfo.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\classCRC.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ErrorEtc.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\libCrc.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\libFile.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\libString.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stdafx.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TriggerVFS.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VFS.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VFS_Manager.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ErrorEtc.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\libFile.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stdafx.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VFS.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BlankInfo.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\classCRC.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Client\Util\classHASH.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\libCrc.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\libString.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource1.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TriggerVFS.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VFS_Manager.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TriggerVFS1.rc">
+      <Filter>Resource files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+</Project>

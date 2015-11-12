@@ -1,0 +1,25 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TriggerInfo", "TriggerInfo.vcproj", "{DE7958CD-934E-4AF9-8A22-CCE329B364FB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "viewinfo", "sample\viewinfo\viewinfo.vcproj", "{4130C2E5-4078-4AFD-95FD-0DBC754C6BC4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DE7958CD-934E-4AF9-8A22-CCE329B364FB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DE7958CD-934E-4AF9-8A22-CCE329B364FB}.Debug|Win32.Build.0 = Debug|Win32
+		{DE7958CD-934E-4AF9-8A22-CCE329B364FB}.Release|Win32.ActiveCfg = Release|Win32
+		{DE7958CD-934E-4AF9-8A22-CCE329B364FB}.Release|Win32.Build.0 = Release|Win32
+		{4130C2E5-4078-4AFD-95FD-0DBC754C6BC4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4130C2E5-4078-4AFD-95FD-0DBC754C6BC4}.Debug|Win32.Build.0 = Debug|Win32
+		{4130C2E5-4078-4AFD-95FD-0DBC754C6BC4}.Release|Win32.ActiveCfg = Release|Win32
+		{4130C2E5-4078-4AFD-95FD-0DBC754C6BC4}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
