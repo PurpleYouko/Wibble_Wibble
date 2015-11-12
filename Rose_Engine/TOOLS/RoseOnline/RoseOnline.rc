@@ -1,0 +1,131 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "main.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+IDB_BITMAP1             BITMAP                  "gfx\\main.bmp"
+IDB_BITMAP2             BITMAP                  "gfx\\playbtnover.bmp"
+IDB_BITMAP3             BITMAP                  "gfx\\loadbarbase.bmp"
+IDB_BITMAP4             BITMAP                  "gfx\\loadbarover.bmp"
+IDB_BITMAP5             BITMAP                  "gfx\\newsbar.bmp"
+IDB_BITMAP6             BITMAP                  "gfx\\newsbarover.bmp"
+IDB_BITMAP7             BITMAP                  "gfx\\newsbarover.bmp"
+IDB_BITMAP8             BITMAP                  "gfx\\playbtndisabled.bmp"
+IDB_BITMAP9             BITMAP                  "gfx\\playbtndown.bmp"
+IDB_BITMAP10            BITMAP                  "gfx\\playbtnnormal.bmp"
+IDB_BITMAP11            BITMAP                  "gfx\\Exit1.bmp"
+IDB_BITMAP12            BITMAP                  "gfx\\Exit2.bmp"
+IDB_BITMAP13            BITMAP                  "gfx\\Exit3.bmp"
+IDB_BITMAP14            BITMAP                  "gfx\\Man1.bmp"
+IDB_BITMAP15            BITMAP                  "gfx\\Man2.bmp"
+IDB_BITMAP16            BITMAP                  "gfx\\Op1.bmp"
+IDB_BITMAP17            BITMAP                  "gfx\\Op2.bmp"
+IDB_BITMAP18            BITMAP                  "gfx\\Don1.bmp"
+IDB_BITMAP19            BITMAP                  "gfx\\Don2.bmp"
+IDB_BITMAP20            BITMAP                  "gfx\\Forum1.bmp"
+IDB_BITMAP21            BITMAP                  "gfx\\Forum2.bmp"
+IDB_BITMAP22            BITMAP                  "gfx\\Reg1.bmp"
+IDB_BITMAP23            BITMAP                  "gfx\\Reg2.bmp"
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+/*
+/////////////////////////////////////////////////////////////////////////////
+// English (Canada) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENC)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP1             BITMAP                  "gfx\\main.bmp"
+IDB_BITMAP2             BITMAP                  "gfx\\playbtnover.bmp"
+IDB_BITMAP3             BITMAP                  "gfx\\loadbarbase.bmp"
+IDB_BITMAP4             BITMAP                  "gfx\\loadbarover.bmp"
+IDB_BITMAP5             BITMAP                  "gfx\\newsbar.bmp"
+IDB_BITMAP6             BITMAP                  "gfx\\newsbarover.bmp"
+IDB_BITMAP7             BITMAP                  "gfx\\newsbarover.bmp"
+IDB_BITMAP8             BITMAP                  "gfx\\playbtndisabled.bmp"
+IDB_BITMAP9             BITMAP                  "gfx\\playbtndown.bmp"
+IDB_BITMAP10            BITMAP                  "gfx\\playbtnnormal.bmp"
+IDB_BITMAP11            BITMAP                  "gfx\\Exit1.bmp"
+IDB_BITMAP12            BITMAP                  "gfx\\Exit2.bmp"
+IDB_BITMAP13            BITMAP                  "gfx\\Exit3.bmp"
+#endif    // English (Canada) resources
+/////////////////////////////////////////////////////////////////////////////
+*/
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,6 @@
+Play - x24 Y341
+MUpdate - x108 Y365
+Options - x 119 Y11
+Forums -X 173 Y12
+Register - X225 Y12
+Donate - X282  Y12
