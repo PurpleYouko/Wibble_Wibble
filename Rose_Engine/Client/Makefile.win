@@ -1,0 +1,390 @@
+# Project: Client
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D__DEBUG__
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = Client_private.res
+OBJ  = Util/CCheat.o Util/CD3DUtil.o Util/CDSound.o Util/CFileSystemNormal.o Util/CFileSystemTriggerVFS.o Util/CGameSTB.o Util/CGameStr.o Util/CMessageQ.o Util/CRangeTBL.o Util/CWaveFILE.o Util/VFSManager.o Util/WndMsgQ.o IO_Basic.o IO_Effect.o IO_Event.o IO_MATERIAL.o IO_MESH.o IO_Model.o IO_Morpher.o IO_Skeleton.o IO_Terrain.o CApplication.o Debug.o StdAfx.o winMAIN.o CKeyboard.o CGameOBJ.o CModelCHAR.o CObjCHAR.o CObjFIXED.o CObjGROUND.o CObjMORPH.o CObjUSER.o CSkyDOME.o OBJECT.o Sound/CMusic.o Sound/IO_Sound.o Interface/DLGs/BasePAN.o Interface/DLGs/CharacterDLG.o Interface/DLGs/ChattingDLG.o Interface/DLGs/CMinimapDLG.o Interface/DLGs/CMsgBox.o Interface/DLGs/CNumberInputDlg.o Interface/DLGs/COptionDlg.o Interface/DLGs/CPartyDlg.o Interface/DLGs/CPartyMember.o Interface/DLGs/CQuestDlg.o Interface/DLGs/CRestartDLG.o Interface/DLGs/CSkillDLG.o Interface/DLGs/CStoreDLG.o Interface/DLGs/CSystemDLG.o Interface/DLGs/CSystemMsgDlg.o Interface/DLGs/CTargetMenu.o Interface/DLGs/DealDLG.o Interface/DLGs/ExchangeDLG.o Interface/DLGs/InventoryDLG.o Interface/DLGs/MakeDLG.o Interface/DLGs/QueryDLG.o Interface/DLGs/QuickToolBAR.o Interface/DLGs/TargetObjectDLG.o Interface/ExternalUI/CCreateAvata.o Interface/ExternalUI/CExternalUIManager.o Interface/ExternalUI/CLogin.o Interface/ExternalUI/CSelectAvata.o Interface/ExternalUI/CSelectCharacter.o Interface/ExternalUI/CSelectServer.o Interface/ExternalUI/CSetting.o Interface/ExternalUI/ExternalUILobby.o Interface/Command/CTCmdHotExec.o Interface/Command/CTCmdNumberInput.o Interface/Command/CTCmdOpenDlg.o Interface/CChatBox.o Interface/CDigitEffect.o Interface/CEnduranceProperty.o Interface/CHelpMgr.o Interface/CKeyMove.o Interface/CLoading.o Interface/CNameBox.o Interface/CTDrawImpl.o Interface/CTFontImpl.o Interface/CTSoundImpl.o Interface/CUIMediator.o Interface/IO_ImageRes.o Interface/it_mgr.o Interface/TypeResource.o Event/CEvent.o Event/GF_EFFECT.o Event/GF_ITEM.o Event/GF_SYSTEM.o Event/QF_CONVERSATION.o Event/QF_QUEST.o Event/QF_SKILL.o BULLET.o AI_LIB/AI_Action.o AI_LIB/AI_Condition.o AI_LIB/CAI_FILE.o Common/Calculation.o Common/CEconomy.o Common/CHotICON.o Common/CInventory.o Common/CItem.o Common/CObjAI.o Common/CQuest.o Common/CRegenAREA.o Common/CUserDATA.o Common/IO_AI.o Common/IO_Motion.o Common/IO_Skill.o Common/IO_STB.o Game_FUNC.o LUA_Func.o LUA_Init.o Network/CNetwork.o Network/RecvPACKET.o Network/SendPACKET.o CCamera.o CClientStorage.o CViewMSG.o Game.o JCommandState.o $(RES)
+LINKOBJ  = Util/CCheat.o Util/CD3DUtil.o Util/CDSound.o Util/CFileSystemNormal.o Util/CFileSystemTriggerVFS.o Util/CGameSTB.o Util/CGameStr.o Util/CMessageQ.o Util/CRangeTBL.o Util/CWaveFILE.o Util/VFSManager.o Util/WndMsgQ.o IO_Basic.o IO_Effect.o IO_Event.o IO_MATERIAL.o IO_MESH.o IO_Model.o IO_Morpher.o IO_Skeleton.o IO_Terrain.o CApplication.o Debug.o StdAfx.o winMAIN.o CKeyboard.o CGameOBJ.o CModelCHAR.o CObjCHAR.o CObjFIXED.o CObjGROUND.o CObjMORPH.o CObjUSER.o CSkyDOME.o OBJECT.o Sound/CMusic.o Sound/IO_Sound.o Interface/DLGs/BasePAN.o Interface/DLGs/CharacterDLG.o Interface/DLGs/ChattingDLG.o Interface/DLGs/CMinimapDLG.o Interface/DLGs/CMsgBox.o Interface/DLGs/CNumberInputDlg.o Interface/DLGs/COptionDlg.o Interface/DLGs/CPartyDlg.o Interface/DLGs/CPartyMember.o Interface/DLGs/CQuestDlg.o Interface/DLGs/CRestartDLG.o Interface/DLGs/CSkillDLG.o Interface/DLGs/CStoreDLG.o Interface/DLGs/CSystemDLG.o Interface/DLGs/CSystemMsgDlg.o Interface/DLGs/CTargetMenu.o Interface/DLGs/DealDLG.o Interface/DLGs/ExchangeDLG.o Interface/DLGs/InventoryDLG.o Interface/DLGs/MakeDLG.o Interface/DLGs/QueryDLG.o Interface/DLGs/QuickToolBAR.o Interface/DLGs/TargetObjectDLG.o Interface/ExternalUI/CCreateAvata.o Interface/ExternalUI/CExternalUIManager.o Interface/ExternalUI/CLogin.o Interface/ExternalUI/CSelectAvata.o Interface/ExternalUI/CSelectCharacter.o Interface/ExternalUI/CSelectServer.o Interface/ExternalUI/CSetting.o Interface/ExternalUI/ExternalUILobby.o Interface/Command/CTCmdHotExec.o Interface/Command/CTCmdNumberInput.o Interface/Command/CTCmdOpenDlg.o Interface/CChatBox.o Interface/CDigitEffect.o Interface/CEnduranceProperty.o Interface/CHelpMgr.o Interface/CKeyMove.o Interface/CLoading.o Interface/CNameBox.o Interface/CTDrawImpl.o Interface/CTFontImpl.o Interface/CTSoundImpl.o Interface/CUIMediator.o Interface/IO_ImageRes.o Interface/it_mgr.o Interface/TypeResource.o Event/CEvent.o Event/GF_EFFECT.o Event/GF_ITEM.o Event/GF_SYSTEM.o Event/QF_CONVERSATION.o Event/QF_QUEST.o Event/QF_SKILL.o BULLET.o AI_LIB/AI_Action.o AI_LIB/AI_Condition.o AI_LIB/CAI_FILE.o Common/Calculation.o Common/CEconomy.o Common/CHotICON.o Common/CInventory.o Common/CItem.o Common/CObjAI.o Common/CQuest.o Common/CRegenAREA.o Common/CUserDATA.o Common/IO_AI.o Common/IO_Motion.o Common/IO_Skill.o Common/IO_STB.o Game_FUNC.o LUA_Func.o LUA_Init.o Network/CNetwork.o Network/RecvPACKET.o Network/SendPACKET.o CCamera.o CClientStorage.o CViewMSG.o Game.o JCommandState.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" -L"../engine/lib" -L"../TGameCtrl/Libs" -L"../znzin11/3rdparty/lua-4.0.1/lib" -L"../Tools/TriggerVFS/LIBS" -mwindows -lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32 -lTriggerVFS -g3 
+INCS =  -I"C:/Dev-Cpp/include"  -I".//"  -I"./interface"  -I"../engine/include"  -I"../TGameCtrl" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I".//"  -I"./interface"  -I"../engine/include"  -I"../TGameCtrl" 
+BIN  = Client.exe
+CXXFLAGS = $(CXXINCS) -D__GNUWIN32__ -W -fexceptions -DWIN32 -D_DEBUG -D_WINDOWS -D_MBCS  -fexceptions -g3
+CFLAGS = $(INCS) -D__GNUWIN32__ -W -fexceptions -DWIN32 -D_DEBUG -D_WINDOWS -D_MBCS  -fexceptions -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before Client.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "Client.exe" $(LIBS)
+
+Util/CCheat.o: Util/CCheat.cpp
+	$(CPP) -c Util/CCheat.cpp -o Util/CCheat.o $(CXXFLAGS)
+
+Util/CD3DUtil.o: Util/CD3DUtil.cpp
+	$(CPP) -c Util/CD3DUtil.cpp -o Util/CD3DUtil.o $(CXXFLAGS)
+
+Util/CDSound.o: Util/CDSound.cpp
+	$(CPP) -c Util/CDSound.cpp -o Util/CDSound.o $(CXXFLAGS)
+
+Util/CFileSystemNormal.o: Util/CFileSystemNormal.cpp
+	$(CPP) -c Util/CFileSystemNormal.cpp -o Util/CFileSystemNormal.o $(CXXFLAGS)
+
+Util/CFileSystemTriggerVFS.o: Util/CFileSystemTriggerVFS.cpp
+	$(CPP) -c Util/CFileSystemTriggerVFS.cpp -o Util/CFileSystemTriggerVFS.o $(CXXFLAGS)
+
+Util/CGameSTB.o: Util/CGameSTB.cpp
+	$(CPP) -c Util/CGameSTB.cpp -o Util/CGameSTB.o $(CXXFLAGS)
+
+Util/CGameStr.o: Util/CGameStr.cpp
+	$(CPP) -c Util/CGameStr.cpp -o Util/CGameStr.o $(CXXFLAGS)
+
+Util/CMessageQ.o: Util/CMessageQ.cpp
+	$(CPP) -c Util/CMessageQ.cpp -o Util/CMessageQ.o $(CXXFLAGS)
+
+Util/CRangeTBL.o: Util/CRangeTBL.cpp
+	$(CPP) -c Util/CRangeTBL.cpp -o Util/CRangeTBL.o $(CXXFLAGS)
+
+Util/CWaveFILE.o: Util/CWaveFILE.cpp
+	$(CPP) -c Util/CWaveFILE.cpp -o Util/CWaveFILE.o $(CXXFLAGS)
+
+Util/VFSManager.o: Util/VFSManager.cpp
+	$(CPP) -c Util/VFSManager.cpp -o Util/VFSManager.o $(CXXFLAGS)
+
+Util/WndMsgQ.o: Util/WndMsgQ.cpp
+	$(CPP) -c Util/WndMsgQ.cpp -o Util/WndMsgQ.o $(CXXFLAGS)
+
+IO_Basic.o: IO_Basic.cpp
+	$(CPP) -c IO_Basic.cpp -o IO_Basic.o $(CXXFLAGS)
+
+IO_Effect.o: IO_Effect.cpp
+	$(CPP) -c IO_Effect.cpp -o IO_Effect.o $(CXXFLAGS)
+
+IO_Event.o: IO_Event.cpp
+	$(CPP) -c IO_Event.cpp -o IO_Event.o $(CXXFLAGS)
+
+IO_MATERIAL.o: IO_MATERIAL.CPP
+	$(CPP) -c IO_MATERIAL.CPP -o IO_MATERIAL.o $(CXXFLAGS)
+
+IO_MESH.o: IO_MESH.CPP
+	$(CPP) -c IO_MESH.CPP -o IO_MESH.o $(CXXFLAGS)
+
+IO_Model.o: IO_Model.cpp
+	$(CPP) -c IO_Model.cpp -o IO_Model.o $(CXXFLAGS)
+
+IO_Morpher.o: IO_Morpher.cpp
+	$(CPP) -c IO_Morpher.cpp -o IO_Morpher.o $(CXXFLAGS)
+
+IO_Skeleton.o: IO_Skeleton.cpp
+	$(CPP) -c IO_Skeleton.cpp -o IO_Skeleton.o $(CXXFLAGS)
+
+IO_Terrain.o: IO_Terrain.cpp
+	$(CPP) -c IO_Terrain.cpp -o IO_Terrain.o $(CXXFLAGS)
+
+CApplication.o: CApplication.cpp
+	$(CPP) -c CApplication.cpp -o CApplication.o $(CXXFLAGS)
+
+Debug.o: Debug.cpp
+	$(CPP) -c Debug.cpp -o Debug.o $(CXXFLAGS)
+
+StdAfx.o: StdAfx.cpp
+	$(CPP) -c StdAfx.cpp -o StdAfx.o $(CXXFLAGS)
+
+winMAIN.o: winMAIN.cpp
+	$(CPP) -c winMAIN.cpp -o winMAIN.o $(CXXFLAGS)
+
+CKeyboard.o: CKeyboard.cpp
+	$(CPP) -c CKeyboard.cpp -o CKeyboard.o $(CXXFLAGS)
+
+CGameOBJ.o: CGameOBJ.cpp
+	$(CPP) -c CGameOBJ.cpp -o CGameOBJ.o $(CXXFLAGS)
+
+CModelCHAR.o: CModelCHAR.cpp
+	$(CPP) -c CModelCHAR.cpp -o CModelCHAR.o $(CXXFLAGS)
+
+CObjCHAR.o: CObjCHAR.cpp
+	$(CPP) -c CObjCHAR.cpp -o CObjCHAR.o $(CXXFLAGS)
+
+CObjFIXED.o: CObjFIXED.cpp
+	$(CPP) -c CObjFIXED.cpp -o CObjFIXED.o $(CXXFLAGS)
+
+CObjGROUND.o: CObjGROUND.cpp
+	$(CPP) -c CObjGROUND.cpp -o CObjGROUND.o $(CXXFLAGS)
+
+CObjMORPH.o: CObjMORPH.cpp
+	$(CPP) -c CObjMORPH.cpp -o CObjMORPH.o $(CXXFLAGS)
+
+CObjUSER.o: CObjUSER.cpp
+	$(CPP) -c CObjUSER.cpp -o CObjUSER.o $(CXXFLAGS)
+
+CSkyDOME.o: CSkyDOME.cpp
+	$(CPP) -c CSkyDOME.cpp -o CSkyDOME.o $(CXXFLAGS)
+
+OBJECT.o: OBJECT.cpp
+	$(CPP) -c OBJECT.cpp -o OBJECT.o $(CXXFLAGS)
+
+Sound/CMusic.o: Sound/CMusic.cpp
+	$(CPP) -c Sound/CMusic.cpp -o Sound/CMusic.o $(CXXFLAGS)
+
+Sound/IO_Sound.o: Sound/IO_Sound.cpp
+	$(CPP) -c Sound/IO_Sound.cpp -o Sound/IO_Sound.o $(CXXFLAGS)
+
+Interface/DLGs/BasePAN.o: Interface/DLGs/BasePAN.cpp
+	$(CPP) -c Interface/DLGs/BasePAN.cpp -o Interface/DLGs/BasePAN.o $(CXXFLAGS)
+
+Interface/DLGs/CharacterDLG.o: Interface/DLGs/CharacterDLG.cpp
+	$(CPP) -c Interface/DLGs/CharacterDLG.cpp -o Interface/DLGs/CharacterDLG.o $(CXXFLAGS)
+
+Interface/DLGs/ChattingDLG.o: Interface/DLGs/ChattingDLG.cpp
+	$(CPP) -c Interface/DLGs/ChattingDLG.cpp -o Interface/DLGs/ChattingDLG.o $(CXXFLAGS)
+
+Interface/DLGs/CMinimapDLG.o: Interface/DLGs/CMinimapDLG.cpp
+	$(CPP) -c Interface/DLGs/CMinimapDLG.cpp -o Interface/DLGs/CMinimapDLG.o $(CXXFLAGS)
+
+Interface/DLGs/CMsgBox.o: Interface/DLGs/CMsgBox.cpp
+	$(CPP) -c Interface/DLGs/CMsgBox.cpp -o Interface/DLGs/CMsgBox.o $(CXXFLAGS)
+
+Interface/DLGs/CNumberInputDlg.o: Interface/DLGs/CNumberInputDlg.cpp
+	$(CPP) -c Interface/DLGs/CNumberInputDlg.cpp -o Interface/DLGs/CNumberInputDlg.o $(CXXFLAGS)
+
+Interface/DLGs/COptionDlg.o: Interface/DLGs/COptionDlg.cpp
+	$(CPP) -c Interface/DLGs/COptionDlg.cpp -o Interface/DLGs/COptionDlg.o $(CXXFLAGS)
+
+Interface/DLGs/CPartyDlg.o: Interface/DLGs/CPartyDlg.cpp
+	$(CPP) -c Interface/DLGs/CPartyDlg.cpp -o Interface/DLGs/CPartyDlg.o $(CXXFLAGS)
+
+Interface/DLGs/CPartyMember.o: Interface/DLGs/CPartyMember.cpp
+	$(CPP) -c Interface/DLGs/CPartyMember.cpp -o Interface/DLGs/CPartyMember.o $(CXXFLAGS)
+
+Interface/DLGs/CQuestDlg.o: Interface/DLGs/CQuestDlg.cpp
+	$(CPP) -c Interface/DLGs/CQuestDlg.cpp -o Interface/DLGs/CQuestDlg.o $(CXXFLAGS)
+
+Interface/DLGs/CRestartDLG.o: Interface/DLGs/CRestartDLG.cpp
+	$(CPP) -c Interface/DLGs/CRestartDLG.cpp -o Interface/DLGs/CRestartDLG.o $(CXXFLAGS)
+
+Interface/DLGs/CSkillDLG.o: Interface/DLGs/CSkillDLG.cpp
+	$(CPP) -c Interface/DLGs/CSkillDLG.cpp -o Interface/DLGs/CSkillDLG.o $(CXXFLAGS)
+
+Interface/DLGs/CStoreDLG.o: Interface/DLGs/CStoreDLG.cpp
+	$(CPP) -c Interface/DLGs/CStoreDLG.cpp -o Interface/DLGs/CStoreDLG.o $(CXXFLAGS)
+
+Interface/DLGs/CSystemDLG.o: Interface/DLGs/CSystemDLG.cpp
+	$(CPP) -c Interface/DLGs/CSystemDLG.cpp -o Interface/DLGs/CSystemDLG.o $(CXXFLAGS)
+
+Interface/DLGs/CSystemMsgDlg.o: Interface/DLGs/CSystemMsgDlg.cpp
+	$(CPP) -c Interface/DLGs/CSystemMsgDlg.cpp -o Interface/DLGs/CSystemMsgDlg.o $(CXXFLAGS)
+
+Interface/DLGs/CTargetMenu.o: Interface/DLGs/CTargetMenu.cpp
+	$(CPP) -c Interface/DLGs/CTargetMenu.cpp -o Interface/DLGs/CTargetMenu.o $(CXXFLAGS)
+
+Interface/DLGs/DealDLG.o: Interface/DLGs/DealDLG.cpp
+	$(CPP) -c Interface/DLGs/DealDLG.cpp -o Interface/DLGs/DealDLG.o $(CXXFLAGS)
+
+Interface/DLGs/ExchangeDLG.o: Interface/DLGs/ExchangeDLG.cpp
+	$(CPP) -c Interface/DLGs/ExchangeDLG.cpp -o Interface/DLGs/ExchangeDLG.o $(CXXFLAGS)
+
+Interface/DLGs/InventoryDLG.o: Interface/DLGs/InventoryDLG.cpp
+	$(CPP) -c Interface/DLGs/InventoryDLG.cpp -o Interface/DLGs/InventoryDLG.o $(CXXFLAGS)
+
+Interface/DLGs/MakeDLG.o: Interface/DLGs/MakeDLG.cpp
+	$(CPP) -c Interface/DLGs/MakeDLG.cpp -o Interface/DLGs/MakeDLG.o $(CXXFLAGS)
+
+Interface/DLGs/QueryDLG.o: Interface/DLGs/QueryDLG.cpp
+	$(CPP) -c Interface/DLGs/QueryDLG.cpp -o Interface/DLGs/QueryDLG.o $(CXXFLAGS)
+
+Interface/DLGs/QuickToolBAR.o: Interface/DLGs/QuickToolBAR.cpp
+	$(CPP) -c Interface/DLGs/QuickToolBAR.cpp -o Interface/DLGs/QuickToolBAR.o $(CXXFLAGS)
+
+Interface/DLGs/TargetObjectDLG.o: Interface/DLGs/TargetObjectDLG.cpp
+	$(CPP) -c Interface/DLGs/TargetObjectDLG.cpp -o Interface/DLGs/TargetObjectDLG.o $(CXXFLAGS)
+
+Interface/ExternalUI/CCreateAvata.o: Interface/ExternalUI/CCreateAvata.cpp
+	$(CPP) -c Interface/ExternalUI/CCreateAvata.cpp -o Interface/ExternalUI/CCreateAvata.o $(CXXFLAGS)
+
+Interface/ExternalUI/CExternalUIManager.o: Interface/ExternalUI/CExternalUIManager.cpp
+	$(CPP) -c Interface/ExternalUI/CExternalUIManager.cpp -o Interface/ExternalUI/CExternalUIManager.o $(CXXFLAGS)
+
+Interface/ExternalUI/CLogin.o: Interface/ExternalUI/CLogin.cpp
+	$(CPP) -c Interface/ExternalUI/CLogin.cpp -o Interface/ExternalUI/CLogin.o $(CXXFLAGS)
+
+Interface/ExternalUI/CSelectAvata.o: Interface/ExternalUI/CSelectAvata.cpp
+	$(CPP) -c Interface/ExternalUI/CSelectAvata.cpp -o Interface/ExternalUI/CSelectAvata.o $(CXXFLAGS)
+
+Interface/ExternalUI/CSelectCharacter.o: Interface/ExternalUI/CSelectCharacter.cpp
+	$(CPP) -c Interface/ExternalUI/CSelectCharacter.cpp -o Interface/ExternalUI/CSelectCharacter.o $(CXXFLAGS)
+
+Interface/ExternalUI/CSelectServer.o: Interface/ExternalUI/CSelectServer.cpp
+	$(CPP) -c Interface/ExternalUI/CSelectServer.cpp -o Interface/ExternalUI/CSelectServer.o $(CXXFLAGS)
+
+Interface/ExternalUI/CSetting.o: Interface/ExternalUI/CSetting.cpp
+	$(CPP) -c Interface/ExternalUI/CSetting.cpp -o Interface/ExternalUI/CSetting.o $(CXXFLAGS)
+
+Interface/ExternalUI/ExternalUILobby.o: Interface/ExternalUI/ExternalUILobby.cpp
+	$(CPP) -c Interface/ExternalUI/ExternalUILobby.cpp -o Interface/ExternalUI/ExternalUILobby.o $(CXXFLAGS)
+
+Interface/Command/CTCmdHotExec.o: Interface/Command/CTCmdHotExec.cpp
+	$(CPP) -c Interface/Command/CTCmdHotExec.cpp -o Interface/Command/CTCmdHotExec.o $(CXXFLAGS)
+
+Interface/Command/CTCmdNumberInput.o: Interface/Command/CTCmdNumberInput.cpp
+	$(CPP) -c Interface/Command/CTCmdNumberInput.cpp -o Interface/Command/CTCmdNumberInput.o $(CXXFLAGS)
+
+Interface/Command/CTCmdOpenDlg.o: Interface/Command/CTCmdOpenDlg.cpp
+	$(CPP) -c Interface/Command/CTCmdOpenDlg.cpp -o Interface/Command/CTCmdOpenDlg.o $(CXXFLAGS)
+
+Interface/CChatBox.o: Interface/CChatBox.cpp
+	$(CPP) -c Interface/CChatBox.cpp -o Interface/CChatBox.o $(CXXFLAGS)
+
+Interface/CDigitEffect.o: Interface/CDigitEffect.cpp
+	$(CPP) -c Interface/CDigitEffect.cpp -o Interface/CDigitEffect.o $(CXXFLAGS)
+
+Interface/CEnduranceProperty.o: Interface/CEnduranceProperty.cpp
+	$(CPP) -c Interface/CEnduranceProperty.cpp -o Interface/CEnduranceProperty.o $(CXXFLAGS)
+
+Interface/CHelpMgr.o: Interface/CHelpMgr.cpp
+	$(CPP) -c Interface/CHelpMgr.cpp -o Interface/CHelpMgr.o $(CXXFLAGS)
+
+Interface/CKeyMove.o: Interface/CKeyMove.cpp
+	$(CPP) -c Interface/CKeyMove.cpp -o Interface/CKeyMove.o $(CXXFLAGS)
+
+Interface/CLoading.o: Interface/CLoading.cpp
+	$(CPP) -c Interface/CLoading.cpp -o Interface/CLoading.o $(CXXFLAGS)
+
+Interface/CNameBox.o: Interface/CNameBox.cpp
+	$(CPP) -c Interface/CNameBox.cpp -o Interface/CNameBox.o $(CXXFLAGS)
+
+Interface/CTDrawImpl.o: Interface/CTDrawImpl.cpp
+	$(CPP) -c Interface/CTDrawImpl.cpp -o Interface/CTDrawImpl.o $(CXXFLAGS)
+
+Interface/CTFontImpl.o: Interface/CTFontImpl.cpp
+	$(CPP) -c Interface/CTFontImpl.cpp -o Interface/CTFontImpl.o $(CXXFLAGS)
+
+Interface/CTSoundImpl.o: Interface/CTSoundImpl.cpp
+	$(CPP) -c Interface/CTSoundImpl.cpp -o Interface/CTSoundImpl.o $(CXXFLAGS)
+
+Interface/CUIMediator.o: Interface/CUIMediator.cpp
+	$(CPP) -c Interface/CUIMediator.cpp -o Interface/CUIMediator.o $(CXXFLAGS)
+
+Interface/IO_ImageRes.o: Interface/IO_ImageRes.cpp
+	$(CPP) -c Interface/IO_ImageRes.cpp -o Interface/IO_ImageRes.o $(CXXFLAGS)
+
+Interface/it_mgr.o: Interface/it_mgr.cpp
+	$(CPP) -c Interface/it_mgr.cpp -o Interface/it_mgr.o $(CXXFLAGS)
+
+Interface/TypeResource.o: Interface/TypeResource.cpp
+	$(CPP) -c Interface/TypeResource.cpp -o Interface/TypeResource.o $(CXXFLAGS)
+
+Event/CEvent.o: Event/CEvent.cpp
+	$(CPP) -c Event/CEvent.cpp -o Event/CEvent.o $(CXXFLAGS)
+
+Event/GF_EFFECT.o: Event/GF_EFFECT.CPP
+	$(CPP) -c Event/GF_EFFECT.CPP -o Event/GF_EFFECT.o $(CXXFLAGS)
+
+Event/GF_ITEM.o: Event/GF_ITEM.CPP
+	$(CPP) -c Event/GF_ITEM.CPP -o Event/GF_ITEM.o $(CXXFLAGS)
+
+Event/GF_SYSTEM.o: Event/GF_SYSTEM.CPP
+	$(CPP) -c Event/GF_SYSTEM.CPP -o Event/GF_SYSTEM.o $(CXXFLAGS)
+
+Event/QF_CONVERSATION.o: Event/QF_CONVERSATION.CPP
+	$(CPP) -c Event/QF_CONVERSATION.CPP -o Event/QF_CONVERSATION.o $(CXXFLAGS)
+
+Event/QF_QUEST.o: Event/QF_QUEST.CPP
+	$(CPP) -c Event/QF_QUEST.CPP -o Event/QF_QUEST.o $(CXXFLAGS)
+
+Event/QF_SKILL.o: Event/QF_SKILL.CPP
+	$(CPP) -c Event/QF_SKILL.CPP -o Event/QF_SKILL.o $(CXXFLAGS)
+
+BULLET.o: BULLET.CPP
+	$(CPP) -c BULLET.CPP -o BULLET.o $(CXXFLAGS)
+
+AI_LIB/AI_Action.o: AI_LIB/AI_Action.cpp
+	$(CPP) -c AI_LIB/AI_Action.cpp -o AI_LIB/AI_Action.o $(CXXFLAGS)
+
+AI_LIB/AI_Condition.o: AI_LIB/AI_Condition.cpp
+	$(CPP) -c AI_LIB/AI_Condition.cpp -o AI_LIB/AI_Condition.o $(CXXFLAGS)
+
+AI_LIB/CAI_FILE.o: AI_LIB/CAI_FILE.CPP
+	$(CPP) -c AI_LIB/CAI_FILE.CPP -o AI_LIB/CAI_FILE.o $(CXXFLAGS)
+
+Common/Calculation.o: Common/Calculation.cpp
+	$(CPP) -c Common/Calculation.cpp -o Common/Calculation.o $(CXXFLAGS)
+
+Common/CEconomy.o: Common/CEconomy.cpp
+	$(CPP) -c Common/CEconomy.cpp -o Common/CEconomy.o $(CXXFLAGS)
+
+Common/CHotICON.o: Common/CHotICON.cpp
+	$(CPP) -c Common/CHotICON.cpp -o Common/CHotICON.o $(CXXFLAGS)
+
+Common/CInventory.o: Common/CInventory.cpp
+	$(CPP) -c Common/CInventory.cpp -o Common/CInventory.o $(CXXFLAGS)
+
+Common/CItem.o: Common/CItem.cpp
+	$(CPP) -c Common/CItem.cpp -o Common/CItem.o $(CXXFLAGS)
+
+Common/CObjAI.o: Common/CObjAI.cpp
+	$(CPP) -c Common/CObjAI.cpp -o Common/CObjAI.o $(CXXFLAGS)
+
+Common/CQuest.o: Common/CQuest.cpp
+	$(CPP) -c Common/CQuest.cpp -o Common/CQuest.o $(CXXFLAGS)
+
+Common/CRegenAREA.o: Common/CRegenAREA.cpp
+	$(CPP) -c Common/CRegenAREA.cpp -o Common/CRegenAREA.o $(CXXFLAGS)
+
+Common/CUserDATA.o: Common/CUserDATA.cpp
+	$(CPP) -c Common/CUserDATA.cpp -o Common/CUserDATA.o $(CXXFLAGS)
+
+Common/IO_AI.o: Common/IO_AI.CPP
+	$(CPP) -c Common/IO_AI.CPP -o Common/IO_AI.o $(CXXFLAGS)
+
+Common/IO_Motion.o: Common/IO_Motion.cpp
+	$(CPP) -c Common/IO_Motion.cpp -o Common/IO_Motion.o $(CXXFLAGS)
+
+Common/IO_Skill.o: Common/IO_Skill.cpp
+	$(CPP) -c Common/IO_Skill.cpp -o Common/IO_Skill.o $(CXXFLAGS)
+
+Common/IO_STB.o: Common/IO_STB.cpp
+	$(CPP) -c Common/IO_STB.cpp -o Common/IO_STB.o $(CXXFLAGS)
+
+Game_FUNC.o: Game_FUNC.cpp
+	$(CPP) -c Game_FUNC.cpp -o Game_FUNC.o $(CXXFLAGS)
+
+LUA_Func.o: LUA_Func.cpp
+	$(CPP) -c LUA_Func.cpp -o LUA_Func.o $(CXXFLAGS)
+
+LUA_Init.o: LUA_Init.cpp
+	$(CPP) -c LUA_Init.cpp -o LUA_Init.o $(CXXFLAGS)
+
+Network/CNetwork.o: Network/CNetwork.cpp
+	$(CPP) -c Network/CNetwork.cpp -o Network/CNetwork.o $(CXXFLAGS)
+
+Network/RecvPACKET.o: Network/RecvPACKET.cpp
+	$(CPP) -c Network/RecvPACKET.cpp -o Network/RecvPACKET.o $(CXXFLAGS)
+
+Network/SendPACKET.o: Network/SendPACKET.cpp
+	$(CPP) -c Network/SendPACKET.cpp -o Network/SendPACKET.o $(CXXFLAGS)
+
+CCamera.o: CCamera.cpp
+	$(CPP) -c CCamera.cpp -o CCamera.o $(CXXFLAGS)
+
+CClientStorage.o: CClientStorage.cpp
+	$(CPP) -c CClientStorage.cpp -o CClientStorage.o $(CXXFLAGS)
+
+CViewMSG.o: CViewMSG.cpp
+	$(CPP) -c CViewMSG.cpp -o CViewMSG.o $(CXXFLAGS)
+
+Game.o: Game.cpp
+	$(CPP) -c Game.cpp -o Game.o $(CXXFLAGS)
+
+JCommandState.o: JCommandState.cpp
+	$(CPP) -c JCommandState.cpp -o JCommandState.o $(CXXFLAGS)
+
+Client_private.res: Client_private.rc Client.rc 
+	$(WINDRES) -i Client_private.rc --input-format=rc -o Client_private.res -O coff 
