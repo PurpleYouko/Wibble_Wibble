@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbis_dynamic", "vorbis_dynamic.vcproj", "{F09EE1D8-7C57-42D7-B49F-0A04B5A341E1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbis_static", "vorbis_static.vcproj", "{251262CA-CCBB-4298-8214-4CAB8B0971FE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbisenc_dynamic", "vorbisenc_dynamic.vcproj", "{2185430E-D42E-476D-8A38-7D538D14EBB1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F09EE1D8-7C57-42D7-B49F-0A04B5A341E1} = {F09EE1D8-7C57-42D7-B49F-0A04B5A341E1}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbisenc_static", "vorbisenc_static.vcproj", "{9AC603DE-B316-4666-BF80-DE8BB031AF31}"
+	ProjectSection(ProjectDependencies) = postProject
+		{251262CA-CCBB-4298-8214-4CAB8B0971FE} = {251262CA-CCBB-4298-8214-4CAB8B0971FE}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbisfile_dynamic", "vorbisfile_dynamic.vcproj", "{F6C0BA4C-CDD8-4F54-AE1A-F5238B94B2CF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F09EE1D8-7C57-42D7-B49F-0A04B5A341E1} = {F09EE1D8-7C57-42D7-B49F-0A04B5A341E1}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbisfile_static", "vorbisfile_static.vcproj", "{DFFECD1D-921F-452B-BCBE-144452A48A1C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{251262CA-CCBB-4298-8214-4CAB8B0971FE} = {251262CA-CCBB-4298-8214-4CAB8B0971FE}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F09EE1D8-7C57-42D7-B49F-0A04B5A341E1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F09EE1D8-7C57-42D7-B49F-0A04B5A341E1}.Debug|Win32.Build.0 = Debug|Win32
+		{F09EE1D8-7C57-42D7-B49F-0A04B5A341E1}.Release|Win32.ActiveCfg = Release|Win32
+		{F09EE1D8-7C57-42D7-B49F-0A04B5A341E1}.Release|Win32.Build.0 = Release|Win32
+		{251262CA-CCBB-4298-8214-4CAB8B0971FE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{251262CA-CCBB-4298-8214-4CAB8B0971FE}.Debug|Win32.Build.0 = Debug|Win32
+		{251262CA-CCBB-4298-8214-4CAB8B0971FE}.Release|Win32.ActiveCfg = Release|Win32
+		{251262CA-CCBB-4298-8214-4CAB8B0971FE}.Release|Win32.Build.0 = Release|Win32
+		{2185430E-D42E-476D-8A38-7D538D14EBB1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2185430E-D42E-476D-8A38-7D538D14EBB1}.Debug|Win32.Build.0 = Debug|Win32
+		{2185430E-D42E-476D-8A38-7D538D14EBB1}.Release|Win32.ActiveCfg = Release|Win32
+		{2185430E-D42E-476D-8A38-7D538D14EBB1}.Release|Win32.Build.0 = Release|Win32
+		{9AC603DE-B316-4666-BF80-DE8BB031AF31}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9AC603DE-B316-4666-BF80-DE8BB031AF31}.Debug|Win32.Build.0 = Debug|Win32
+		{9AC603DE-B316-4666-BF80-DE8BB031AF31}.Release|Win32.ActiveCfg = Release|Win32
+		{9AC603DE-B316-4666-BF80-DE8BB031AF31}.Release|Win32.Build.0 = Release|Win32
+		{F6C0BA4C-CDD8-4F54-AE1A-F5238B94B2CF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F6C0BA4C-CDD8-4F54-AE1A-F5238B94B2CF}.Debug|Win32.Build.0 = Debug|Win32
+		{F6C0BA4C-CDD8-4F54-AE1A-F5238B94B2CF}.Release|Win32.ActiveCfg = Release|Win32
+		{F6C0BA4C-CDD8-4F54-AE1A-F5238B94B2CF}.Release|Win32.Build.0 = Release|Win32
+		{DFFECD1D-921F-452B-BCBE-144452A48A1C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DFFECD1D-921F-452B-BCBE-144452A48A1C}.Debug|Win32.Build.0 = Debug|Win32
+		{DFFECD1D-921F-452B-BCBE-144452A48A1C}.Release|Win32.ActiveCfg = Release|Win32
+		{DFFECD1D-921F-452B-BCBE-144452A48A1C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
