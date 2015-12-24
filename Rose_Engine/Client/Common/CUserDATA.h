@@ -89,8 +89,8 @@ struct tagGrowAbility {
 	short	m_nMP;				// 0~1000
 
 	//PY added	not sure what use they will be yet
-	//short	m_MaxHP;
-	//short	m_MaxMP;
+	short	m_MaxHP;
+	short	m_MaxMP;
 
 	long	m_lEXP;				// Experience 1~100000
 	short	m_nLevel;			// 0~250
@@ -559,6 +559,7 @@ public:
 	void	Sub_CurMONEY (int iMoney)		{	this->m_Inventory.m_i64Money-=iMoney;	}
 	void  SetCur_HP (short nValue);// 생명력
 	void  SetCur_MP (short nValue);// 마나
+	void  SetCur_MaxHP (short nValue);
 
 	int   AddCur_HP (short nValue)	
 	{	

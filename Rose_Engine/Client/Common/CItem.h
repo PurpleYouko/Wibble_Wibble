@@ -4,21 +4,21 @@
 #pragma warning (disable:4201)
 //-------------------------------------------------------------------------------------------------
 /*
-돈(MONEY)	지정번호 : 40	(0 ~ 999,999)
-아이템 종류(ITEM_CLASS)		(1 ~ 20)		: 5  bit  0~31		
-아아템 번호(ITEM_ID)		(0 ~ 999)		: 10 bit  0~1023	
+Money (MONEY) designation: 40 (0-999,999)
+Item types(ITEM_CLASS)		(1 ~ 20)		: 5  bit  0~31		
+Ah system number(ITEM_ID)		(0 ~ 999)		: 10 bit  0~1023	
 
-재밍 번호1(JAMMING1)		(0~120)			: 7  bit  0~127
-재밍 번호2(JAMMING2)		(0~120)         : 7  bit  0~127
-재밍 번호3(JAMMING3)		(0~120)         : 7  bit  0~127
+Re Ming number 1(JAMMING1)		(0~120)			: 7  bit  0~127
+Re Ming number 2(JAMMING2)		(0~120)         : 7  bit  0~127
+Re Ming number 3(JAMMING3)		(0~120)         : 7  bit  0~127
 
-강화 등급(RESMELT)			(0~9)			: 4  bit  0~15		장비 아이템일 경우만..
-품질(QUALITY)				(0~120)			: 7  bit  0~127		장비 아이템일 경우만..
-개수(QUANTITY)				(1~999)			: 10 bit  0~1023	소모, 기타 아이템일 경우
+Enhanced ratings (RESMELT) (0 ~ 9): 4 bit 0 to 15 equipment items only ...
+Quality (QUALITY) (0 ~ 120): 7 bit 0 through 127 only if an item of equipment, ...
+The number (QUANTITY) (1-999): 10 bit if you are consuming, miscellaneous items, 0 ~ 1023
 
-  장비 : 5 + 10 + 21 + 11 ==> 15+33 : 48   6 bytes
-  기타 : 5 + 10 + 10      ==> 15+10
-  돈   : 5 + 10 + xx
+  Equipment : 5 + 10 + 21 + 11 ==> 15+33 : 48   6 bytes
+  Other : 5 + 10 + 10      ==> 15+10
+  Don   : 5 + 10 + xx
 */
 
 
@@ -31,20 +31,20 @@
 
 #pragma pack (push, 1)
 struct tagPartITEM {
-	unsigned int	m_nItemNo		: 18;	// 0~1023	아아템 번호(ITEM_ID)		(0 ~ 999)
-	unsigned int	m_nGEM_OP		: 9;	// 0~512	보석번호(m_bHasSocket==1) 또는 옵션 번호(m_bHasSocket==0)
-	unsigned int	m_bHasSocket	: 1;	// 0~1		보석 소켓 여부
-	unsigned int	m_cGrade	    : 4;	// 0~15		등급						(0~9)
+	unsigned int	m_nItemNo		: 18;	// 0~1023	Ah system number(ITEM_ID)		(0 ~ 999)
+	unsigned int	m_nGEM_OP		: 9;	// 0~512	Jewelry number(m_bHasSocket==1) Or a number of options(m_bHasSocket==0)
+	unsigned int	m_bHasSocket	: 1;	// 0~1		Jewelry, whether or not a socket
+	unsigned int	m_cGrade	    : 4;	// 0~15		Rating						(0~9)
 } ;
 
 #else
 
 #pragma pack (push, 1)
 struct tagPartITEM {
-	unsigned int	m_nItemNo		: 10;	// 0~1023	아아템 번호(ITEM_ID)		(0 ~ 999)
-	unsigned int	m_nGEM_OP		: 9;	// 0~512	보석번호(m_bHasSocket==1) 또는 옵션 번호(m_bHasSocket==0)
-	unsigned int	m_bHasSocket	: 1;	// 0~1		보석 소켓 여부
-	unsigned int	m_cGrade	    : 4;	// 0~15		등급						(0~9)
+	unsigned int	m_nItemNo		: 10;	// 0~1023	Ah system number(ITEM_ID)		(0 ~ 999)
+	unsigned int	m_nGEM_OP		: 9;	// 0~512	Jewelry number(m_bHasSocket==1) Or a number of options(m_bHasSocket==0)
+	unsigned int	m_bHasSocket	: 1;	// 0~1		Jewelry, whether or not a socket
+	unsigned int	m_cGrade	    : 4;	// 0~15		Rating						(0~9)
 } ;
 
 #endif
@@ -61,42 +61,48 @@ int getItemType(int iFullItemNo);
 int setItemFullNo( int iItemType, int iItemNo );
 
 // 총 48 bits, 6 bytes
-struct tagBaseITEM {
+struct tagBaseITEM 
+{
 	
 #ifdef __ITEM_MAX
 
-	union {
-		// 장비 아이템 구조
-		struct {	
+	union 
+	{
+		// Equipment item structure
+		struct 
+		{	
 			// LSB ::
-			// 아래 둘중 하나는 비트 늘려도 됨.
-			unsigned int	m_cType			: 5;	// 0~31		아이템 종류(ITEM_CLASS)		(1 ~ 20)			
-			unsigned int	m_nItemNo		: 26;	// 0~1023	아아템 번호(ITEM_ID)		(0 ~ 999)
-			unsigned int	m_bCreated		: 1;	// 0~1		제조된 아이템인가 ?
+			// One of the two is a bit stale as.
+			unsigned int	m_cType			: 5;	// 0~31		Item types(ITEM_CLASS)		(1 ~ 20)			
+			unsigned int	m_nItemNo		: 26;	// 0~1023	Ah system number(ITEM_ID)		(0 ~ 999)
+			unsigned int	m_bCreated		: 1;	// 0~1		The item is manufactured ?
 
-			unsigned int	m_nGEM_OP		: 9;	// 0~512	보석번호(m_bHasSocket==1) 또는 옵션 번호(m_bHasSocket==0)
-			unsigned int	m_cDurability	: 7;	// 0~127	내구도
+			unsigned int	m_nGEM_OP		: 9;	// 0~512	Jewelry number(m_bHasSocket==1) Or a number of options(m_bHasSocket==0)
+			unsigned int	m_cDurability	: 7;	// 0~127	My old
 
-			unsigned int	m_nLife			: 10;	// 0~1023	수명
-			unsigned int	m_bHasSocket	: 1;	// 0~1		보석 소켓 여부
-			unsigned int	m_bIsAppraisal	: 1;	// 0~1		옵션 검증 여부
-			unsigned int	m_cGrade	    : 4;	// 0~15		등급						(0~9)
+			unsigned int	m_nLife			: 10;	// 0~1023	Life
+			unsigned int	m_bHasSocket	: 1;	// 0~1		Jewelry, whether or not a socket
+			unsigned int	m_bIsAppraisal	: 1;	// 0~1		Options verification whether or not
+			unsigned int	m_cGrade	    : 4;	// 0~15		Rating						(0~9)
+			//unsigned int	m_Count			: 1;
 
 			// 16 + 16 + 16 => 48
 			// MSB ::
 		} ;
 
-		// 소모, 기타 아이템 구조
-		struct {
-			unsigned int	m_cType_1		: 5;	// 0~31		아이템 종류(ITEM_CLASS)		(1 ~ 20)
-			unsigned int	m_nItemNo_1		: 26;	// 0~1023	아아템 번호(ITEM_ID)		(0 ~ 999)
+		// Consumption, other items structure
+		struct 
+		{
+			unsigned int	m_cType_1		: 5;	// 0~31		Item types(ITEM_CLASS)		(1 ~ 20)
+			unsigned int	m_nItemNo_1		: 26;	// 0~1023	Ah system number(ITEM_ID)		(0 ~ 999)
 			unsigned int    __dummy_0       : 1;
 
-			unsigned int	m_uiQuantity	: 32;	// 갯수(돈)
+			unsigned int	m_uiQuantity	: 32;	// The number of (money)
 		} ;
 
 		// 돈 아이템 구조
-		struct {
+		struct 
+		{
 			unsigned int	m_cType_2		: 5;	// 0~31
 			unsigned int	m_nReserved1	: 26;
 			unsigned int    __dummy_0       : 1;
@@ -104,12 +110,14 @@ struct tagBaseITEM {
 			unsigned int	m_uiMoney		: 32;
 		} ;
 
-		struct {
-			unsigned int	m_wHeader		: 32;	//서버는 m_dwHeader인데 고칠곳이 많아서 이름은 수정하지 않았다.
+		struct 
+		{
+			unsigned int	m_wHeader		: 32;	//The server is the name of a heck of a place to fix fixes m_dwHeader.
 			unsigned int	m_dwBody		: 32;
 		} ;
 
-		struct {
+		struct 
+		{
 			unsigned int	m_dwLSB;
 			unsigned int	m_dwMSB;
 		} ;		
@@ -120,25 +128,26 @@ struct tagBaseITEM {
 
 #ifdef __ITEM_TIME_LIMMIT
 
-	struct {
+	struct 
+	{
 		DWORD dwPickOutTime;
 		WORD  wPeriod;
 	};	
 
-	// 1970년 1월 1일 0시 0분 0초부터 2007년 01월 01일 0시 0분 0초까지의 시간을 초단위로
+	// On January 1, 1970 00:00:00 January 01, 2007 0:00:00 time in seconds
 	time_t tagBaseITEM::get_basicTime()
 	{
 		time_t basic_t;
 		struct tm t;
 
-		// 2007년 01월 01일 0시 0분 0초 기준
+		// 2007, Jan 01, 00:00:00 standard
 		t.tm_year = 2007 - 1900; t.tm_mon = 1 - 1; t.tm_mday = 1; t.tm_hour = 0; t.tm_min = 0; t.tm_sec = 0;
 		basic_t = mktime( &t);	
 
 		return basic_t;
 	}
 
-	//적용시간
+	//Apply time
 	tm tagBaseITEM::get_startTime()
 	{		
 		time_t long_time = (dwPickOutTime) + get_basicTime();
@@ -148,7 +157,7 @@ struct tagBaseITEM {
 		return l;
 	}
 	
-	//소멸시간
+	//Time-lapse
 	tm tagBaseITEM::get_endTime()
 	{		
 		time_t long_time = (dwPickOutTime) + get_basicTime() + (wPeriod) * 3600 ;
@@ -173,35 +182,35 @@ struct tagBaseITEM {
 #else
 
 	union {
-		// 장비 아이템 구조
+		// Equipment item structure
 		struct {	
 			// LSB ::
-			// 아래 둘중 하나는 비트 늘려도 됨.
-			unsigned short	m_cType			: 5;	// 0~31		아이템 종류(ITEM_CLASS)		(1 ~ 20)			
-			unsigned short	m_nItemNo		: 10;	// 0~1023	아아템 번호(ITEM_ID)		(0 ~ 999)
-			unsigned short	m_bCreated		: 1;	// 0~1		제조된 아이템인가 ?
+			// One of the two is a bit stale.
+			unsigned short	m_cType			: 5;	// 0~31		Item types(ITEM_CLASS)		(1 ~ 20)			
+			unsigned short	m_nItemNo		: 10;	// 0~1023	Ah system number(ITEM_ID)		(0 ~ 999)
+			unsigned short	m_bCreated		: 1;	// 0~1		The item is manufactured ?
 
-			unsigned int	m_nGEM_OP		: 9;	// 0~512	보석번호(m_bHasSocket==1) 또는 옵션 번호(m_bHasSocket==0)
-			unsigned int	m_cDurability	: 7;	// 0~127	내구도
+			unsigned int	m_nGEM_OP		: 9;	// 0~512	Jewelry number(m_bHasSocket==1) Or a number of options(m_bHasSocket==0)
+			unsigned int	m_cDurability	: 7;	// 0~127	My old
 
-			unsigned int	m_nLife			: 10;	// 0~1023	수명
-			unsigned int	m_bHasSocket	: 1;	// 0~1		보석 소켓 여부
-			unsigned int	m_bIsAppraisal	: 1;	// 0~1		옵션 검증 여부
-			unsigned int	m_cGrade	    : 4;	// 0~15		등급						(0~9)
+			unsigned int	m_nLife			: 10;	// 0~1023	Life
+			unsigned int	m_bHasSocket	: 1;	// 0~1		Jewelry, whether or not a socket
+			unsigned int	m_bIsAppraisal	: 1;	// 0~1		Options verification whether or not
+			unsigned int	m_cGrade	    : 4;	// 0~15		Rating						(0~9)
 
 			// 16 + 16 + 16 => 48
 			// MSB ::
 		} ;
 
-		// 소모, 기타 아이템 구조
+		// Consumption, other items structure
 		struct {
-			unsigned short	m_cType_1		: 5;	// 0~31		아이템 종류(ITEM_CLASS)		(1 ~ 20)
-			unsigned short	m_nItemNo_1		: 10;	// 0~1023	아아템 번호(ITEM_ID)		(0 ~ 999)
+			unsigned short	m_cType_1		: 5;	// 0~31		Item types(ITEM_CLASS)		(1 ~ 20)
+			unsigned short	m_nItemNo_1		: 10;	// 0~1023	Ah system number(ITEM_ID)		(0 ~ 999)
 
-			unsigned int	m_uiQuantity	: 32;	// 갯수(돈)
+			unsigned int	m_uiQuantity	: 32;	// The number of (money)
 		} ;
 
-		// 돈 아이템 구조
+		// Money item structure
 		struct {
 			unsigned short	m_cType_2		: 5;	// 0~31
 			unsigned short	m_nReserved1	: 11;
@@ -240,20 +249,22 @@ struct tagBaseITEM {
 #endif
 	}
 	unsigned int	GetItemNO ()			{	return	m_nItemNo;				}
+	void			SetItemNo (short ItmNo)	{	m_nItemNo = ItmNo;				}
 	bool			IsEmpty ()				{	return (0==m_wHeader);			}
-	unsigned short	GetHEADER ()			{	return (m_wHeader & 0x7fffffff);	}	// m_bCreated :: 헤더 비교시 제조비트 없이...
+	unsigned short	GetHEADER ()			{	return (m_wHeader & 0x7fffffff);	}	// m_bCreated :: Compared to manufacturing without the header a bit. ...
 #else
 	void			Clear ()				{	m_dwLSB=m_wMSB=0;				}
 	unsigned short	GetItemNO ()			{	return	m_nItemNo;				}
 	bool			IsEmpty ()				{	return (0==m_wHeader);			}
-	unsigned short	GetHEADER ()			{	return (m_wHeader & 0x7fff);	}	// m_bCreated :: 헤더 비교시 제조비트 없이...
+	unsigned short	GetHEADER ()			{	return (m_wHeader & 0x7fff);	}	// m_bCreated :: Compared to manufacturing without a bit of the header...
 
 #endif
 	
 
 	unsigned short GetTYPE ()			{	return	m_cType;				}
-	
-	
+	unsigned short GetTYPE1()			{	return	m_cType_1;				}
+	void		   SetType (short Type) {   m_cType = Type;					}
+	void		   SetType1(short Type) {   m_cType_1 = Type;				}
 
 	unsigned short GetGrade ()			{	return	m_cGrade;		}
 	unsigned short GetOption ()			{	return  m_nGEM_OP;		}
@@ -268,20 +279,20 @@ struct tagBaseITEM {
 	bool IsAppraisal()					{	return (0!=m_bIsAppraisal);		}
 	bool HasSocket()					{	return (0!=m_bHasSocket);		}
 
-	bool IsEnableDROP ();					// 버리기가 가능한 아이템인가 ?
-	bool IsEnableSELL ();					// 팔기가 가능한 아이템인가 ?
-	bool IsEnableKEEPING ();				// 은행에 보관 가능한 아이템인가 ?
+	bool IsEnableDROP ();					// Discard the item is available ?
+	bool IsEnableSELL ();					// Is possible to sell items ?
+	bool IsEnableKEEPING ();				// Items kept in the Bank is ?
 
 	bool IsValidITEM ();
 
 	static bool IsEnableDupCNT( unsigned short cType )		
 	{	
-		// 중복 갯수적용 아이템이냐???
+		// Applies the number of duplicate items, because???
 		return (cType>=ITEM_TYPE_USE && cType<ITEM_TYPE_RIDE_PART);
 	}
 	bool IsEnableDupCNT()				{	return IsEnableDupCNT(m_cType);	}
 	bool IsCreated()					{	return (1==m_bCreated);			}
-	bool IsEquipITEM()					{	return ( m_cType && m_cType < ITEM_TYPE_USE );					}	// 장착 아이템인가?
+	bool IsEquipITEM()					{	return ( m_cType && m_cType < ITEM_TYPE_USE );					}	// Mount items?
 	bool IsEtcITEM()					{	return ( m_cType>ITEM_TYPE_USE && m_cType<ITEM_TYPE_QUEST);		}
 
 	bool IsTwoHands ();
@@ -292,11 +303,16 @@ struct tagBaseITEM {
 	unsigned int	GetQuantity ()		{	return	m_uiQuantity;			}
 #else
 	unsigned int	GetQuantity ();
-	short			Subtract( tagITEM &sITEM );		// 주어진 아이템 만큼 덜어 내고 빠진결과는 sITEM에 들어 있다.
-	void			SubtractOnly (tagITEM &sITEM);	// 주어진 아이템 만큼 덜어 낸다.
+	unsigned int	GetQuantity1()		{   return	m_uiQuantity;			}
+	void			SetQuantity1( short Count )	{ m_uiQuantity = Count;		}
+	void			IncQuantity1()		{	m_uiQuantity ++;				}				
+	//unsigned int	GetCount ()		{   return  m_Count;				}
+	//void			SetQuantity (byte Count);		// Set the quantity of an item
+	short			Subtract( tagITEM &sITEM );		// As much as the given item is contained in the missing results in relieving sITEM.
+	void			SubtractOnly (tagITEM &sITEM);	// As long as a given item for relieving.
 
-	bool			IsEnableAppraisal ();					///감정가능한 아이템인가?
-	bool			IsEnableExchange ();					// 버리기가 가능한 아이템인가 ?
+	bool			IsEnableAppraisal ();					///Emotional items?
+	bool			IsEnableExchange ();					// Discard items as possible?
 	bool			IsEnableSeparate ();
 	bool			IsEnableUpgrade ();
 	bool			HasLife();
@@ -307,10 +323,10 @@ struct tagBaseITEM {
 	char*			GettingMESSAGE_Party (const char * partyName_);
 	char*			GettingQuestMESSAGE();
 	char*			SubtractQuestMESSAGE();
-	///소모탄아이템의 ShotType을 얻기
+	///Consuming Tan items ShotType을 얻기
 	static t_eSHOT GetNaturalBulletType( int iItemNo );
 	t_eSHOT GetBulletType();
-	///명중력
+	///Famous gravity
 	int				GetHitRate();
 	int				GetAvoidRate();
 	bool			IsEqual( int iType, int iItemNo );
@@ -330,9 +346,9 @@ struct tagITEM : public tagBaseITEM {
 		__int64	m_iSN;
 	} ;
 
-	// 현재 아이템에서 주어진 아이템 만큼 뺀후, 빠진 무게를 리턴한다.
-	short	Subtract( tagITEM &sITEM );		// 주어진 아이템 만큼 덜어 내고 빠진결과는 sITEM에 들어 있다.
-	void	SubtractOnly (tagITEM &sITEM);	// 주어진 아이템 만큼 덜어 낸다.
+	// After subtracting the current item being given in item weighs as much as returns,
+	short	Subtract( tagITEM &sITEM );		// As much as the given item is contained in the missing results in relieving sITEM.
+	void	SubtractOnly (tagITEM &sITEM);	// As long as a given item for relieving.
 
 	bool SubQuantity ()		{	
 		if ( GetQuantity() > 0 ) {
@@ -387,8 +403,8 @@ struct tagITEM : public tagBaseITEM {
 } ;
 #endif
 
-//서버에서는 클라이언트랑통신을 위해 시리얼키를 제외하고 구조체를 구성..
-//클라이언트에서는 그대로 CMileageInv에서 사용하면됨...
+//The server uses the client rang to communicate except for structure configuration serial key ...
+//On the client, you can use the CMileageInv as in the as. ..
 struct Net_MileageItem:public tagBaseITEM
 {
 	DWORD m_dwDate;

@@ -24,17 +24,17 @@
 		. The results of the above objects using a skill packet is transmitted after gsv_RESULT_OF_SKILL Is transmitted.
 
 	2004. 4. 1  More details. 
-		. tag_ADD_CHAR 팀번호 추가 CAI_OBJ::Is_ALLIED(상대팀번호)를 호출하여 true면 아군, false면 적군.
+		. tag_ADD_CHAR Add team No. CAI_OBJ :: Is_ALLIED (opponents numbers) to call if true, friendly, false enemy side.
 
-	2004. 4. 2  수정/추가 사항
-		. tag_FIELDITEM구조 에서 아이템 남은 시간(m_wRemainTIME)을 제외시켜 tag_DROPITEM으로 이름 변경.
-		. 일반 필드아이템일경우 gsv_ADD_FIELDITEM에 m_wRemainTIME 멤버 변수값으로 아이템 시간 설정.
-		. 데미지 패킷의 tag_DROPITEM으로 생성한 아이템은 남은 시간을 ITEM_OBJ_LIVE_TIME으로 설정.
-		. gsv_DAMAGE_OF_SKILL에 아이템 드롭시 tag_DROPITEM[0]에 값 들어감. 사용법은 일반 데미지 아이템과 동일
+	2004. 4. 2  Modification / additions
+		. tag_FIELDITEMBy excluding the remaining time (m_wRemainTIME) item in the structure, change the name to tag_DROPITEM.
+		. If the items in the General field as the value for the m_wRemainTIME member variable gsv_ADD_FIELDITEM items time setting.
+		. It is produced by tag_DROPITEM of packets that damage the time remaining is set to ITEM_OBJ_LIVE_TIME.
+		. Gsv_DAMAGE_OF_SKILL item drop: tag_DROPITEM [0] and enter the value in the. The usage is the same as the regular damage items
 
 	2004. 4. 8  추가 사항
-		. gsv_SKILL_LEARN_REPLY 패킷의 응답 종류에 RESULT_SKILL_LEARN_DELETE 추가..
-		. 응답이 RESULT_SKILL_LEARN_DELETE 일경우 CUserDATA::Skill_DELETE(slot,skill)을 호출하여 삭제한다.
+		. Gsv_SKILL_LEARN_REPLY RESULT_SKILL_LEARN_DELETE on the type of additional packet response. ..
+		. If the response is RESULT_SKILL_LEARN_DELETE, CUserDATA:: Skill_DELETE (slot, skill) by calling the.
 
 	2004. 4. 13 수정/추가 사항
 		. tag_ADD_CHAR 멥버 m_btMoveMODE의 이동 상태값 추가..
@@ -395,7 +395,7 @@
 #define	CLI_ATTACK					0x0798
 #define GSV_ATTACK					0x0798
 
-#define	CLI_DAMAGE					0x0799
+#define	CLI_DAMAGE					0x0799			//combat damage
 #define GSV_DAMAGE					0x0799
 
 #define	CLI_MOUSECMD				0x079a
@@ -601,20 +601,21 @@
 #define GSV_SCREEN_SHOT_TIME 0x07eb							//Transfer the required server time when taking screenshots ... (more heojaeyoung 2005.10.18)
 
 
-#define GSV_CHAR_HPMP_INFO			0x07ec					//1 Per second from the server to the client MP/HP Send...                         
+#define GSV_CHAR_HPMP_INFO			0x07ec					//1 Per second from the server to the client MP/HP Send...  
+#define GSV_CHAR_STAT_INFO			0x07ed					//PY: New packet added to sens ALL stats from the server
 
 
-#define GSV_MILEAGE_INV_DATA  0x801							//Mileage inventory data..
-#define GSV_DESTROY_MILEAGE_ITEM 0x802	    				//Destroyed items mileage.
-#define GSV_NOTIFY_MIEAGE_ITEM 0x803			 			//Mileage changed item information
-#define 	GSV_SET_MILEAGE_INV_ONLY			0x0804		//Setting mileage inventory..
+#define GSV_MILEAGE_INV_DATA		0x801					//Mileage inventory data..
+#define GSV_DESTROY_MILEAGE_ITEM	0x802	    			//Destroyed items mileage.
+#define GSV_NOTIFY_MIEAGE_ITEM		0x803			 		//Mileage changed item information
+#define GSV_SET_MILEAGE_INV_ONLY	0x0804					//Setting mileage inventory..
 
 
-#define CLI_USE_MILEAGE_ITEM 0x805
-#define GSV_USE_MILEAGE_ITEM 0x805							//Mileage used items
+#define CLI_USE_MILEAGE_ITEM		0x805
+#define GSV_USE_MILEAGE_ITEM		0x805					//Mileage used items
 
-#define CLI_EQUIP_MILEAGE_ITEM 0x806          				//Mileage wear items
-#define GSV_EQUIP_MILEAGE_ITEM 0x806          				//Mileage wear items
+#define CLI_EQUIP_MILEAGE_ITEM		0x806          			//Mileage wear items
+#define GSV_EQUIP_MILEAGE_ITEM		0x806          			//Mileage wear items
 
 #define CLI_EQUIP_RIDE_MILEAGE_ITEM 0x807   				//Mileage cart items worn
 #define GSV_EQUIP_RIDE_MILEAGE_ITEM 0x807  					//Mileage cart items worn
@@ -706,21 +707,21 @@ struct gsv_cli_CLAN_WAR_ERR : public t_PACKETHEADER
 //	Message packets proceeds keulraenjeon
 struct gsv_cli_CLAN_WAR_PROGRESS : public t_PACKETHEADER
 {
-	//	1 = 클랜전 시작, 2 = A팀 승리, 3 = B팀 승리, 4 = 시간초과 비김, ....
-	WORD	m_CW_Progress;		// 클랜전 진행번호
+	//	1 = Keulraenjeon start, 2 = A team wins, 3 = B team wins, 4 = timeout set-off, ...
+	WORD	m_CW_Progress;		// Keulraenjeon proceeding No.
 };
 
-//          클랜전 보스 몹 체력 전송 패킷
+//          Keulraenjeon fitness mob boss sent packets
 
 struct gsv_cli_CLAN_WAR_BOSS_HP : public t_PACKETHEADER 
 {
-	short		m_A_nCharIdx;			// A팀 보스 몹 인덱스
-	short		m_B_nCharIdx;			// B팀 보스 몹 인덱스
-	int         m_A_Boss_Max_HP;        // A 팀 보스 몹의 최대 체력
-	int         m_A_Boss_HP;            // A 팀 보스 몹의 현재 체력
-	int         m_B_Boss_Max_HP;        // B 팀 보스 몹의 최대 체력
-	int         m_B_Boss_HP;            // B 팀 보스 몹의 현재 체력
-	//          m_B_Boss_HP = 0 또는 m_B_Boss_Max_HP = 0 이면 해당 몹은 죽은 것으로 표기 한다.
+	short		m_A_nCharIdx;			// A Team boss mobs Index
+	short		m_B_nCharIdx;			// B Team boss mobs Index
+	int         m_A_Boss_Max_HP;        // A The maximum strength of the team boseumop
+	int         m_A_Boss_HP;            // A The maximum strength of the team boseumop
+	int         m_B_Boss_Max_HP;        // B The maximum strength of the team boseumop
+	int         m_B_Boss_HP;            // B The maximum strength of the team boseumop
+	//          m_B_Boss_HP = 0 M_B_Boss_Max_HP = 0 or if it is shown that the body be dead.
 };
 
 
@@ -729,63 +730,73 @@ struct gsv_cli_CLAN_WAR_BOSS_HP : public t_PACKETHEADER
 //	...
 //
 //-------------------------------------------------------------------------------------------------
-// 암호화 관련 더미패킷1 - 패킷의 크기는 일정범위 안에서 임의의 크기로
-struct cli_DUMMY_1 : public t_PACKETHEADER {
+// Related encryption dummy packet 1 to the size of the packet is in an arbitrary size within a predetermined range
+struct cli_DUMMY_1 : public t_PACKETHEADER 
+{
 	BYTE m_Dummy[128];
 } ;
 
 
-struct cli_CHECK_AUTH : public t_PACKETHEADER {
+struct cli_CHECK_AUTH : public t_PACKETHEADER 
+{
 	/*
-		각 모듈별 데이타...
-		필리핀의 경우 GG_AUTH_DATA 구조체
+		For each module-specific data structures ... Philippines GG_AUTH_DATA
 	*/
 } ;
 #define	AUTH_MODULE_nPROTECT	0xf1
-struct srv_CHECK_AUTH : public t_PACKETHEADER {
+struct srv_CHECK_AUTH : public t_PACKETHEADER 
+{
 	BYTE	m_btModuleTYPE;
 	/*
-		각 모듈별 데이타...
-		필리핀의 경우 GG_AUTH_DATA 구조체
+		Each module-specific data..
+		In the case of the Philippines GG_AUTH_DATA structure
 	*/
 } ;
 
-struct srv_ERROR : public t_PACKETHEADER {
+struct srv_ERROR : public t_PACKETHEADER 
+{
 	WORD	m_wErrorCODE;
 	// szErrorMSG[]
 } ;
 
 
-struct lsv_ERROR : public srv_ERROR {
+struct lsv_ERROR : public srv_ERROR 
+{
 } ;
-struct gsv_ERROR : public srv_ERROR {
+struct gsv_ERROR : public srv_ERROR 
+{
 } ;
 
 
-struct gsv_GM_COMMAND : public t_PACKETHEADER {
+struct gsv_GM_COMMAND : public t_PACKETHEADER 
+{
 	BYTE	m_btCMD;
 	WORD	m_wBlockTIME;
 } ;
-#define	GM_CMD_SHUT		0x00		//	채팅 금지..
-#define	GM_CMD_LOGOUT	0x01		//	접속 끊고 나가라...
+#define	GM_CMD_SHUT		0x00		//	Chat prohibited.
+#define	GM_CMD_LOGOUT	0x01		//	Nagara hang-up ...
 
 
-struct cli_ACCEPT_REQ : public t_PACKETHEADER {
+struct cli_ACCEPT_REQ : public t_PACKETHEADER 
+{
 } ;
 
-struct cli_LOGIN_REQ : public t_PACKETHEADER {
-//	DWORD		m_dwBuildNo;							// 클라이언트 빌드 번호.
-	union {
+struct cli_LOGIN_REQ : public t_PACKETHEADER 
+{
+//	DWORD		m_dwBuildNo;							// Client build number.
+	union 
+	{
 		BYTE	m_MD5Password[ 32 ];
 		DWORD	m_dwMD5[ 8 ];
 	} ;
     // szAccount[];
 } ;
-struct srv_LOGIN_REPLY : public t_PACKETHEADER {
+struct srv_LOGIN_REPLY : public t_PACKETHEADER 
+{
     BYTE    m_btResult;
 	WORD	m_wRight;
 	WORD	m_wPayType;
-    /*  m_cResult == RESULT_LOGIN_REPLY_OK 일경우
+    /*  m_cResult == RESULT_LOGIN_REPLY_OK One case
         struct {
             // szServerNAME[]
 			DWORD dwServerID;
@@ -796,53 +807,53 @@ struct srv_LOGIN_REPLY : public t_PACKETHEADER {
 #define RESULT_LOGIN_REPLY_OK                   0x00
 #define	RESULT_LOGIN_REPLY_KOREA_OK				RESULT_LOGIN_REPLY_OK
 
-#define RESULT_LOGIN_REPLY_FAILED               0x01    // 오류
-#define RESULT_LOGIN_REPLY_NOT_FOUND_ACCOUNT    0x02    // 계정 없다.
-#define RESULT_LOGIN_REPLY_INVALID_PASSWORD     0x03    // 비번 오류
-#define RESULT_LOGIN_REPLY_ALREADY_LOGGEDIN     0x04    // 이미 로그인 중이다
-#define RESULT_LOGIN_REPLY_REFUSED_ACCOUNT      0x05    // 서버에서 거부된 계정이다.
-#define RESULT_LOGIN_REPLY_NEED_CHARGE          0x06    // 충전이 필요한다
-#define	RESULT_LOGIN_REPLY_NO_RIGHT_TO_CONNECT	0x07	// 접속 권한이 없다.
-#define	RESULT_LOGIN_REPLY_TOO_MANY_USER		0x08	// 접속 인원 제한
+#define RESULT_LOGIN_REPLY_FAILED               0x01    // error
+#define RESULT_LOGIN_REPLY_NOT_FOUND_ACCOUNT    0x02    // Account no.
+#define RESULT_LOGIN_REPLY_INVALID_PASSWORD     0x03    // Off-duty error
+#define RESULT_LOGIN_REPLY_ALREADY_LOGGEDIN     0x04    // Already being logged
+#define RESULT_LOGIN_REPLY_REFUSED_ACCOUNT      0x05    // The account that was rejected by the server.
+#define RESULT_LOGIN_REPLY_NEED_CHARGE          0x06    // Charging is required
+#define	RESULT_LOGIN_REPLY_NO_RIGHT_TO_CONNECT	0x07	// There is no access rights.
+#define	RESULT_LOGIN_REPLY_TOO_MANY_USER		0x08	// Personnel access limited
 #define	RESULT_LOGIN_REPLY_NO_REAL_NAME			0x09
-#define	RESULT_LOGIN_REPLY_INVALID_VERSION		0x0a	// 패치를 받아야 한다.
-#define	RESULT_LOGIN_REPLY_OUT_OF_IP			0x0b	// 피씨방 접속 가능 ip 초과...
+#define	RESULT_LOGIN_REPLY_INVALID_VERSION		0x0a	// It must be a patch.
+#define	RESULT_LOGIN_REPLY_OUT_OF_IP			0x0b	// Internet cafe Accessible exceed ip ...
 
-#define	RESULT_LOGIN_REPLY_TAIWAN_OK			0x10	// m_wPayType 값은 타이완 과금서버 체계
-#define	RESULT_LOGIN_REPLY_TAIWAN_FAILED		0x11	// 타이완 과금서버 체계로 적용
+#define	RESULT_LOGIN_REPLY_TAIWAN_OK			0x10	// m_wPayType Taiwan value accounting server system
+#define	RESULT_LOGIN_REPLY_TAIWAN_FAILED		0x11	// Taiwan applied to the accounting server system
 
-#define	RESULT_LOGIN_REPLY_JAPAN_OK				0x18	// m_wPayType 값은 일본 과금서버 체계
+#define	RESULT_LOGIN_REPLY_JAPAN_OK				0x18	// m_wPayType The value accounting server system in Japan
 
 
 /*
-일본 과금 서버 RESULT_LOGIN_REPLY_JAPAN_OK일경우 m_wPayType의 값과
-PAY_FLAG_JP_???? 와 & 연산해서 TRUE이면 결제것
-예:: )
+If the value of Japanese accounting server RESULT_LOGIN_REPLY_JAPAN_OK m_wPayType
+PAY_FLAG_JP_???? And to TRUE, billing and operations will
+Yes:: )
 	if ( m_wPayType & PAY_FLAG_JP_EXTRA_CHAR ) {
-		// 한국을 플레티넘 과금처럼 5개의 케릭터 운용가능.
+		// Five characters, like South Korea Platinum operable charges.
 	}
 */
 /*
-대만 과금 서버 RESULT_LOGIN_REPLY_TWAIN_OK일경우 m_wPayType의 값
-0  :	// 금지
-1	:	// 시간제 - 매 1 시간 단위로 6 포인트 삭감, 1시간을 채우지 못했을 경우, 1시간으로 계산한다.
-2	:	// 월 정액제 - 매 30 일 단위로 350 포인트 삭감.
-3	:	// 시간 정액제 - 매 12 시간 단위로 20 포인트 삭감.
-4	:	// 3개월 정액제 - 매 90 일 단위로 888 포인트 삭감.
-5	:	// 홍콩 월정액제
-6	:	// 홍콩 3개월 정액제
-7	:	// 홍콩 시간제
-8	:	// 홍콩 시간 정액제
-9	:	// 분 정량제 - 매 1분 단위로 0.25포인트 삭감.
-10	:	// 시간 정량제  - 매 2시간 단위로 12 포인트 삭감.
-11	:	// 10일 - 매 10일 단위로 150 포인트 삭감.
-12	:	// 무료 체험
-101:	// 블록 3일
-102:	// 블록 7일
-103:	// 블록 10일
+Taiwan RESULT_LOGIN_REPLY_TWAIN_OK days if the value of the charging server m_wPayType
+0  :	// prohibition
+1	:	// Time - every time the unit 1 to 6 point reduction, if not have to fill an hour, calculated to be one hour.
+2	:	// Month Subscription - every 350 points reduced to 30 days.
+3	:	// Subscription period - ao 20 point reduction in 12-hour increments.
+4	:	// Subscription 3 months - every 90 days as a 888 point reduction.
+5	:	// Hong Kong May Subscription
+6	:	// Hong Kong three-month flat-rate
+7	:	// Hong Kong time
+8	:	// Hong Kong time flat-rate
+9	:	// Min 0.25 points every 1 minute increments of quantitative-cuts.
+10	:	// Time unit of dosage-every 2 hours 12-point cuts.
+11	:	// 10-150-point cut every 10 days.
+12	:	// Free trial
+101:	// Block 3,
+102:	// Block 7 days
+103:	// Block 10
 
-대만 과금 서버 RESULT_LOGIN_REPLY_TWAIN_FAILED일경우 m_wPayType의 값
-2	:	// 중복 로그인 (login result)	이미 로그인 된 계정
+Taiwan billing server If the value of RESULT_LOGIN_REPLY_TWAIN_FAILED, m_wPayType
+2	:	// Duplicate login (login result) is already logged in to your account
 3	:	// 패스워드 에러 (login result)	계정 또는 패스워드 에러 또는 포인트 충전하지 않은 상태,  Joypark 회원 중심 참고.
 4	:	// ObjnetObiect 구축 실패, Login Server등록 불가능 (Connection State Result)
 5	:	// Login Server연결 중단 (Connection State Result)
@@ -878,18 +889,21 @@ PAY_FLAG_JP_???? 와 & 연산해서 TRUE이면 결제것
 */
 
 
-struct cli_CHANNEL_LIST_REQ : public t_PACKETHEADER {
+struct cli_CHANNEL_LIST_REQ : public t_PACKETHEADER 
+{
 	DWORD	m_dwServerID;
 } ;
 
-struct tagCHANNEL_SRV {
-	BYTE	m_btChannelNO;		// 보여줄 채널 슬롯 번호
-	BYTE	m_btLowAGE;			// 접속 가능한 최저 연령 0 이면 최저 연령 제한 없음
-	BYTE	m_btHighAGE;		// 접속 가능한 최고 연령 0 이면 최고 연령 제한 없음
-	short	m_nUserPERCENT;		// 현재 접속되어 있는 사용자양...
-	// char m_szChannenNAME[]	// m_szChannelsNAME == "" 이면 CHANNEL-채널번호 로 부혀함
+struct tagCHANNEL_SRV 
+{
+	BYTE	m_btChannelNO;		// Show channel slot number
+	BYTE	m_btLowAGE;			// Connectable minimum age 0, no minimum age limit
+	BYTE	m_btHighAGE;		// Connectable maximum age 0, no maximum age limit
+	short	m_nUserPERCENT;		// The amount that is currently connected users ...
+	// char m_szChannenNAME[]	// m_szChannelsNAME == "" If CHANNEL- should give the channel number
 } ;
-struct lsv_CHANNEL_LIST_REPLY : public t_PACKETHEADER {
+struct lsv_CHANNEL_LIST_REPLY : public t_PACKETHEADER 
+{
 	DWORD			m_dwServerID;
 	BYTE			m_btChannelCNT;
 	/*
@@ -899,11 +913,13 @@ struct lsv_CHANNEL_LIST_REPLY : public t_PACKETHEADER {
 	*/
 } ;
 
-struct cli_SELECT_SERVER : public t_PACKETHEADER {
+struct cli_SELECT_SERVER : public t_PACKETHEADER 
+{
 	DWORD	m_dwServerID;
 	BYTE	m_btChannelNO;
 } ;
-struct lsv_SELECT_SERVER : public t_PACKETHEADER {
+struct lsv_SELECT_SERVER : public t_PACKETHEADER 
+{
 	BYTE	m_btResult;
 	DWORD	m_dwIDs[2];
 	// szServerIP[];
@@ -911,87 +927,98 @@ struct lsv_SELECT_SERVER : public t_PACKETHEADER {
 } ;
 #define	RESULT_SELECT_SERVER_OK					0x00
 #define RESULT_SELECT_SERVER_FAILED				0x01
-#define	RESULT_SELECT_SERVER_FULL				0x02	// 인원 꽉참
-#define	RESULT_SELECT_SERVER_INVALID_CHANNEL	0x03	// 잘못된 채널 선택
-#define	RESULT_SELECT_SERVER_CHANNEL_NOT_ACTIVE	0x04	// 채널 서버 점검중
-#define	RESUTL_SELECT_SERVER_INVALID_AGE		0x05	// 연령이 맞지 않는다..
-#define	RESULT_SELECT_SERVER_NEED_CHARGE		0x06	// 과금이 안되어 있다
+#define	RESULT_SELECT_SERVER_FULL				0x02	// Number kkwakcham
+#define	RESULT_SELECT_SERVER_INVALID_CHANNEL	0x03	// Wrong channel selection
+#define	RESULT_SELECT_SERVER_CHANNEL_NOT_ACTIVE	0x04	// Of the channel server maintenance
+#define	RESUTL_SELECT_SERVER_INVALID_AGE		0x05	// It does not meet the age.
+#define	RESULT_SELECT_SERVER_NEED_CHARGE		0x06	// Billing is afterwards
 
 
-struct tagVAR_GLOBAL {
-	short	m_nWorld_PRODUCT;					// 제조 관련
-	DWORD	m_dwUpdateTIME;						// 갱신된 시간.
-	short	m_nWorld_RATE;						// 경제 관련 :: 세계물가 80~140
-	BYTE	m_btTOWN_RATE;						// 마을 물가					80~140
-	BYTE	m_btItemRATE[ MAX_PRICE_TYPE ];		// 아이템별 물가				1~127
+struct tagVAR_GLOBAL 
+{
+	short	m_nWorld_PRODUCT;					// Manufacturing Related
+	DWORD	m_dwUpdateTIME;						// The updated time.
+	short	m_nWorld_RATE;						// Economy:: the world's waterfront. 80~140
+	BYTE	m_btTOWN_RATE;						// The village waterfront.					80~140
+	BYTE	m_btItemRATE[ MAX_PRICE_TYPE ];		// Aitembyeol waterfront.				1~127
 	DWORD	m_dwGlobalFLAGS;
 } ;
-struct gsv_SET_GLOBAL_VAR : public t_PACKETHEADER, public tagVAR_GLOBAL {
+struct gsv_SET_GLOBAL_VAR : public t_PACKETHEADER, public tagVAR_GLOBAL 
+{
 } ;
 
-struct gsv_SET_GLOBAL_FLAG : public t_PACKETHEADER {
+struct gsv_SET_GLOBAL_FLAG : public t_PACKETHEADER 
+{
 	DWORD	m_dwGlobalFLAGS;
 } ;
 #define	ZONE_FLAG_PK_ALLOWED		0x00000001
 
 /*
-struct cli_JOIN_WORLD : public t_PACKETHEADER {
+struct cli_JOIN_WORLD : public t_PACKETHEADER 
+{
 	DWORD	m_dwID;
     BYTE	m_MD5Password[ 32 ];
 } ;
 
 // m_cResult 값은 lsv_LOGIN_REPLY와 같다.
-struct wsv_JOIN_WORLD : public t_PACKETHEADER {
+struct wsv_JOIN_WORLD : public t_PACKETHEADER 
+{
 	BYTE	m_btResult;
 	DWORD	m_dwID;
 } ;
 #define	RESULT_JOIN_WORLD_OK					0x00
 #define	RESULT_JOIN_WORLD_FAILED				0x01
-#define RESULT_JOIN_WORLD_TIME_OUT				0x02    // 시간 초과로 계정 없어져 다시 로그인 해야한다.
-#define RESULT_JOIN_WORLD_INVALID_PASSWORD		0x03    // 비번 오류
-#define RESULT_JOIN_WORLD_ALREADY_LOGGEDIN		0x04    // 이미 로그인 중이다
+#define RESULT_JOIN_WORLD_TIME_OUT				0x02    // Should the account goes back to login timed out.
+#define RESULT_JOIN_WORLD_INVALID_PASSWORD		0x03    // Off error
+#define RESULT_JOIN_WORLD_ALREADY_LOGGEDIN		0x04    // Is already logged in
 */
 
-// 월드/존 서버에 접속 요청
-struct cli_JOIN_SERVER_REQ	: public t_PACKETHEADER {
+// World/John server access request
+struct cli_JOIN_SERVER_REQ	: public t_PACKETHEADER 
+{
 	DWORD	m_dwID;
     BYTE	m_MD5Password[ 32 ];
 } ;
-struct srv_JOIN_SERVER_REPLY : public t_PACKETHEADER {
+struct srv_JOIN_SERVER_REPLY : public t_PACKETHEADER 
+{
 	BYTE	m_btResult;
 	DWORD	m_dwID;
 	DWORD	m_dwPayFLAG;
 } ;
 #define	RESULT_JOIN_SERVER_OK					0x00
 #define	RESULT_JOIN_SERVER_FAILED				0x01
-#define RESULT_JOIN_SERVER_TIME_OUT				0x02    // 시간 초과로 계정 없어져 다시 로그인 해야한다.
-#define RESULT_JOIN_SERVER_INVALID_PASSWORD		0x03    // 비번 오류
-#define RESULT_JOIN_SERVER_ALREADY_LOGGEDIN		0x04    // 이미 로그인 중이다
+#define RESULT_JOIN_SERVER_TIME_OUT				0x02    // Should the account goes back to login timed out.
+#define RESULT_JOIN_SERVER_INVALID_PASSWORD		0x03    // Off error
+#define RESULT_JOIN_SERVER_ALREADY_LOGGEDIN		0x04    // Is already logged in
 
 
-// 클라이언트에게 존서버 이동 접속하라고 통보...
-struct wsv_MOVE_SERVER : public t_PACKETHEADER {
+// John tries to notify the client to the server moves connecting ...
+struct wsv_MOVE_SERVER : public t_PACKETHEADER 
+{
 	WORD	m_wPortNO;
 	DWORD	m_dwIDs[2];
 	// szServerIP[]
 } ;
 
 
-struct cli_CHAR_LIST : public t_PACKETHEADER {
+struct cli_CHAR_LIST : public t_PACKETHEADER 
+{
 } ;
 
 
-// 성별, 레벨,직업, 파트 인덱스...
-struct tagCHARINFO {
+// Gender, level, occupation, part-index ...
+struct tagCHARINFO 
+{
 	BYTE	m_btCharRACE;
 	short	m_nLEVEL;
 	short	m_nJOB;
-	DWORD	m_dwRemainSEC;		// 0이 아닐경우 삭제될때까지 남은 시간(초단위)
+	DWORD	m_dwRemainSEC;		// If non-zero when the deletion until the remaining time (in seconds)
 #ifdef	__INC_PLATINUM
-	BYTE	m_btIsPlatinumCHAR;	// 0이 아닌경우는 플레티넘일 경우만 선택 가능한 케릭이다.
+	BYTE	m_btIsPlatinumCHAR;	// If non-zero selection is possible only if the platinum Carrick.
 #endif
 } ;
-struct wsv_CHAR_LIST : public t_PACKETHEADER {
+struct wsv_CHAR_LIST : public t_PACKETHEADER 
+{
 	BYTE	m_btCharCNT;
 	/*
 	{
@@ -1003,7 +1030,8 @@ struct wsv_CHAR_LIST : public t_PACKETHEADER {
 } ;
 
 
-struct cli_CREATE_CHAR : public t_PACKETHEADER {
+struct cli_CREATE_CHAR : public t_PACKETHEADER 
+{
 	BYTE	m_btCharRACE;
 	char	m_cBoneSTONE;
 	char	m_cHairIDX;
@@ -1012,7 +1040,8 @@ struct cli_CREATE_CHAR : public t_PACKETHEADER {
 	short	m_nZoneNO;
 	// char szCharName[]
 } ;
-struct wsv_CREATE_CHAR : public t_PACKETHEADER {
+struct wsv_CREATE_CHAR : public t_PACKETHEADER 
+{
 	BYTE	m_btResult;
 	BYTE	m_btIsPlatinumCHAR;
 } ;
@@ -1020,44 +1049,51 @@ struct wsv_CREATE_CHAR : public t_PACKETHEADER {
 #define	RESULT_CREATE_CHAR_FAILED			0x01
 #define	RESULT_CREATE_CHAR_DUP_NAME			0x02
 #define	RESULT_CREATE_CHAR_INVALID_VALUE	0x03
-#define	RESULT_CREATE_CHAR_NO_MORE_SLOT		0x04	// 더이상 만들수 없다.
-#define	RESULT_CREATE_CHAR_BLOCKED			0x05	// 서버에서 케릭터 생성이 금지되어 있는 상태다.
+#define	RESULT_CREATE_CHAR_NO_MORE_SLOT		0x04	// Do not make anymore.
+#define	RESULT_CREATE_CHAR_BLOCKED			0x05	// Character creation on the server, the status is prohibited.
 
-struct cli_DELETE_CHAR : public t_PACKETHEADER {
+struct cli_DELETE_CHAR : public t_PACKETHEADER 
+{
 	BYTE	m_btCharNO;
-	bool	m_bDelete;								// true면 삭제, false면 삭제대기 상태 케릭터 부활
+	bool	m_bDelete;								// true If removed, false if deleting idle characters resurrection
 	// char szCharName[]
 } ;
-struct wsv_DELETE_CHAR : public t_PACKETHEADER {
-	DWORD	m_dwDelRemainTIME;						// 0이면 삭제 취소...
+struct wsv_DELETE_CHAR : public t_PACKETHEADER 
+{
+	DWORD	m_dwDelRemainTIME;						// 0, undelete ...
 	// char szCharName[]
 } ;
 
 
 
 
-struct cli_LOGOUT_REQ : public t_PACKETHEADER {
+struct cli_LOGOUT_REQ : public t_PACKETHEADER 
+{
 } ;
-struct gsv_LOGOUT_REPLY : public t_PACKETHEADER {
+struct gsv_LOGOUT_REPLY : public t_PACKETHEADER 
+{
 	WORD	m_wWaitSec;
 } ;
 
 
 
-struct gsv_INIT_DATA : public t_PACKETHEADER {
+struct gsv_INIT_DATA : public t_PACKETHEADER 
+{
 	int		m_iRandomSEED;
 	WORD	m_wRandomINDEX;
 } ;
 
 
-struct cli_SELECT_CHAR : public t_PACKETHEADER {
+struct cli_SELECT_CHAR : public t_PACKETHEADER 
+{
 	BYTE	m_btCharNO;
 	BYTE	m_btRunMODE;
 	BYTE	m_btRideMODE;
 	// char szCharName[]
 } ;
 
-struct gsv_SELECT_CHAR : public t_PACKETHEADER {
+struct gsv_SELECT_CHAR : public t_PACKETHEADER 
+{
 	BYTE				m_btCharRACE;
 	short				m_nZoneNO;
 	tPOINTF				m_PosSTART;
@@ -1081,46 +1117,53 @@ struct gsv_SELECT_CHAR : public t_PACKETHEADER {
 } ;
 
 
-struct gsv_INVENTORY_DATA : public t_PACKETHEADER {
-	// 2004. 9.11 대체... CInventory	m_INV;
-	struct {
+struct gsv_INVENTORY_DATA : public t_PACKETHEADER 
+{
+	// 2004. 9.11 Replaced... CInventory	m_INV;
+	struct 
+	{
 		__int64		m_i64Money;
 		tagBaseITEM	m_ItemLIST[ INVENTORY_TOTAL_SIZE ];
 	} m_INV;
 } ;
 
 
-// 퀘스트 스위치 갯수 증가후 아래 2개의 패킷으로 분리후 사용안함.
-struct gsv_QUEST_DATA : public t_PACKETHEADER {
+// After increasing number of quests switch OFF then separated into two packets below.
+struct gsv_QUEST_DATA : public t_PACKETHEADER 
+{
 	tagQuestData	m_Quests;
 	tagWishLIST		m_WishLIST;
 } ;
 
-struct gsv_QUEST_ONLY : public t_PACKETHEADER {
+struct gsv_QUEST_ONLY : public t_PACKETHEADER 
+{
 	tagQuestData	m_Quests;
 } ;
-struct gsv_WISH_LIST : public t_PACKETHEADER {
+struct gsv_WISH_LIST : public t_PACKETHEADER 
+{
 	tagWishLIST		m_WishLIST;
 } ;
 
 
-struct cli_JOIN_ZONE : public t_PACKETHEADER {
+struct cli_JOIN_ZONE : public t_PACKETHEADER 
+{
 	BYTE			m_btWeightRate;
 	short			m_nPosZ;
 } ;
 
 
 
-struct gsv_JOIN_ZONE : public t_PACKETHEADER {
+struct gsv_JOIN_ZONE : public t_PACKETHEADER 
+{
 	WORD			m_wServerObjectIndex;
 	short			m_nCurHP;
 	short			m_nCurMP;
 	long			m_lCurEXP;
 	long			m_lPenalEXP;
 	tagVAR_GLOBAL	m_VAR;
-	DWORD			m_dwAccWorldTIME;		// 게임 서버 처음 동작후 누적된 월드 타임
+	DWORD			m_dwAccWorldTIME;		// World time accumulated after the first game server operation
 #ifdef	__APPLY_04_10_15_TEAMNO
-	int				m_iTeamNO;				// 서버에서 설정된 팀번호	:: 04.10.15 추가..
+	int				m_iTeamNO;				// Set on the server side code :: 15.10.04 added.
 #endif
 
 } ;
@@ -1140,7 +1183,7 @@ struct gsv_SCREEN_SHOT_TIME:public t_PACKETHEADER
 	BYTE  btMin;
 };
 
-struct gsv_CHAR_HPMP_INFO:public t_PACKETHEADER			//HP and MP sent from the server
+struct gsv_CHAR_HPMP_INFO:public t_PACKETHEADER			//0x07ec packet. HP and MP sent from the server. let's see if we can also pass MaxHP
 {
 	short m_CurHP;
 	short m_CurMP;
@@ -1148,8 +1191,21 @@ struct gsv_CHAR_HPMP_INFO:public t_PACKETHEADER			//HP and MP sent from the serv
 	short m_MaxMP;		//added by PY
 };
 
+struct gsv_CHAR_STAT_INFO:public t_PACKETHEADER			//0x07ed packet. Attack, Dodge, Def etc. sent from server		///PY: added to give server full control
+{
+	short m_CurAP;			//Attack Power
+	short m_CurDef;			//Defense
+	short m_CurAccuracy;	//Accuracy
+	short m_CurDodge;		//Dodge
+	short m_CurMDef;		//Magic Defense
+	short m_CurCrit;		//Critical
+	short m_CurMSPD;		//Move Speed
+	short m_CurMaxWeight;	//Maximum weight capacity
+};
 
-struct cli_REVIVE_REQ : public t_PACKETHEADER {
+
+struct cli_REVIVE_REQ : public t_PACKETHEADER 
+{
 	BYTE	m_btReviveTYPE;
 } ;
 #define	REVIVE_TYPE_REVIVE_POS		0x01
@@ -1157,125 +1213,151 @@ struct cli_REVIVE_REQ : public t_PACKETHEADER {
 #define	REVIVE_TYPE_START_POS		0x03
 #define	REVIVE_TYPE_CURRENT_POS		0x04
 
-struct gsv_REVIVE_REPLY : public t_PACKETHEADER {
+struct gsv_REVIVE_REPLY : public t_PACKETHEADER 
+{
 	short	m_nZoneNO;
 } ;
 
-struct cli_SET_REVIVE_POS : public t_PACKETHEADER {
+struct cli_SET_REVIVE_POS : public t_PACKETHEADER 
+{
 } ;
 
-struct cli_SET_VAR_REQ : public t_PACKETHEADER {
+struct cli_SET_VAR_REQ : public t_PACKETHEADER 
+{
 	BYTE	m_btVarTYPE;
 	int		m_iValue;
 } ;
-struct gsv_SET_VAR_REPLY : public cli_SET_VAR_REQ {
+struct gsv_SET_VAR_REPLY : public cli_SET_VAR_REQ 
+{
 } ;
 #define	REPLY_GSV_SET_VAR_FAIL_BIT	0x080 
 // #define	REPLY_GSV_SET_JOB_xxx
 
 
 #define	BIT_MOTION_STOP_CMD			0x080000
-struct cli_SET_MOTION : public t_PACKETHEADER {
+struct cli_SET_MOTION : public t_PACKETHEADER 
+{
 	short		m_nMotionNO;
-	union {
+	union 
+	{
 		WORD	m_wValue;
-		struct {
+		struct 
+		{
 			WORD	m_wETC : 15;
 			WORD	m_wIsSTOP :  1;
 		} ;
 	} ;
 } ;
-struct gsv_SET_MOTION : public cli_SET_MOTION {
+struct gsv_SET_MOTION : public cli_SET_MOTION 
+{
 	WORD		m_wObjectIDX;
 } ;
 
-struct cli_TOGGLE : public t_PACKETHEADER {
+struct cli_TOGGLE : public t_PACKETHEADER 
+{
 	BYTE	m_btTYPE;
 } ;
 #define	TOGGLE_TYPE_RUN		0x00
 #define	TOGGLE_TYPE_SIT		0x01
 #define	TOGGLE_TYPE_DRIVE	0x02
-struct gsv_TOGGLE : public t_PACKETHEADER {
+struct gsv_TOGGLE : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	BYTE	m_btTYPE;
-	short	m_nRunSPEED[0];			// 팻 타고 내릴때만...
+	short	m_nRunSPEED[0];			// Pat down when riding ...
 } ;
 
-struct cli_CHAT : public t_PACKETHEADER {
+struct cli_CHAT : public t_PACKETHEADER 
+{
 	// szChatMSG[]
 } ;
-struct gsv_CHAT : public t_PACKETHEADER {
+struct gsv_CHAT : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 } ;
 
-struct cli_WHISPER : public t_PACKETHEADER {
+struct cli_WHISPER : public t_PACKETHEADER 
+{
 	// szTargetAccount[]
 	// szChatMSG[]
 } ;
-struct gsv_WHISPER : public t_PACKETHEADER {
+struct gsv_WHISPER : public t_PACKETHEADER 
+{
 	// szFromAccount[]
 	// szChatMSG[]
 } ;
 
-struct cli_SHOUT : public cli_CHAT {
+struct cli_SHOUT : public cli_CHAT 
+{
 } ;
-struct gsv_SHOUT : public t_PACKETHEADER {
+struct gsv_SHOUT : public t_PACKETHEADER 
+{
 } ;
 
-struct cli_ALLIED_CHAT : public t_PACKETHEADER {
+struct cli_ALLIED_CHAT : public t_PACKETHEADER 
+{
 } ;
-struct gsv_ALLIED_CHAT : public gsv_CHAT {
+struct gsv_ALLIED_CHAT : public gsv_CHAT 
+{
 	int	m_iTeamNO;
 	// szChatMSG[]
 } ;
 
-struct cli_ALLIED_SHOUT : public t_PACKETHEADER {
+struct cli_ALLIED_SHOUT : public t_PACKETHEADER 
+{
 } ;
-struct gsv_ALLIED_SHOUT : public t_PACKETHEADER {
+struct gsv_ALLIED_SHOUT : public t_PACKETHEADER 
+{
 	int	m_iTeamNO;
 	// szFromAccount[]
 	// szChatMSG[]
 } ;
 
 
-struct cli_PARTY_CHAT : public cli_CHAT {
+struct cli_PARTY_CHAT : public cli_CHAT 
+{
 } ;
-struct gsv_PARTY_CHAT : public gsv_CHAT {
-} ;
-
-struct cli_CLAN_CHAT : public cli_CHAT {
-} ;
-struct wsv_CLAN_CHAT : public gsv_SHOUT {
+struct gsv_PARTY_CHAT : public gsv_CHAT 
+{
 } ;
 
-struct gsv_SET_EVENT_STATUS : public t_PACKETHEADER {
+struct cli_CLAN_CHAT : public cli_CHAT 
+{
+} ;
+struct wsv_CLAN_CHAT : public gsv_SHOUT 
+{
+} ;
+
+struct gsv_SET_EVENT_STATUS : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	short	m_nEventSTATUS;
 } ;
 
-#define	MOVE_MODE_WALK		0x00	// 걷기 모드
-#define	MOVE_MODE_RUN		0x01	// 뛰기 모드
-#define	MOVE_MODE_DRIVE		0x02	// 운전 모드 : 자신이 타고 있다.
-#define	MOVE_MODE_RIDEON	0x04	// 승차 모드 : 남의것에 타고 있다.
+#define	MOVE_MODE_WALK		0x00	// Walking Mode
+#define	MOVE_MODE_RUN		0x01	// Walking Mode
+#define	MOVE_MODE_DRIVE		0x02	// Walking Mode : There he rides.
+#define	MOVE_MODE_RIDEON	0x04	// Walking Mode : Ride to others.
 
-struct tag_ADD_CHAR : public t_PACKETHEADER {
+struct tag_ADD_CHAR : public t_PACKETHEADER			
+{
     WORD		m_wObjectIDX;
 	tPOINTF		m_PosCUR;
 	tPOINTF		m_PosTO;
-	WORD		m_wCommand;
+	WORD		m_wCommand;						//CMD_STOP 0000, CMD_MOVE 0001, CMD_ATTACK 0002, CMD_DIE 0003, CMD_PICK_ITEM 0004 etc, see CObjAI.h
 	WORD		m_wTargetOBJ;
-	BYTE		m_btMoveMODE;					// 0:걷기, 1:뛰기, 2:내 승용아이템에 타고있다, 3: m_wTargetOBJ의 승용아이템에 타고있다.
+	BYTE		m_btMoveMODE;					// 0:Walk, 1 run, 2: ride in my passenger Item 3: Riding is riding on items m_wTargetOBJ.
 	int			m_iHP;
 #ifdef	__APPLY_04_10_15_TEAMNO
-	int			m_iTeamNO;						//	char m_cTeamNO => int로 변경 04.10.15 수정...
+	int			m_iTeamNO;						//	char m_cTeamNO => int Change to modify ... 15/10/04
 #else
 	char		m_cTeamNO;
 #endif
 	DWORD		m_dwStatusFALG;		
 	/*
-	지속 스킬에 의해 바뀐 값...	2004.1.4
+	Continuous skill value of the changed by ...	2004.1.4
 	if ( m_dwStatusFALG & ( ING_FLAG_MAX_HP | ING_FLAG_xxx_MOV_SPEED | ING_FLAG_xxx_ATK_SPEED ) ) {
-		각 구조체 뒤에 m_nAdjSTATUS[ xx ]붙어 전송됨.
+		M_nAdjSTATUS [xx] stuck behind each structure are transferred.
 
 		BYTE btIDX = 0;
   		if ( tag_ADD_CHAR.m_dwStatusFALG &  FLAG_ING_MAX_HP ) )
@@ -1299,24 +1381,29 @@ struct tag_ADD_CHAR : public t_PACKETHEADER {
 	*/
 } ;
 
-struct gsv_MOB_CHAR : public tag_ADD_CHAR {
+struct gsv_MOB_CHAR : public tag_ADD_CHAR 
+{
 	short			m_nCharIdx;					
 	short			m_nQuestIDX;
 	// short		m_nAdjSTATUS[];
 } ;
 
-// gsv_NPC_CHAR패킷에서 m_nCharIdx < 0 이면 숨김상태(클라이언트에서 랜더링하지 않음)
-struct gsv_NPC_CHAR : public gsv_MOB_CHAR {
+// gsv_NPC_CHAR In the packet m_nCharIdx <0 if hidden (not rendered on the client)
+struct gsv_NPC_CHAR : public gsv_MOB_CHAR 
+{
 	float			m_fModelDIR;
-	short			m_nEventSTATUS;				// 2004. 3. 22 추가.., NPC인공지능에 의해 내부적으로 바뀌는 변수값..
+	short			m_nEventSTATUS;				// 2004. 3. 22 Add ..., parameter values changed internally by the NPC AI.
 	// short		m_nAdjSTATUS[];
 } ;
 
 
-/// 현재 설정된 소모탄 
-struct tagShotDATA {
-	union {
-		struct {
+/// Coal consumption is currently set
+struct tagShotDATA 
+{
+	union 
+	{
+		struct 
+		{
 			WORD	m_cType			: 5;
 			WORD	m_nItemNo		: 10;
 		} ;
@@ -1325,32 +1412,35 @@ struct tagShotDATA {
 } ;
 
 /*
-	계산 방법 
-	1. 공격속도 = 무기로 계산된값 + 패시브 보정값 + 지속 보정값
-	2. 이동속도 = 서버에서 받은값(패시브포함) + 지속 보정값으로 
+	Calculation
+	1. The attack rate = value calculated as a weapon + Passive lasting correction value correction value +
+	2. Move the speed = value received from the server (including passive) + lasting correction value
 */
-struct tag_CLAN_ID {
+struct tag_CLAN_ID 
+{
 	DWORD	m_dwClanID;
-	union {
+	union 
+	{
 		DWORD	m_dwClanMARK;
 		WORD	m_wClanMARK[2];
 	} ;
-	BYTE	m_btClanLEVEL;		// 클랜 레벨
-	BYTE	m_btClanPOS;		// 클랜에서의 직위
+	BYTE	m_btClanLEVEL;		// Clan Level
+	BYTE	m_btClanPOS;		// Position in clan
 } ;
-struct gsv_AVT_CHAR : public tag_ADD_CHAR {
+struct gsv_AVT_CHAR : public tag_ADD_CHAR 
+{
 	BYTE		m_btCharRACE;
-	short		m_nRunSpeed;						// 패시브에 의해 보정된 값까지, 지속에 의해 보정된값 제외 ..
-	short		m_nPsvAtkSpeed;						// 패시브 값만...  기본속도, 지속에 의해 보정된값 제외 ..
-	BYTE		m_btWeightRate;						// 현재소지량/최대소지량*100
+	short		m_nRunSpeed;						// To a value corrected by the passive, except for the value corrected by the duration.
+	short		m_nPsvAtkSpeed;						// Passive ... except for the default rate value, a value corrected by the duration.
+	BYTE		m_btWeightRate;						// Current carrying capacity / maximum carrying capacity * 100
 	tagPartITEM m_PartITEM	  [ MAX_BODY_PART ];
 	tagShotDATA	m_sShotItem	  [ MAX_SHOT_TYPE ];
 
 	short		m_nJOB;
 	BYTE		m_btLEVEL;
 
-//	short		m_nRidingITEM [ MAX_RIDING_PART ];	// 승용 아이템 ..
-	tagPartITEM	m_RidingITEM  [ MAX_RIDING_PART ];	// 승용 아이템 ..
+//	short		m_nRidingITEM [ MAX_RIDING_PART ];	// Passenger items.
+	tagPartITEM	m_RidingITEM  [ MAX_RIDING_PART ];	// Passenger items.
 	short		m_nPosZ;
 
 	DWORD		m_dwSubFLAG;
@@ -1359,59 +1449,69 @@ struct gsv_AVT_CHAR : public tag_ADD_CHAR {
 	// short	m_nAdjSTATUS[];
 	// ( tag_ADD_CHAR.m_dwStatusFALG & FLAG_ING_STORE_MODE ) 일경우 char szStoreTITLE[] 붙음
 
-	/*	클랜 정보 추가...
-	tag_CLAN_ID	m_CLAN;	== NULL이 아니면 클랜정보 있음
+	/*	Additional information clan ...
+	tag_CLAN_ID	m_CLAN;	== NULL Or that this Clan Information
 	// char m_szClanNAME[];
 	*/
 } ;
 
-struct gsv_SUB_OBJECT : public t_PACKETHEADER {
+struct gsv_SUB_OBJECT : public t_PACKETHEADER 
+{
     WORD    m_wObjectIDX[ 1 ];
 } ;
 
-struct cli_SET_WEIGHT_RATE : public t_PACKETHEADER {
+struct cli_SET_WEIGHT_RATE : public t_PACKETHEADER 
+{
 	BYTE	m_btWeightRate;
 } ;
 
-struct gsv_SET_WEIGHT_RATE : public t_PACKETHEADER {
+struct gsv_SET_WEIGHT_RATE : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	BYTE	m_btWeightRate;
 } ;
 
 
-struct gsv_ADJUST_POS : public t_PACKETHEADER {
+struct gsv_ADJUST_POS : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	tPOINTF	m_PosCUR;
 	short	m_nPosZ;
 } ;
 
-struct cli_CANTMOVE : public t_PACKETHEADER {
+struct cli_CANTMOVE : public t_PACKETHEADER 
+{
     tPOINTF m_PosCUR;
 	short	m_nPosZ;
 } ;
-struct cli_SETPOS : public t_PACKETHEADER {
+struct cli_SETPOS : public t_PACKETHEADER 
+{
     tPOINTF m_PosCUR;
 } ;
 
 
-struct cli_STOP : public t_PACKETHEADER {
+struct cli_STOP : public t_PACKETHEADER 
+{
     tPOINTF m_PosCUR;
 } ;
 
-struct gsv_STOP : public t_PACKETHEADER {
+struct gsv_STOP : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
     tPOINTF m_PosCUR;
 	short	m_nPosZ;
 } ;
 
 
-struct cli_MOUSECMD : public t_PACKETHEADER {
+struct cli_MOUSECMD : public t_PACKETHEADER 
+{
     WORD	m_wTargetObjectIDX;
     tPOINTF m_PosTO;
 	short	m_nPosZ;
 } ;
 
-struct gsv_MOUSECMD : public t_PACKETHEADER {
+struct gsv_MOUSECMD : public t_PACKETHEADER 
+{
 	WORD	m_wSourObjIDX;
 	WORD	m_wDestObjIDX;
 
@@ -1423,11 +1523,13 @@ struct gsv_MOUSECMD : public t_PACKETHEADER {
 } ;
 
 
-struct cli_ATTACK : public t_PACKETHEADER {
+struct cli_ATTACK : public t_PACKETHEADER 
+{
 	WORD	m_wTargetObjectIndex;
 } ;
 
-struct gsv_ATTACK : public t_PACKETHEADER {
+struct gsv_ATTACK : public t_PACKETHEADER 
+{
 	WORD	m_wAtkObjIDX;
 	WORD	m_wDefObjIDX;
 
@@ -1436,44 +1538,51 @@ struct gsv_ATTACK : public t_PACKETHEADER {
     tPOINTF m_PosTO;
 } ;
 
-struct gsv_MOVE : public gsv_MOUSECMD {
-	BYTE	m_btMoveMODE;		// tag_ADD_CHAR::m_btMoveMODE와 같은값
+struct gsv_MOVE : public gsv_MOUSECMD 
+{
+	BYTE	m_btMoveMODE;		// Tag_ADD_CHAR:: m_btMoveMODE the same value as the
 } ;
 
 
-// tag_DROPITEM은 몹이 죽으면서 떨구는거...아이템 생성 시간은 고정이름 클라이어트가 ITEM_OBJ_LIVE_TIME 으로 설정.
-struct tag_DROPITEM {
+// tag_DROPITEM . Items produced are going to die this time tteolguneun mobs set up by King Gojong name clients ITEM_OBJ LIVE_TIME.
+struct tag_DROPITEM 
+{
 	tPOINTF		m_PosCUR;
 	tagBaseITEM	m_ITEM;
 	WORD		m_wServerItemIDX;
 	WORD		m_wOwnerObjIDX;
-	// WORD m_wRemainTIME;		// 삭제 :: ITEM_OBJ_LIVE_TIME로 설정.
+	// WORD m_wRemainTIME;		// Set to delete ITEM_OBJ LIVE_TIME.
 } ;
-struct gsv_ADD_FIELDITEM : public t_PACKETHEADER, public tag_DROPITEM {
+struct gsv_ADD_FIELDITEM : public t_PACKETHEADER, public tag_DROPITEM 
+{
 	WORD	m_wRemainTIME;
 } ;
 
-struct gsv_SUB_FIELDITEM : public t_PACKETHEADER {
+struct gsv_SUB_FIELDITEM : public t_PACKETHEADER 
+{
 	WORD	m_wServerItemIDX;
 } ;
 
-struct cli_GET_FIELDITEM_REQ : public t_PACKETHEADER {
+struct cli_GET_FIELDITEM_REQ : public t_PACKETHEADER 
+{
 	WORD	m_wServerItemIDX;
 } ;
 
-struct gsv_GET_FIELDITEM_REPLY : public t_PACKETHEADER {
+struct gsv_GET_FIELDITEM_REPLY : public t_PACKETHEADER 
+{
 	WORD		m_wServerItemIDX;
 	BYTE		m_btResult;
 	short		m_nInventoryListNO;
 	tagBaseITEM	m_ITEM;
 } ;
-#define	REPLY_GET_FIELDITEM_REPLY_OK			0x00	// 획득했다.
-#define REPLY_GET_FIELDITEM_REPLY_NONE			0x01	// 사라진 아이템이다..
-#define REPLY_GET_FIELDITEM_REPLY_NO_RIGHT		0x02	// 가져갈 권한이 없다.
-#define	REPLY_GET_FIELDITEM_REPLY_TOO_MANY		0x03	// 더이상 아이템을 갖을수 없다.
+#define	REPLY_GET_FIELDITEM_REPLY_OK			0x00	// It was obtained.
+#define REPLY_GET_FIELDITEM_REPLY_NONE			0x01	// The missing items.
+#define REPLY_GET_FIELDITEM_REPLY_NO_RIGHT		0x02	// There is no authority to take ...
+#define	REPLY_GET_FIELDITEM_REPLY_TOO_MANY		0x03	// I can not find any more items.
 
 
-struct cli_DAMAGE : public t_PACKETHEADER {
+struct cli_DAMAGE : public t_PACKETHEADER 
+{
 	WORD	m_wDefObjIDX;
 	WORD	m_wRandomIDX;
 } ;
@@ -1489,63 +1598,68 @@ union uniDAMAGE {
 		} ;
 } ;
 */
-// 2006.03.07/김대성
-// 최대 데미지 2047(0x07ff) 제한을 없애기 위해 자료형 수정 ( #define	MAX_DAMAGE			0x07ff )
-union uniDAMAGE {
-	__int64	m_wDamage;				// WORD => __int64 수정  
-	struct {
-		DWORD	m_wVALUE;			// 비트단위로 쪼개지 않고 그냥 씀
-		DWORD	m_wACTION;			// 비트단위로 쪼개지 않고 그냥 씀
+// 2006.03.07/Kim Dae-Sung
+// Types modified to eliminate the maximum damage 2047 (0x07ff) limited (#define MAX_DAMAGE 0x07ff)
+union uniDAMAGE 
+{
+	__int64	m_wDamage;				// WORD => __int64 Crystal  
+	struct 
+	{
+		DWORD	m_wVALUE;			// Split in bits instead of just writing
+		DWORD	m_wACTION;			// Split in bits instead of just writing
 	} ;
 } ;
 
-struct gsv_DAMAGE : public t_PACKETHEADER {
+struct gsv_DAMAGE : public t_PACKETHEADER 
+{
 	WORD			m_wAtkObjIDX;
 	WORD			m_wDefObjIDX;
 
 	uniDAMAGE		m_Damage;
-	tag_DROPITEM	m_DropITEM[ 0 ];	// 죽는 데미지일경우에만 값이 들어 있다. 드롭된 아이템 인덱스
+	tag_DROPITEM	m_DropITEM[ 0 ];	// If the value contains only one die of damage. Drop the item index
 } ;
 
 //-------------------------------------
 
 //#define	MAX_DAMAGE			0x07ff
 
-// 2006.03.16/김대성 - 최대 데미지 수정 - 2147483647
+// 2006.03.16/Kim, Dae - Sung-corrected maximum damage - 2147483647
 #define	MAX_DAMAGE			0x7FFFFFFF	
 //-------------------------------------
 
 //-------------------------------------
 /*
-// gsv_DAMAGE::m_wDamage와 연산되는 값.
-#define	DMG_BIT_DUMMY		0x0800		// 추가 데미지 붙은 거다 :: 자신이 때린경우 추가 데미지 계산을 해.
-#define	DMG_BIT_IMMEDIATE	0x1000		// 패키 받고 즉각 처리 하면 된다:예)방패 뎀쥐 스킬에 의해 반사된 뎀쥐
-#define	DMG_BIT_HITTED		0x2000		// 맞는 동작을 한다.
-#define	DMG_BIT_CRITICAL	0x4000		// 크리티컬 데미지다
-#define	DMG_BIT_DEAD		0x8000		// 죽었다.
+// gsv_DAMAGE::m_wDamage Value calculation with.
+#define	DMG_BIT_DUMMY		0x0800		//  I'll Further damage to attached additional damage calculation if they are hit.
+#define	DMG_BIT_IMMEDIATE	0x1000		// When a packet is received and processed immediately: Yes) it demjwi reflected by damage shield skill
+#define	DMG_BIT_HITTED		0x2000		// The fit operation.
+#define	DMG_BIT_CRITICAL	0x4000		// The critical damage
+#define	DMG_BIT_DEAD		0x8000		// died.
 */
-// 2006.03.07/김대성 - 최대 데미지 수정 - uniDAMAGE 의 데이타형이 WORD 에서 DWORD로 바뀜
-// gsv_DAMAGE::m_wDamage와 연산되는 값.
-#define	DMG_BIT_DUMMY		0x0100000000	// 추가 데미지 붙은 거다 :: 자신이 때린경우 추가 데미지 계산을 해.
-#define	DMG_BIT_IMMEDIATE	0x0200000000	// 패키 받고 즉각 처리 하면 된다:예)방패 뎀쥐 스킬에 의해 반사된 뎀쥐
-#define	DMG_BIT_HITTED		0x0400000000	// 맞는 동작을 한다.
-#define	DMG_BIT_CRITICAL	0x0800000000	// 크리티컬 데미지다
-#define	DMG_BIT_DEAD		0x1000000000	// 죽었다.
+// 2006.03.07/ Kim, Dae - Sung-corrected maximum damage - Changes in data type WORD to DWORD of uni DAMAGE
+// gsv_DAMAGE::m_wDamage Value calculation with.
+#define	DMG_BIT_DUMMY		0x0100000000	// I'll Further damage to attached additional damage calculation if they are hit.
+#define	DMG_BIT_IMMEDIATE	0x0200000000	// When a packet is received and processed immediately: Yes) it demjwi reflected by damage shield skill
+#define	DMG_BIT_HITTED		0x0400000000	// The fit operation.
+#define	DMG_BIT_CRITICAL	0x0800000000	// The critical damage
+#define	DMG_BIT_DEAD		0x1000000000	// died.
 //-------------------------------------
 
-// gsv_DAMAGE::m_wACTION이 갖는 값...
+// gsv_DAMAGE::m_wACTION This has value ...
 #define	DMG_ACT_RESERVED	0x01
 #define	DMG_ACT_ATTACK		0x02
 #define	DMG_ACT_HITTED		0x04
 #define	DMG_ACT_CRITICAL	0x08
 #define	DMG_ACT_DEAD		0x10
 
-struct gsv_CHANGE_NPC : public t_PACKETHEADER {
+struct gsv_CHANGE_NPC : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	short	m_nNPCNo;
 } ;
 
-struct cli_SUMMON_CMD : public t_PACKETHEADER {
+struct cli_SUMMON_CMD : public t_PACKETHEADER 
+{
 	BYTE	m_btCMD;
 } ;
 #define	SUMMON_CMD_ATTACK		0x00
@@ -1553,14 +1667,16 @@ struct cli_SUMMON_CMD : public t_PACKETHEADER {
 #define	SUMMON_CMD_STANDING		0x02
 
 
-// 자신의 현재 경험치를 갱신한다.
-struct gsv_SETEXP : public t_PACKETHEADER {
+// To update their current experience.
+struct gsv_SETEXP : public t_PACKETHEADER 
+{
 	long	m_lCurEXP;
 	short	m_nCurSTAMINA;
 	WORD	m_wFromObjIDX;
 } ;
 
-struct gsv_LEVELUP : public t_PACKETHEADER {
+struct gsv_LEVELUP : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	short	m_nCurLevel;
 	long	m_lCurEXP;
@@ -1569,33 +1685,39 @@ struct gsv_LEVELUP : public t_PACKETHEADER {
 } ;
 
 
-struct cli_HP_REQ : public t_PACKETHEADER {
+struct cli_HP_REQ : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 } ;
-struct gsv_HP_REPLY : public t_PACKETHEADER {
+struct gsv_HP_REPLY : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
-	int		m_iHP;			// MOB hp를 전송하기는것이기 때문에...
+	int		m_iHP;			// MOB hp So by sending a ...
 } ;
 
 
-struct gsv_SET_HPnMP : public t_PACKETHEADER {
+struct gsv_SET_HPnMP : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	short	m_nHP;
 	short	m_nMP;
 } ;
 
 
-struct tag_BUY_ITEM {
+struct tag_BUY_ITEM 
+{
 	char	m_cTabNO;
 	char	m_cColNO;
-	WORD	m_wDupCNT;		// 중복된 아이템일경우 구매할 갯수
+	WORD	m_wDupCNT;		// If the number of duplicate items purchased
 } ;
-struct tag_SELL_ITEM {
+struct tag_SELL_ITEM 
+{
 	BYTE	m_btInvIDX;
-	WORD	m_wDupCNT;		// 중복된 아이템일경우 판매할 갯수
+	WORD	m_wDupCNT;		// If the number of duplicate items for sale
 } ;
 // 상점에서 거래...
-struct cli_STORE_TRADE_REQ : public t_PACKETHEADER {
+struct cli_STORE_TRADE_REQ : public t_PACKETHEADER 
+{
 	WORD	m_wNPCObjIdx;
 	char	m_cBuyCNT;
 	char	m_cSellCNT;
@@ -1606,53 +1728,61 @@ struct cli_STORE_TRADE_REQ : public t_PACKETHEADER {
 */
 } ;
 
-struct gsv_STORE_TRADE_REPLY : public t_PACKETHEADER {
+struct gsv_STORE_TRADE_REPLY : public t_PACKETHEADER 
+{
 	BYTE	m_btRESULT;
 } ;
 #define	STORE_TRADE_RESULT_PRICE_DIFF		0x01
 #define	STORE_TRADE_RESULT_NPC_NOT_FOUND	0x02
 #define	STORE_TRADE_RESULT_TOO_FAR			0x03
 #define	STORE_TRADE_RESULT_OUT_OF_MONEY		0x04
-#define	STORE_TRADE_RESULT_NOT_UNION_USER	0x05	// 같은 조합원이 아니다
-#define	STORE_TRADE_RESULT_OUT_OF_POINT		0x06	// 조합 포인트가 모자르다
-#define STORE_TRADE_RESULT_OUT_OF_REWARD_POINT	0x07	// 클랜 보상 포인트 부족
+#define	STORE_TRADE_RESULT_NOT_UNION_USER	0x05	// Such is not the union
+#define	STORE_TRADE_RESULT_OUT_OF_POINT		0x06	// Garda combination point cap
+#define STORE_TRADE_RESULT_OUT_OF_REWARD_POINT	0x07	// Clan tribe reward points
 
-// 변경된 인벤토리 정보...
-struct tag_SET_INVITEM {
+// Changed inventory information ...
+struct tag_SET_INVITEM 
+{
 	BYTE		m_btInvIDX;
 	tagBaseITEM	m_ITEM;
 } ;
 
-// 변경된 인벤토리 정보가 들어감...
-struct gsv_SET_MONEYnINV : public t_PACKETHEADER {
+// Changed inventory information into ...
+struct gsv_SET_MONEYnINV : public t_PACKETHEADER 
+{
 	__int64			m_i64Money;
 	BYTE			m_btItemCNT;
-	tag_SET_INVITEM	m_sInvITEM[ 0 ];		// 변경된 갯수 만큼 들어 있다...
+	tag_SET_INVITEM	m_sInvITEM[ 0 ];		// It contains as many changes ...
 } ;
 
-struct gsv_SET_INV_ONLY : public t_PACKETHEADER {
+struct gsv_SET_INV_ONLY : public t_PACKETHEADER 
+{
 	BYTE			m_btItemCNT;
-	tag_SET_INVITEM	m_sInvITEM[ 0 ];		// 변경된 갯수 만큼 들어 있다...
+	tag_SET_INVITEM	m_sInvITEM[ 0 ];		// It contains as many changes ...
 } ;
 
-struct gsv_SET_MONEY_ONLY : public t_PACKETHEADER {
+struct gsv_SET_MONEY_ONLY : public t_PACKETHEADER 
+{
 	__int64			m_i64Money;
 } ;
 
-struct gsv_SET_ABILITY : public t_PACKETHEADER {
+struct gsv_SET_ABILITY : public t_PACKETHEADER 
+{
 	WORD	m_wAbilityTYPE;
 	int		m_iValue;
 } ;
 
 #define	SERVER_DATA_ECONOMY		0
 #define	SERVER_DATA_NPC			1
-struct gsv_SERVER_DATA : public t_PACKETHEADER {
+struct gsv_SERVER_DATA : public t_PACKETHEADER 
+{
 	BYTE	m_btDataTYPE;
 	BYTE	m_pDATA[0];
 } ;
 
 #define	RELAY_TYPE_RECALL	0x00
-struct gsv_RELAY_REQ : public t_PACKETHEADER {
+struct gsv_RELAY_REQ : public t_PACKETHEADER 
+{
 	WORD	m_wRelayTYPE;
 	union {
 		BYTE	m_pBODY[1];
@@ -1662,80 +1792,99 @@ struct gsv_RELAY_REQ : public t_PACKETHEADER {
 		} ;
 	} ;
 } ;
-struct cli_RELAY_REPLY : public gsv_RELAY_REQ {
+struct cli_RELAY_REPLY : public gsv_RELAY_REQ 
+{
 } ;
 
-struct cli_ITEM_SKILL : public t_PACKETHEADER {
+struct cli_ITEM_SKILL : public t_PACKETHEADER 
+{
 	short	m_nInventoryIndex;
 } ;
 
-struct cli_USE_ITEM : public t_PACKETHEADER {
+struct cli_USE_ITEM : public t_PACKETHEADER 
+{
 	short	m_nInventoryIndex;
-	// WORD		m_wDestObjIDX;		:: 소모 아이템으로 타켓 스킬 사용시
-	// tPOINTF	m_PosTARGET;		:: 소모 아이템으로 위치 스킬 사용시
+	// WORD		m_wDestObjIDX;		:: Targeted skills using a consumption item
+	// tPOINTF	m_PosTARGET;		:: Location skill using a consumption item
 } ;
-struct gsv_USE_ITEM : public t_PACKETHEADER {
+struct gsv_USE_ITEM : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	short	m_nUseItemNO;
 	BYTE	m_btInvIDX[ 0 ];
 } ;
 
-struct cli_DROP_ITEM : public t_PACKETHEADER {
+struct cli_DROP_ITEM : public t_PACKETHEADER 
+{
 	BYTE	m_btInventoryIndex;
 	DWORD	m_uiQuantity;	
 } ;
 
 
-// m_nEquipInvIDX는 받드시 값이 들어 있어야함.
-// m_nWeaponInvIDX는 장비 탈거의 경우 0 !!
-struct cli_EQUIP_ITEM : public t_PACKETHEADER {
-	short	m_nEquipInvIDX;		// 장착창 인벤토리 번호 :: m_nEquipInvIDX >= 1 && m_nEquipInvIDX < MAX_EQUIP_IDX
-	short	m_nWeaponInvIDX;	// 장비 아이템이 위치하고 있는 인벤토리 번호...
+// m_nEquipInvIDX It must must contain a value.
+// m_nWeaponInvIDX In the case of stripping equipment is zero!
+struct cli_EQUIP_ITEM : public t_PACKETHEADER 
+{
+	short	m_nEquipInvIDX;		// Replacing windows inventory number :: m_nEquipInvIDX> = 1 && m_nEquipInvIDX <MAX_EQUIP_IDX
+	short	m_nWeaponInvIDX;	// Equipment inventory item number is located ...
 } ;
 
 
-struct gsv_EQUIP_ITEM : public t_PACKETHEADER {
+struct gsv_EQUIP_ITEM : public t_PACKETHEADER 
+{
 	WORD		m_wObjectIDX;
-	short		m_nEquipIndex;
+	short		m_nEquipIndex;		//Slot number
 //	short		m_nItemNO;
 	tagPartITEM m_PartITEM;
-	short		m_nRunSPEED[ 0 ];	// 패시브 스킬에의해 보정된 값까지 : 지속에 의해 보정된값 제외 :: 팻 미 탑승 안했을때..
+	/* Struct tagPartITEM
+		unsigned int	m_nItemNo		: 18;	// 0~1023	Ah system number(ITEM_ID)		(0 ~ 999)
+		unsigned int	m_nGEM_OP		: 9;	// 0~512	Jewelry number(m_bHasSocket == 1) Or a number of options(m_bHasSocket==0)
+		unsigned int	m_bHasSocket	: 1;	// 0~1		Jewelry, whether or not a socket
+		unsigned int	m_cGrade	    : 4;	// 0~15		Rating						(0~9)
+	*/
+	short		m_nRunSPEED[ 0 ];	// Move Speed calculated entirely by the server. Here we set it and forget it
+
 } ;
 
 
-struct cli_ASSEMBLE_RIDE_ITEM : public t_PACKETHEADER {
-	short	m_nRidingPartIDX;	// t_eRidePART의값.
-	short	m_nRidingInvIDX;	// cli_EQUIP_ITEM::m_nWeaponInvIDX 처럼...
+struct cli_ASSEMBLE_RIDE_ITEM : public t_PACKETHEADER 
+{
+	short	m_nRidingPartIDX;	// t_eRidePART Uigap.
+	short	m_nRidingInvIDX;	// cli_EQUIP_ITEM::m_nWeaponInvIDX like...
 } ;
 
-struct gsv_ASSEMBLE_RIDE_ITEM : public t_PACKETHEADER {
+struct gsv_ASSEMBLE_RIDE_ITEM : public t_PACKETHEADER 
+{
 	WORD		m_wObjectIDX;
 	short		m_nRidingPartIDX;
 //	short		m_nItemNO;
 	tagPartITEM	m_RideITEM;
-	short		m_nRunSPEED[ 0 ];	// 패시브 스킬에의해 보정된 값까지 : 지속에 의해 보정된값 제외 :: 팻 탑승 했을때...
+	short		m_nRunSPEED[ 0 ];	// Up to the value compensated by the passive skill: When values except: Pat corrected by the Boarding continued ...
 } ;
 
 
-struct cli_USE_ITEM_TO_REPAIR : public t_PACKETHEADER {
-	short	m_nUseItemInvIDX;			// 수리에 사용할 아이템의 인벤 번호
-	short	m_nRepairTargetInvIDX;		// 수리될 아이템의 인벤 번호
+struct cli_USE_ITEM_TO_REPAIR : public t_PACKETHEADER 
+{
+	short	m_nUseItemInvIDX;			// Inventory number of items for repair
+	short	m_nRepairTargetInvIDX;		// Inventory number of items to be repaired
 } ;
 
-struct cli_REPAIR_FROM_NPC : public t_PACKETHEADER {
-	WORD	m_wNPCObjIDX;				// 수리 요청할 NPC 서버 인덱스
-	short	m_nRepairTargetInvIDX;		// 수리될 아이템의 인벤 번호
-} ;
-
-
-struct gsv_SET_ITEM_LIFE : public t_PACKETHEADER {
-	short	m_nInventoryIDX;			// 수명이 변경될 아이템의 인벤토리 번호
-	short	m_nLife;					// 서버에서의 현재 수명
+struct cli_REPAIR_FROM_NPC : public t_PACKETHEADER 
+{
+	WORD	m_wNPCObjIDX;				// NPC index server to request repairs
+	short	m_nRepairTargetInvIDX;		// Inventory number of items to be repaired
 } ;
 
 
+struct gsv_SET_ITEM_LIFE : public t_PACKETHEADER 
+{
+	short	m_nInventoryIDX;			// Inventory item number to be life changing
+	short	m_nLife;					// Current life in server
+} ;
 
-// 변경된 인벤토리 정보...
+
+
+// Changed inventory information ...
 struct Set_MileageInv
 {
 	BYTE		m_btInvIDX;
@@ -1767,125 +1916,142 @@ struct gsv_DESTROY_MILEAGE_ITEM: public t_PACKETHEADER
 };
 
 
-typedef gsv_DESTROY_MILEAGE_ITEM gsv_NOTIFY_MILEAGE_ITEM;   //변경된 마일리지 아이템 통보
-typedef gsv_DESTROY_MILEAGE_ITEM gsv_SET_MILEAGE_INV;						  //마일리지 인벤정보 통보..
+typedef gsv_DESTROY_MILEAGE_ITEM gsv_NOTIFY_MILEAGE_ITEM;   	//Notification changed Mileage items
+typedef gsv_DESTROY_MILEAGE_ITEM gsv_SET_MILEAGE_INV;			//Mileage inventory information notice.
 
 
-typedef cli_USE_ITEM cli_USE_MILEAGE_ITEM;											//마일리지 아이템 사용
+typedef cli_USE_ITEM cli_USE_MILEAGE_ITEM;						//Using miles items
 typedef gsv_USE_ITEM gsv_USE_MILEAGE_ITEM;
 
-typedef cli_EQUIP_ITEM cli_EQUIP_MILEAGE_ITEM;								//마일리지 아이템 착용				
+typedef cli_EQUIP_ITEM cli_EQUIP_MILEAGE_ITEM;					//Mileage wear items		
 typedef gsv_EQUIP_ITEM gsv_EQUIP_MILEAGE_ITEM;
 
 
-//struct cli_CHANGE_SKIN : public t_PACKETHEADER {
+//struct cli_CHANGE_SKIN : public t_PACKETHEADER 
+//{
 //	BYTE	m_btBodyIDX;
 //	short	m_nItemNO;
 //} ;
-struct gsv_CHANGE_SKIN : public t_PACKETHEADER {
+struct gsv_CHANGE_SKIN : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	WORD	m_wAbilityTYPE;
 	int		m_iValue;
 } ;
 
-struct cli_MOVE_ITEM : public t_PACKETHEADER {
+struct cli_MOVE_ITEM : public t_PACKETHEADER 
+{
 	BYTE		m_btMoveTYPE;
 	BYTE		m_btFromIDX;
-	tagBaseITEM	m_MoveITEM;						// <<-- 옮길 갯수만 있어도.. WORD m_wQuantity;
+	tagBaseITEM	m_MoveITEM;						// <<-- It may only be moved .. WORD m_w Quantity;
 #ifdef	__INC_PLATINUM
-	BYTE		m_btUseSpecialTAB;				// 값이 1이면 .. 프레티넘 서비스로 추가된 탭에 아이템 넣기..
+	BYTE		m_btUseSpecialTAB;				// If the value is 1 .. Loading item has been added to the Platinum Service tab.
 #endif
 } ;
 
 #define	MOVE_ITEM_TYPE_INV2BANK		0x00		// ITEM :: Inventory --> Bank
 #define	MOVE_ITEM_TYPE_BANK2INV		0x01		// ITEM :: Bank --> Inventory
 
-// 패킷 사이즈 == gsv_MOVE_ITEM 이면				창고=>인벤토리 이동
-// 패킷 사이즈 == gsv_MOVE_ITEM+sizeof(__int64)면	인벤=>창고, m_iCurMoney[0]에 돈들어 있음
-struct gsv_MOVE_ITEM : public t_PACKETHEADER {
-	short		m_nInvIDX;						// IDX == -1 실패
-	short		m_nBankIDX;						// IDX == -1 실패
+// If the packet size == gsv MOVEITEM warehouse => Move Inventory
+// Packet size == gsv_MOVE_ITEM + sizeof (__ int64) if inventory => warehouses, m_iCurMoney [0] that the money for the
+struct gsv_MOVE_ITEM : public t_PACKETHEADER 
+{
+	short		m_nInvIDX;						// IDX == -1 failure
+	short		m_nBankIDX;						// IDX == -1 failure
 
 	tagBaseITEM	m_InvItem;
 	tagBaseITEM	m_BankITEM;
-	__int64		m_iCurMoney[0];					// 보관료 빠진 결과돈...
+	__int64		m_iCurMoney[0];					// Results storage fee missing money ...
 } ;
 
 #define	MOVE_ZULY_TYPE_INV2BANK		0x10		// ZULY :: Inventory --> Bank
 #define MOVE_ZULY_TYPE_BANK2INV		0x11		// ZULY :: Bank --> Inventory
-struct cli_MOVE_ZULY : public t_PACKETHEADER {
+struct cli_MOVE_ZULY : public t_PACKETHEADER 
+{
 	BYTE		m_btMoveTYPE;
-	__int64		m_i64MoveZuly;					// 이동 할 줄리량
+	__int64		m_i64MoveZuly;					// Julie amount to move
 } ;
-struct gsv_MOVE_ZULY : public t_PACKETHEADER {
-	__int64		m_i64InvZuly;						// 이동후 소지한 줄리량
-	__int64		m_i64BankZuly;					// 이동후 보관된 줄리량
+struct gsv_MOVE_ZULY : public t_PACKETHEADER 
+{
+	__int64		m_i64InvZuly;					// The machine moves possession of a quantity Julie
+	__int64		m_i64BankZuly;					// The machine moves possession of a quantity Julie
 } ;
 
 
-#define	BANK_REQ_OPEN				0x00		// 창고 열때..
-#define	BANK_REQ_CHANGE_PASSWORD	0x01		// 창고 비번 바꿀때...반드시 창고가 열려 있는 상태에서...
-struct cli_BANK_LIST_REQ : public t_PACKETHEADER {
+#define	BANK_REQ_OPEN				0x00		// When opening the warehouse.
+#define	BANK_REQ_CHANGE_PASSWORD	0x01		// When off duty storage warehouses must be open to change ... in the state ...
+struct cli_BANK_LIST_REQ : public t_PACKETHEADER 
+{
 	BYTE	m_btREQ;
 	char	m_szPassword[0];
 } ;
 
-#define	BANK_REPLY_INIT_DATA		0x00		// 창고 데이타 초기화 & 보여준다
-#define	BANK_REPLY_SHOW_DATA		0x01		// 창고 보여 준다 m_btItemCNT == 0
-#define	BANK_REPLY_NEED_PASSWORD	0x02		// 창고 비번이 필요..
-#define	BANK_REPLY_CHANGED_PASSWORD	0x03		// 창고 비번이 변경됐음
-#define	BANK_REPLY_INVALID_PASSWORD	0x04		// 창고 비번이 틀림
-#define	BANK_REPLY_CLEARED_PASSWORD	0x05		// 창고 비번 삭제됨
-#define	BANK_REPLY_PLATINUM			0x06		// 플레티넘 창고 내용( BANK_REPLY_INIT_DATA뒤에 이어서 전송됨 )
-struct gsv_BANK_LIST_REPLY : public t_PACKETHEADER {
+#define	BANK_REPLY_INIT_DATA		0x00		// Initialized data warehouse & shows
+#define	BANK_REPLY_SHOW_DATA		0x01		// Warehouse show m_btItemCNT == 0
+#define	BANK_REPLY_NEED_PASSWORD	0x02		// The off-duty storage needs.
+#define	BANK_REPLY_CHANGED_PASSWORD	0x03		// Warehouse unbundled changes dwaeteum
+#define	BANK_REPLY_INVALID_PASSWORD	0x04		// This must shed off duty
+#define	BANK_REPLY_CLEARED_PASSWORD	0x05		// Deleted off-duty warehouse
+#define	BANK_REPLY_PLATINUM			0x06		// Platinum warehouse contents (subsequently transferred back BANK_REPLY_INIT_DATA)
+struct gsv_BANK_LIST_REPLY : public t_PACKETHEADER 
+{
 	BYTE			m_btREPLY;
 	BYTE			m_btItemCNT;
-	tag_SET_INVITEM	m_sInvITEM[ 0 ];			// 변경된 갯수 만큼 들어 있다...
+	tag_SET_INVITEM	m_sInvITEM[ 0 ];			// For as long as the number is changed ...
 } ;
 
-struct cli_TELEPORT_REQ : public t_PACKETHEADER {
+struct cli_TELEPORT_REQ : public t_PACKETHEADER 
+{
 	short	m_nWarpIDX;
-	tPOINTF	m_PosCUR;							// 스핵 방지용 :: 클라이언트의 현재 좌표를 주면 서버 좌표와 비교
+	tPOINTF	m_PosCUR;							// Hodges, the current coordinate nuclear screening: client to server coordinates and comparisons
 } ;
-struct gsv_TELEPORT_REPLY : public t_PACKETHEADER {
+struct gsv_TELEPORT_REPLY : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	short	m_nZoneNO;
 	tPOINTF	m_PosWARP;
 	BYTE	m_btRunMODE;
 	BYTE	m_btRideMODE;
 	//-------------------------------------
-	// 2006.05.10/김대성/추가 - 로딩이미지때문에 워프할때마다 특정npc(1201)의 상태값을 같이 전송해 준다.
+	// 2006.05.10/ Kim Dae-Seong/add-loading image warp due to the condition of a certain npc (1201) whenever such a value transfer.
 	BYTE	m_pDATA[52];  //sizeof(tagObjVAR) server size : 1,	client size : 52
 } ;
 
 
-// m_btAbilityNO >= 100	: 스킬 포인트 인덱스는 +100해서 전송...
-struct cli_USE_BPOINT_REQ : public t_PACKETHEADER {
+// m_btAbilityNO >= 100	: The index is + 100 skill points in the transmission ...
+struct cli_USE_BPOINT_REQ : public t_PACKETHEADER 
+{
 	BYTE	m_btAbilityNO;	
 } ;
-struct gsv_USE_BPOINT_REPLY : public t_PACKETHEADER {
+struct gsv_USE_BPOINT_REPLY : public t_PACKETHEADER 
+{
 	BYTE	m_btAbilityNO;
 	short	m_nAbilityValue;
 } ;
 
 
-struct cli_SET_HOTICON : public t_PACKETHEADER {
+struct cli_SET_HOTICON : public t_PACKETHEADER 
+{
 	BYTE		m_btListIDX;
 	tagHotICON	m_HotICON;
 } ;
-struct gsv_SET_HOTICON : public cli_SET_HOTICON {
+struct gsv_SET_HOTICON : public cli_SET_HOTICON 
+{
 } ;
 
 
-struct cli_SET_BULLET : public t_PACKETHEADER {
-	struct {
+struct cli_SET_BULLET : public t_PACKETHEADER 
+{
+	struct 
+	{
 		WORD	m_wShotTYPE	: 2;
 		WORD	m_wInventoryIDX : 14;
 	} ;
 } ;
-struct gsv_SET_BULLET : public t_PACKETHEADER {
+struct gsv_SET_BULLET : public t_PACKETHEADER 
+{
 	WORD		m_wObjectIDX;
-	tagShotDATA	m_sShot;		// m_sShot.m_wItemNO == 0 일경우 총알 다 썼다 !!!
+	tagShotDATA	m_sShot;		// m_sShot.m_wItemNO == 0 If you wrote all the bullets work!!!
 } ;
 
 
@@ -1903,18 +2069,18 @@ struct gsv_SKILL_LEARN_REPLY : public t_PACKETHEADER
 	short				m_nSkillPOINT;
 } ;
 
-#define	RESULT_SKILL_LEARN_FAILED			0x00		// 배우기 실패.
-#define	RESULT_SKILL_LEARN_SUCCESS			0x01		// 배우기 성공.
-#define	RESULT_SKILL_LEARN_NEED_JOB			0x02		// 직업이 일치하지 않는다.
-#define	RESULT_SKILL_LEARN_NEED_SKILL		0x03		// 보유할 스킬이 필요한다.
-#define	RESULT_SKILL_LEARN_NEED_ABILITY		0x04		// 능력치가 부족하다
-#define	RESULT_SKILL_LEARN_OUTOFSLOT		0x05		// 더이상 스킬을 배울수 없다.
-#define	RESULT_SKILL_LEARN_INVALID_SKILL	0x06		// 잘못된 스킬 번호다.
-#define	RESULT_SKILL_LEARN_OUTOFPOINT		0x07		// 스킬 포인트 부족
+#define	RESULT_SKILL_LEARN_FAILED			0x00		// The failure to learn.
+#define	RESULT_SKILL_LEARN_SUCCESS			0x01		// Successful Withdrawal
+#define	RESULT_SKILL_LEARN_NEED_JOB			0x02		// Does not match the job.
+#define	RESULT_SKILL_LEARN_NEED_SKILL		0x03		// Need the skill hold.
+#define	RESULT_SKILL_LEARN_NEED_ABILITY		0x04		// The lack of stats
+#define	RESULT_SKILL_LEARN_OUTOFSLOT		0x05		// No longer a skill you can learn.
+#define	RESULT_SKILL_LEARN_INVALID_SKILL	0x06		// The number of the wrong skills.
+#define	RESULT_SKILL_LEARN_OUTOFPOINT		0x07		// Lack of skill points
 #define	RESULT_SKILL_LEARN_DELETE			0x08		// 
 
 
-// 스킬 레벨업시...
+// Skill level: ...
 struct cli_SKILL_LEVELUP_REQ : public t_PACKETHEADER 
 {
 #ifdef __MILEAGESKILL
@@ -1941,10 +2107,10 @@ struct gsv_SKILL_LEVELUP_REPLY : public t_PACKETHEADER
 #define	RESULT_SKILL_LEVELUP_NEED_ABILITY	0x03
 #define	RESULT_SKILL_LEVELUP_NEED_JOB		0x04
 #define	RESULT_SKILL_LEVELUP_NEED_SKILL		0x05
-#define	RESULT_SKILL_LEVELUP_OUTOFZULY		0x06		// 05.05.25 줄리가 모자르다
+#define	RESULT_SKILL_LEVELUP_OUTOFZULY		0x06		// 05.05.25 Julie may Hat
 
 
-/// 스킬이 즉시 적용 : 적용후 정지됨
+/// After applying this skill and take effect immediately: stopped
 struct cli_SELF_SKILL : public t_PACKETHEADER 
 {
 #ifdef __MILEAGESKILL
@@ -1961,7 +2127,7 @@ struct gsv_SELF_SKILL : public t_PACKETHEADER
 	char	cNpcSkillMOTION[ 0 ];
 } ;
 
-/// 스킬을 타겟에 적용 : 적용후 정지됨
+/// After applying the skills to apply: target stopped
 struct cli_TARGET_SKILL : public t_PACKETHEADER 
 {
 	WORD	m_wDestObjIDX;
@@ -1972,19 +2138,20 @@ struct cli_TARGET_SKILL : public t_PACKETHEADER
 #endif
 } ;
 
-struct gsv_TARGET_SKILL : public t_PACKETHEADER {
+struct gsv_TARGET_SKILL : public t_PACKETHEADER 
+{
 	WORD	m_wSourObjIDX;
 	WORD	m_wDestObjIDX;
 	short	m_nSkillIDX;
 
 	WORD	m_wSrvDIST;
-	tPOINTF m_PosTO;				// 좌표 보정용	2004. 5. 1 추가
+	tPOINTF m_PosTO;				// Coordinate correction for 2004. 5. Add 1
 
 	char	cNpcSkillMOTION[ 0 ];
 } ;
 
 
-/// 스킬을 지역에 적용 : 적용후 정지됨
+/// Skill area: after applying stopped
 struct cli_POSITION_SKILL : public t_PACKETHEADER 
 {
 #ifdef __MILEAGESKILL
@@ -1994,33 +2161,37 @@ struct cli_POSITION_SKILL : public t_PACKETHEADER
 #endif
 	tPOINTF	m_PosTARGET;
 } ;
-struct gsv_POSITION_SKILL : public t_PACKETHEADER {
+struct gsv_POSITION_SKILL : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	short	m_nSkillIDX;
 	tPOINTF	m_PosTARGET;
 	char	cNpcSkillMOTION[ 0 ];
 } ;
 
-struct gsv_EFFECT_OF_SKILL : public t_PACKETHEADER {
+struct gsv_EFFECT_OF_SKILL : public t_PACKETHEADER 
+{
 	WORD			m_wObjectIDX;
 	WORD			m_wSpellObjIDX;
 
-// 홍근
+// Hong-Keun
 #ifdef _GBC
 	unsigned short	m_nSkillIDX;
 	unsigned short	m_nINT;
 	BYTE			m_btSuccessBITS;
 #else
-	union {
-		struct {
+	union 
+	{
+		struct 
+		{
 			unsigned short	m_nSkillIDX		: 12;
-			unsigned short	m_btSuccessBITS : 2;	// 성공여부
+			unsigned short	m_btSuccessBITS : 2;	// The success of the
 			BYTE			m_tmp1;
 		} ;
 		struct {
 			BYTE			m_tmp2;
 			unsigned short	m_tmp3			: 6;
-			unsigned short	m_nINT			: 10;	// 시전자의 지력
+			unsigned short	m_nINT			: 10;	// : E-power
 		} ;
 	} ;
 #endif
@@ -2031,48 +2202,54 @@ struct gsv_EFFECT_OF_SKILL : public t_PACKETHEADER {
 
 
 //-------------------------------------
-// 김대성
+// Kim Dae-Sung
 /*
-struct gsv_DAMAGE_OF_SKILL : public gsv_EFFECT_OF_SKILL {
-		union {
-			uniDAMAGE	m_Damage;				// 피해가 있을경우 값이 들어 있음.
+struct gsv_DAMAGE_OF_SKILL : public gsv_EFFECT_OF_SKILL 
+{
+		union 
+		{
+			uniDAMAGE	m_Damage;				// If the value of the damage in this instance.
 			WORD		m_wDamage;
 		} ;
-		tag_DROPITEM	m_DropITEM[ 0 ];		// 죽는 데미지일경우에만 값이 들어 있다. 드롭된 아이템 인덱스
+		tag_DROPITEM	m_DropITEM[ 0 ];		// Contains a value only if the damage die. The index dropped items
 } ;
 */
-struct gsv_DAMAGE_OF_SKILL : public gsv_EFFECT_OF_SKILL {
-	union {
-		uniDAMAGE	m_Damage;				// 피해가 있을경우 값이 들어 있음.
+struct gsv_DAMAGE_OF_SKILL : public gsv_EFFECT_OF_SKILL 
+{
+	union 
+	{
+		uniDAMAGE	m_Damage;				// If the value of the damage in this instance.
 		__int64		m_wDamage;
 	} ;
-	tag_DROPITEM	m_DropITEM[ 0 ];		// 죽는 데미지일경우에만 값이 들어 있다. 드롭된 아이템 인덱스
+	tag_DROPITEM	m_DropITEM[ 0 ];		// Contains a value only if the damage die. The index dropped items
 } ;
 //-------------------------------------
 
 
-struct gsv_RESULT_OF_SKILL : public t_PACKETHEADER {
+struct gsv_RESULT_OF_SKILL : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	short	m_nSkillIDX;
 } ;
 
-struct gsv_SKILL_START : public t_PACKETHEADER {
+struct gsv_SKILL_START : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 } ;
 
-#define	SKILL_CANCEL_NEED_ABILITY		0x01	// 능력치 부족
-#define	SKILL_CANCEL_NEED_TARGET		0x02	// 케스팅 시도전 타겟이 없어졌다... MP소모 없음
-#define	SKILL_CANCEL_TARGET_NOT_FOUND	0x03	// 케스팅후 실제동작전 타겟이 없어졌다... MP소모 있음
+#define	SKILL_CANCEL_NEED_ABILITY		0x01	// The lack of stats
+#define	SKILL_CANCEL_NEED_TARGET		0x02	// Try casting I boosted targeted ... No MP consumption
+#define	SKILL_CANCEL_TARGET_NOT_FOUND	0x03	// Casting actual behavior after I boosted targeted ... MP consumption in
 struct gsv_SKILL_CANCEL : public t_PACKETHEADER {
 	WORD	m_wObjectIDX;
 	BYTE	m_btWHY;
 } ;
 
 /*
-	**	서버에서 패킷에 값이 입력되는 방법... AND 시킬 플레그는 DataType.h에 선언된 값의 크기 순으로
-		m_gsv_CLEAR_STATUS.m_nAdjVALUE[x]에 값이 입력되어 있음.
+	**	Enter a value in the packet from the server, how to become a ... AND the value declared on the DataType.h flag to the size of the order
+		m_gsv_CLEAR_STATUS.m_nAdjVALUE[x]Enter a value.
 
-	dwClearedFLAG = 클라이언트상태 & ~서버상태
+	dwClearedFLAG = Client status &amp; ~ server status
 
 	BYTE btIDX=0;	
 	if ( dwClearedFLAG &  FLAG_ING_HP )
@@ -2081,55 +2258,62 @@ struct gsv_SKILL_CANCEL : public t_PACKETHEADER {
 	if ( dwClearedFLAG &  FLAG_ING_MP )
 		clientMP = m_gsv_CLEAR_STATUS.m_nAdjVALUE[ btIDX++ ];
 */
-struct gsv_CLEAR_STATUS : public t_PACKETHEADER {
+struct gsv_CLEAR_STATUS : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
-	DWORD	m_dwStatusFLAG;		// 삭제된후 남은 플레그...
-	short	m_nAdjVALUE[0];		// 삭제된후 보정된 값...
+	DWORD	m_dwStatusFLAG;		// After the remaining flag ...
+	short	m_nAdjVALUE[0];		// After calibrated values have been deleted ...
 } ;
 
-struct gsv_SPEED_CHANGED : public t_PACKETHEADER {
+struct gsv_SPEED_CHANGED : public t_PACKETHEADER			//0x07b8	Speed change packet
+{
 	WORD	m_wObjectIDX;
-	short	m_nRunSPEED;			// 패시브 상태를 포함, 지속 상태 제외
-	short	m_nPsvAtkSPEED;			// 패시브 값만...
-	BYTE	m_btWeightRate;			// 현재소지량/최대소지량*100
+	short	m_nRunSPEED;			// With the exception of the State, including State-passive
+	short	m_nPsvAtkSPEED;			// Passive value ...
+	BYTE	m_btWeightRate;			// The maximum amount of the current amount of possession/possession * 100
 } ;
 
 
-// 장비 아이템의 감정의뢰 :: m_nInventoryIndex의 아이템 감정 요청 ..
-struct cli_APPRAISAL_REQ : public t_PACKETHEADER {			
+// Equipment commissioned: the emotions of the item: the item of emotional m_nInventoryIndex request. ..
+struct cli_APPRAISAL_REQ : public t_PACKETHEADER 
+{			
 	WORD	m_wInventoryIndex;
 } ;
-struct gsv_APPRAISAL_REPLY : public t_PACKETHEADER {
-	struct {
+struct gsv_APPRAISAL_REPLY : public t_PACKETHEADER 
+{
+	struct 
+	{
 		WORD	m_wInventoryIndex : 12;
 		WORD	m_btResult : 4;
 	} ;
 } ;
-#define	RESULT_APPRAISAL_REPLY_OK		0	// 성공
-#define	RESULT_APPRAISAL_REPLY_FAILED	1	// 돈없다.
+#define	RESULT_APPRAISAL_REPLY_OK		0	// Success
+#define	RESULT_APPRAISAL_REPLY_FAILED	1	// There is no money.
 
 
-/// 거래 대상 m_wObjectIDX에게 응답을 보낸다.
-struct cli_TRADE_P2P : public t_PACKETHEADER {
+/// The deal sends a response to the target m_wObjectIDX.
+struct cli_TRADE_P2P : public t_PACKETHEADER 
+{
 	BYTE	m_btRESULT;
 	WORD	m_wObjectIDX;
 	char	m_cTradeSLOT;
 } ;
-#define	RESULT_TRADE_REQUEST			0x00	// 거래 요구
-#define	RESULT_TRADE_ACCEPT				0x01	// 거래 승낙
-#define	RESULT_TRADE_REJECT				0x02	// 거래 거부
-#define	RESULT_TRADE_CANCEL				0x03	// 거래 도중 취소
-#define	RESULT_TRADE_CHECK_READY		0x04	// 거래 준비 완료
-#define	RESULT_TRADE_UNCHECK_READY		0x05	// 거래 준비 취소
-#define	RESULT_TRADE_DONE				0x06	// 거래 실행
-#define	RESULT_TRADE_BUSY				0x07	// 거래를 할수 없다.
-#define	RESULT_TRADE_TOO_FAR			0x08	// 거리가 멀다.	5m 이내..
-#define	RESULT_TRADE_NOT_TARGET			0x09	// 대상이 없다.
-#define	RESULT_TRADE_OUT_OF_INV			0x0a	// 상대방이 인벤토리가 부족하다.
+#define	RESULT_TRADE_REQUEST			0x00	// The deal required
+#define	RESULT_TRADE_ACCEPT				0x01	// Trade acceptance
+#define	RESULT_TRADE_REJECT				0x02	// The deal rejected
+#define	RESULT_TRADE_CANCEL				0x03	// During the canceled deal
+#define	RESULT_TRADE_CHECK_READY		0x04	// Ready to deal
+#define	RESULT_TRADE_UNCHECK_READY		0x05	// Ready to cancel the transaction
+#define	RESULT_TRADE_DONE				0x06	// Trade execution
+#define	RESULT_TRADE_BUSY				0x07	// Can't do the deal.
+#define	RESULT_TRADE_TOO_FAR			0x08	// A far cry from the.	Within 5m ...
+#define	RESULT_TRADE_NOT_TARGET			0x09	// There is no subject.
+#define	RESULT_TRADE_OUT_OF_INV			0x0a	// The other is the lack of inventory.
 #define	RESULT_TRADE_NO_CHARGE_TARGET	0x0b
 
-/// 서버에서 전송된 m_wObjectIDX의 거래에 응답.
-struct gsv_TRADE_P2P : public t_PACKETHEADER {
+/// In response to the m_wObjectIDX of the deal sent from the server.
+struct gsv_TRADE_P2P : public t_PACKETHEADER 
+{
 	BYTE	m_btRESULT;
 	WORD	m_wObjectIDX;
 	char	m_cTradeSLOT;
@@ -2138,218 +2322,250 @@ struct gsv_TRADE_P2P : public t_PACKETHEADER {
 
 #define	MAX_TRADE_ITEM_SLOT		11
 #define	TRADE_MONEY_SLOT_NO		(MAX_TRADE_ITEM_SLOT-1)
-struct cli_TRADE_P2P_ITEM : public t_PACKETHEADER {
+struct cli_TRADE_P2P_ITEM : public t_PACKETHEADER 
+{
 	char	m_cTradeSLOT;
-	short	m_nInventoryIndex;				// 인벤토리 번호
-	DWORD	m_uiQuantity;					// 수량
+	short	m_nInventoryIndex;				// Inventory number
+	DWORD	m_uiQuantity;					// Quantity
 } ;
-struct gsv_TRADE_P2P_ITEM : public t_PACKETHEADER {
+struct gsv_TRADE_P2P_ITEM : public t_PACKETHEADER 
+{
 	char		m_cTradeSLOT;
 	tagBaseITEM	m_ITEM;
 } ;
 
 
-struct cli_SET_WISHITEM : public t_PACKETHEADER {
+struct cli_SET_WISHITEM : public t_PACKETHEADER 
+{
 	BYTE		m_btWishSLOT;
 	tagBaseITEM	m_ITEM;
 } ;
 
-// 개인 상점 관련....
+// Private shop related ....
 #define	MAX_P_STORE_ITEM_SLOT	31
 
-// 판매할 아이템
-struct tagPS_ITEM {
-	union {
-		BYTE	m_btInvIDX;						// 판매시 인벤번호
-		BYTE	m_btWishIDX;					// 구매시 WishList 슬롯 번호
+// Sell your item
+struct tagPS_ITEM 
+{
+	union 
+	{
+		BYTE	m_btInvIDX;						// For sale: Ben No.
+		BYTE	m_btWishIDX;					// Purchase WishList slot number
 	} ;
-	tagBaseITEM	m_ITEM;							// 아이템( 중복갯수 아이템일경우 팔려는 갯수 포함)
-	DWORD		m_dwPricePerEA;					// 1개당 판매 희망 가격
+	tagBaseITEM	m_ITEM;							// Items (if you sell an item number, the number of duplicates)
+	DWORD		m_dwPricePerEA;					// 1 Selling price per piece
 } ;
 
 #define	STORE_MODE_TO_SELL		0x01
 #define	STORE_MODE_TO_BUY		0x02
-struct cli_P_STORE_OPEN : public t_PACKETHEADER {
-	BYTE	m_btSellItemCNT;	// 판매 희망 아이템 등록 갯수
-	BYTE	m_btWishItemCNT;	// 구입 희망 아이템 등록 갯수
+struct cli_P_STORE_OPEN : public t_PACKETHEADER 
+{
+	BYTE	m_btSellItemCNT;	// I hope the sale item registration number
+	BYTE	m_btWishItemCNT;	// I hope to buy the item number of the registration
 
-	// 등록할 아이템
-	tagPS_ITEM	m_ITEMs[ 0 ];	// 판매 3, 구매 2 일경우 0~2는 판매, 3~4는 구입희망 아이템
+	// The item register
+	tagPS_ITEM	m_ITEMs[ 0 ];	// For sale 3 0-2 2, buy, sell, and hope the purchase items 3 and 4
 	// char	m_szStoreTITLE[0]
 } ;
-struct gsv_P_STORE_OPENED : public t_PACKETHEADER {
+struct gsv_P_STORE_OPENED : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	char	m_szStoreTITLE[0];
 } ;
 
 
-struct cli_P_STORE_CLOSE : public t_PACKETHEADER {
+struct cli_P_STORE_CLOSE : public t_PACKETHEADER 
+{
 } ;
-struct gsv_P_STORE_CLOSED : public t_PACKETHEADER {
+struct gsv_P_STORE_CLOSED : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 } ;
 
 
-struct tagPS_SLOT_PRICE {
+struct tagPS_SLOT_PRICE 
+{
 	BYTE		m_btSLOT;
 	tagBaseITEM	m_SlotITEM;
 	DWORD		m_dwPRICE;
 } ;
-struct cli_P_STORE_LIST_REQ : public t_PACKETHEADER {		// 개인 상점 아이템 목록 요구
+struct cli_P_STORE_LIST_REQ : public t_PACKETHEADER 
+{		// Ask your store items list
 	WORD				m_wStoreObjectIDX;
 } ;
-struct gsv_P_STORE_LIST_REPLY : public t_PACKETHEADER {
+struct gsv_P_STORE_LIST_REPLY : public t_PACKETHEADER 
+{
 	BYTE				m_btSellItemCNT;
 	BYTE				m_btWishItemCNT;
 	tagPS_SLOT_PRICE	m_SlotITEMs[0];
 } ;
 
 
-struct tagPS_SLOT_ITEM {
+struct tagPS_SLOT_ITEM 
+{
 	BYTE		m_btSLOT;
 	tagBaseITEM	m_SlotITEM;
 } ;
-// 개인 상점에 구입 요청
-struct cli_P_STORE_BUY_REQ : public t_PACKETHEADER {
+// Private shop purchase request
+struct cli_P_STORE_BUY_REQ : public t_PACKETHEADER 
+{
 	WORD				m_wStoreObjectIDX;
 	BYTE				m_btItemCNT;
 	tagPS_SLOT_ITEM		m_BuyITEMs[0];
 } ;
 
-struct tagSELL_ITEM{
-		BYTE		m_btInvIDX;			// 팔려는 아이템이 위치한 인벤토리 번호
-		BYTE		m_btWishSLOT;		// 상점 주인이 원하는 아이템이 위치한 번호
-		tagBaseITEM	m_SellITEM;			// 팔려는 아이템(중복갯수 아이템의 경우 팔려는 갯수조정 가능)
+struct tagSELL_ITEM
+{
+		BYTE		m_btInvIDX;			// Sell item to inventory number located
+		BYTE		m_btWishSLOT;		// The number of the item you want, shop owner located
+		tagBaseITEM	m_SellITEM;			// Items to sell (in the case of a number of the duplicate count items sell adjustable)
 };
-// 개인 상점에 판매 요청
-struct cli_P_STORE_SELL_REQ : public t_PACKETHEADER {
+// Ask your store sales
+struct cli_P_STORE_SELL_REQ : public t_PACKETHEADER 
+{
 	WORD			m_wStoreObjectIDX;
 	BYTE			m_btItemCNT;
 	tagSELL_ITEM	m_SellITEMs[0];
 } ;
 
-struct gsv_P_STORE_RESULT : public t_PACKETHEADER {
+struct gsv_P_STORE_RESULT : public t_PACKETHEADER 
+{
 	WORD			m_wStoreObjectIDX;
 	BYTE			m_btResult;
 	BYTE			m_btItemCNT;
 	tagPS_SLOT_ITEM m_UpdatedITEM[0];
 } ;
-#define	RESULT_P_STORE_CANCLED				0x01	// 거래 취소,
-#define	RESULT_P_STORE_TRADE_SOLD_OUT		0x02	// 물건이 품절
-#define	RESULT_P_STORE_TRADE_NO_MORE_NEED	0x03	// 상점 주인이 원하는 아이템을 누군가 먼저 팔았다.
-#define RESULT_P_STORE_BOUGHT_PART			0x04	// 구입 완료...단, 일부 품목은 품절되어 구입 실패...
-#define RESULT_P_STORE_BOUGHT_ALL			0x05	// 요청한 품목 전체 구입 완료 
-#define RESULT_P_STORE_SOLD_PART			0x06	// 판매 완료...단, 일부 품목은 구입완료되어 판매 실패...
-#define RESULT_P_STORE_SOLD_ALL				0x07	// 요청한 품목 전체 판매 완료
+#define	RESULT_P_STORE_CANCLED				0x01	// Transaction cancellation,
+#define	RESULT_P_STORE_TRADE_SOLD_OUT		0x02	// Goods out of stock
+#define	RESULT_P_STORE_TRADE_NO_MORE_NEED	0x03	// Shop owner sold the desired item to someone first.
+#define RESULT_P_STORE_BOUGHT_PART			0x04	// Purchase complete ... However, some items are out of stock failed to buy ...
+#define RESULT_P_STORE_BOUGHT_ALL			0x05	// Complete the entire purchase the requested item. 
+#define RESULT_P_STORE_SOLD_PART			0x06	// For sale complete ... However, some items will be sold after the failure to buy ...
+#define RESULT_P_STORE_SOLD_ALL				0x07	// The requested item, the entire sale is complete
 
 /*
 	party structure ...
 */
-struct cli_PARTY_REQ : public t_PACKETHEADER {
+struct cli_PARTY_REQ : public t_PACKETHEADER 
+{
 	BYTE	m_btREQUEST;
 	DWORD	m_dwDestIDXorTAG;
 } ;
-struct gsv_PARTY_REQ : public t_PACKETHEADER {
+struct gsv_PARTY_REQ : public t_PACKETHEADER 
+{
 	BYTE	m_btREQUEST;
 	DWORD	m_dwFromIDXorTAG;
 //	short	m_nZoneNO;
 } ;
-#define	PARTY_REQ_MAKE				0x00	// 파티 결성 요청 
-#define	PARTY_REQ_JOIN				0x01	// 파티 참가 요청
-#define	PARTY_REQ_LEFT				0x02	// 파티 탈퇴 요청
-#define	PARTY_REQ_CHANGE_OWNER		0x03	// 파짱 변경 요청.
+#define	PARTY_REQ_MAKE				0x00	// Forming a party request 
+#define	PARTY_REQ_JOIN				0x01	// Party registration
+#define	PARTY_REQ_LEFT				0x02	// Party withdrawal requests
+#define	PARTY_REQ_CHANGE_OWNER		0x03	// Wave Rock change request.
 
-#define	PARTY_REQ_BAN				0x81	// 파티 강퇴 요청
+#define	PARTY_REQ_BAN				0x81	// The party dropped out of the River on request
 
-struct cli_PARTY_REPLY : public t_PACKETHEADER {
+struct cli_PARTY_REPLY : public t_PACKETHEADER 
+{
 	BYTE	m_btREPLY;
 	DWORD	m_dwDestIDXorTAG;
 } ;
-struct gsv_PARTY_REPLY : public t_PACKETHEADER {
+struct gsv_PARTY_REPLY : public t_PACKETHEADER 
+{
 	BYTE	m_btREPLY;
 	DWORD	m_dwFromIDXorTAG;
 } ;
-#define	PARTY_REPLY_NOT_FOUND				0x00	// 대상을 찾지 못했다.
-#define	PARTY_REPLY_BUSY					0x01	// 대상이 파티에 참가 할수 없는 상태다.
+#define	PARTY_REPLY_NOT_FOUND				0x00	// Did not find the target.
+#define	PARTY_REPLY_BUSY					0x01	// The target cannot participate in the State party.
 #define	PARTY_REPLY_ACCEPT_MAKE				0x02
 #define	PARTY_REPLY_ACCEPT_JOIN				0x03
-#define	PARTY_REPLY_REJECT_JOIN				0x04	// 파티 결성/참가에 거절 ..
-#define	PARTY_REPLY_DESTROY					0x05	// 파티 뽀개 졌다
-#define PARTY_REPLY_FULL_MEMBERS			0x06	// 정원 만땅이다.
-#define	PARTY_REPLY_INVALID_LEVEL			0x07	// 레벨이 맞지 않는다
+#define	PARTY_REPLY_REJECT_JOIN				0x04	// The party refused to attend the formation/...
+#define	PARTY_REPLY_DESTROY					0x05	// The party has been eating out
+#define PARTY_REPLY_FULL_MEMBERS			0x06	// It is the only land in the garden.
+#define	PARTY_REPLY_INVALID_LEVEL			0x07	// Level does not
 #define	PARTY_REPLY_CHANGE_OWNER			0x08
-#define	PARTY_REPLY_CHANGE_OWNERnDISCONN	0x09	// PARTY_REPLY_CHANGE_OWNER와 같다...단 기존 파짱을 disconnect된 상태로 변경.
+#define	PARTY_REPLY_CHANGE_OWNERnDISCONN	0x09	// PARTY_REPLY_CHANGE_OWNER Are as follows ... The only changes the State of an existing wave-CHAN to disconnect.
 #define	PAATY_REPLY_NO_CHARGE_TARGET		0x0a
 
 #define	PARTY_REPLY_BAN						0x80
-#define PARTY_REPLY_DISCONNECT				0x81	// 비정상 종료 됐다...
-#define	PARTY_REPLY_REJOIN					0x82	// 비정상 종료후 재접했다.
+#define PARTY_REPLY_DISCONNECT				0x81	// Abnormal termination ...
+#define	PARTY_REPLY_REJOIN					0x82	// Abnormal termination after the fold.
 
 /*
-struct tag_PARTY_USER {		// 월드 서버에서 전송됨
+struct tag_PARTY_USER 
+{		// Sent by the server in the world
 	WORD	m_wUserTAG;
 	//char	m_szCharName[]
 } ;
-struct wsv_PARTY_USER : public t_PACKETHEADER {
-	char	m_cUserCNT;					// -1이면 파티원에서 제외, 양수 m_cType은 추가될 사용자수...
-	WORD	m_wUserTAG[0];				// 파티원 제외일 경우 참조...
-//	tag_PARTY_USER[ m_cUserCNT ];		// 파티원 추가일 경우 참조
+struct wsv_PARTY_USER : public t_PACKETHEADER 
+{
+	char	m_cUserCNT;					// -1, the party in the House of representatives, the number of users that will be added, with the exception of the m_cType ...
+	WORD	m_wUserTAG[0];				// If the party except circle, ...
+//	tag_PARTY_USER[ m_cUserCNT ];		// If you add a reference to the party House
 } ;
 */
-struct tag_PARTY_MEMBER {	// 존 서버에서 전송됨
+struct tag_PARTY_MEMBER // John sent by the server
+{	
 	DWORD	m_dwUserTAG;
 	WORD	m_wObjectIDX;
 	short	m_nMaxHP;
 	short	m_nHP;
 	DWORD	m_dwStatusFALG;
 
-	short	m_nCON;						// BYTE	m_btCON; //최대 스텟 범위가 300으로 증가됨 2004. 7. 21
+	short	m_nCON;						// BYTE	m_btCON; //Increasing the maximum range of 300 stats as of 2004. 7.21
 
 	BYTE	m_btRecoverHP;				// item_recover_hp + passive_recover_hp
 	BYTE	m_btRecoverMP;				// item_recover_mp + passive_recover_mp
 
 	short	m_nSTAMINA;
 
-	//char	m_szCharName[];				// ** PARTY_MEMBER_ADD일 경우만 값이 들어 있음
+	//char	m_szCharName[];				// ** PARTY_MEMBER_ADD Only when the value contains
 } ;
-struct gsv_PARTY_MEMBER : public t_PACKETHEADER {
-	BYTE	m_btPartyRULE;				// 파티 규칙(아이템분배, 경험치분배방식)
-	char	m_cUserCNT;					// -1이면 파티원에서 제외, 양수 m_cType은 추가될 사용자수, ObjTAG...
-	DWORD	m_dwObjectTAG[0];			// 파티원 제외일 경우 참조...
+struct gsv_PARTY_MEMBER : public t_PACKETHEADER 
+{
+	BYTE	m_btPartyRULE;				// Party rules (item distribution, distribution of experience)
+	char	m_cUserCNT;					// -1 indicates that the party with the exception of the House of representatives, the number of users that will be added, positive m_cType is ObjTAG ...
+	DWORD	m_dwObjectTAG[0];			// If the party except circle, ...
 	/*
-	tag_PARTY_MEMBER[ m_cUserCNT ];		// 파티원 추가일 경우 참조
+	tag_PARTY_MEMBER[ m_cUserCNT ];		// If you add a reference to the party House
 	*/
 } ;
 #define	PARTY_MEMBER_SUB	(-1)
 
-struct gsv_PARTY_LEVnEXP : public t_PACKETHEADER {
+struct gsv_PARTY_LEVnEXP : public t_PACKETHEADER 
+{
 	BYTE				m_btLEVEL;
-	struct {
+	struct 
+	{
 		unsigned int	m_iEXP		 : 31;
 		unsigned int	m_bitLevelUP : 1;
 	} ;
 } ;
 
-struct gsv_CHANGE_OBJIDX : public t_PACKETHEADER {
+struct gsv_CHANGE_OBJIDX : public t_PACKETHEADER 
+{
 	tag_PARTY_MEMBER	m_Member;
 } ;
 
-struct gsv_PARTY_ITEM : public t_PACKETHEADER {
+struct gsv_PARTY_ITEM : public t_PACKETHEADER 
+{
 	WORD		m_wObjectIDX;
 	tagBaseITEM m_ITEM;
 } ;
 
-#define	BIT_PARTY_RULE_EXP_PER_PLAYER		0x001	// 경험치를 레벨비례로 나눈다...
-#define	BIT_PARTY_RULE_ITEM_TO_ORDER		0x080	// 순서대로 우선권 부여...
-struct cli_PARTY_RULE : public t_PACKETHEADER {
+#define	BIT_PARTY_RULE_EXP_PER_PLAYER		0x001	// Take share proportionally to the level of experience ...
+#define	BIT_PARTY_RULE_ITEM_TO_ORDER		0x080	// Given priority in the order ...
+struct cli_PARTY_RULE : public t_PACKETHEADER 
+{
 	BYTE	m_btPartyRUEL;
 } ;
-struct gsv_PARTY_RULE : public t_PACKETHEADER {
+struct gsv_PARTY_RULE : public t_PACKETHEADER 
+{
 	BYTE	m_btPartyRULE;
 } ;
 
 
-struct gsv_ADD_EVENTOBJ : public t_PACKETHEADER {
+struct gsv_ADD_EVENTOBJ : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	char	m_cMapX;
 	char	m_cMapY;
@@ -2357,39 +2573,41 @@ struct gsv_ADD_EVENTOBJ : public t_PACKETHEADER {
 	short	m_nEventSTATUS;
 } ;
 /*
-struct gsv_SUB_EVENTOBJ : public t_PACKETHEADER {
+struct gsv_SUB_EVENTOBJ : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 } ;
 */
 
-struct gsv_SET_NPC_SHOW : public t_PACKETHEADER {
+struct gsv_SET_NPC_SHOW : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
-	bool	m_bShow;						// m_bShow == true이면 보임/false이면 숨김
+	bool	m_bShow;						// m_bShow == true F a l s e visibility/behind, hidden
 } ;
 
 
-//--------------------------- CLAN 관련 패킷
-#define	GCMD_CREATE				0x000		//길드생성, /guildcreate [길드명]
-#define	GCMD_INFO				0x001		//길드정보, /ginfo - 길드에 대한 기본적인 정보
-#define	GCMD_INVITE				0x002		//길드초대, /ginvite <플레이어> - 길드에 해당 플레이어 초대하기
-#define	GCMD_REMOVE				0x003		//길드추방, /gremove <플레이어> - 길드에서 해당 플레이어 추방하기
-#define	GCMD_PROMOTE			0x004		//길드승급, /gpromote <플레이어> - 해당 플레이어 길드 등급 올리기
-#define	GCMD_DEMOTE				0x005		//길드강등, /gdemote <플레이어> - 해당 플레이어 길드 등급 내리기
-#define	GCMD_MOTD				0x006		//길드공지, /gmotd <할말> - 오늘의 길드 메시지 정하기
-#define	GCMD_QUIT				0x007		//길드탈퇴, /gquit - 길드에서 탈퇴하기
-#define	GCMD_ROSTER				0x008		//길드목록, /groster - 전체 길드원 목록 보기
-#define	GCMD_LEADER				0x009		//길드위임, /gleader <플레이어> - 다른 플레이어에게 길드장 위임하기 (길드장 전용)
-#define	GCMD_DISBAND			0x00a		//길드해체, /gdisband - 길드 해체하기 (길드장 전용) 
+//--------------------------- CLAN Related packet
+#define	GCMD_CREATE				0x000		//Guild creation,/guildcreate [Guild people]
+#define	GCMD_INFO				0x001		//Guild info,/ginfo-basic information about Guild
+#define	GCMD_INVITE				0x002		//Guild invitations,/ginvite is equivalent to the players-Guild < player > invite
+#define	GCMD_REMOVE				0x003		//The Guild exile,/gremove the players-Guild < player > kicking
+#define	GCMD_PROMOTE			0x004		//Guild upgrades,/gpromote and raise the players Guild rating < player >-
+#define	GCMD_DEMOTE				0x005		//Relegated to the Guild, the Guild rating < player >/gdemote-down
+#define	GCMD_MOTD				0x006		//The Guild bulletin,/gmotd set today's Guild message < say >-
+#define	GCMD_QUIT				0x007		//To unsubscribe from opt-out,/gquit-Guild the Guild
+#define	GCMD_ROSTER				0x008		//View a list of Guild and the Guild list,/groster-full
+#define	GCMD_LEADER				0x009		//The Guild delegation,/gleader other players Guild < player >-Chapter delegate (Guild chapter only)
+#define	GCMD_DISBAND			0x00a		//The Guild disbanded,/gdisband-Guild disbanded (Guild chapter only) 
 
-#define GCMD_INVITE_REQ			0x00b		//나에게 클랜 가입을 요청했다. <요청자이름>
-#define	GCMD_INVITE_REPLY_YES	0x00c		//클랜가입 승낙 <요청자이름>
-#define	GCMD_INVITE_REPLY_NO	0x00d		//클랜가입 거절 <요청자이름>
+#define GCMD_INVITE_REQ			0x00b		//I was asked to join a clan. < Requestor name >
+#define	GCMD_INVITE_REPLY_YES	0x00c		//Clan join acceptance < requestor name >
+#define	GCMD_INVITE_REPLY_NO	0x00d		//Clancy refused to join < requestor name >
 
-#define	GCMD_SLOGAN				0x00e		//길드슬로건 /clan slotan 슬로건
+#define	GCMD_SLOGAN				0x00e		//Guild/clan slotan slogan slogan
 
-#define	GCMD_MEMBER_JOBnLEV		0x00f		//자신의 직업/레벨을 다른 멤버에게 통보( 로그인후/레벨업후/전직후에 전송 )
+#define	GCMD_MEMBER_JOBnLEV		0x00f		//Their job is to notify other members/level (after login/level up after/I, immediately after the transfer)
 
-//-- 서버 전용 타입...
+//-- Dedicated server type ...
 #define	GCMD_LOGIN				0x0f0
 #define	GCMD_LOGOUT				0x0f1
 #define	GCMD_CHAT				0x0f2
@@ -2399,44 +2617,52 @@ struct gsv_SET_NPC_SHOW : public t_PACKETHEADER {
 #define GCMD_CLANMARK_REGTIME	0x0f6
 
 
-struct cli_CLAN_COMMAND : public t_PACKETHEADER {
+struct cli_CLAN_COMMAND : public t_PACKETHEADER 
+{
 	BYTE	m_btCMD;
 } ;
-struct cli_CLAN_CREATE : public cli_CLAN_COMMAND {
+struct cli_CLAN_CREATE : public cli_CLAN_COMMAND 
+{
 	WORD	m_wMarkIDX[2];
 	// char	m_szName[];
 	// char m_szDesc[];
 } ;
-struct cli_CLAN_MEMBER_JOBnLEV : public cli_CLAN_COMMAND {
+struct cli_CLAN_MEMBER_JOBnLEV : public cli_CLAN_COMMAND 
+{
 	short	m_nLEVEL;
 	short	m_nJOB;
 } ;
-struct wsv_CLAN_MEMBER_JOBnLEV : public t_PACKETHEADER {
+struct wsv_CLAN_MEMBER_JOBnLEV : public t_PACKETHEADER 
+{
 	BYTE	m_btRESULT;
 	short	m_nLEVEL;
 	short	m_nJOB;
 	// char m_szCharNAME[]
 } ;
 
-//struct tag_CLAN_INFO {
+//struct tag_CLAN_INFO 
+//{
 //	short		m_nClanLEVEL;
 //	int			m_iClanSCORE;
-//	int			m_iClanRATE;	// 창고효율
+//	int			m_iClanRATE;	// Window efficiency
 //	__int64		m_biClanMONEY;
-//	char szName[];				이름
-//	char szDesc[];				슬로건 없으면 NULL
-//	char szAlliedGroup[]		동맹 이름 없으면 NULL
+//	char szName[];				Name
+//	char szDesc[];				The slogan does not exist, NULL
+//	char szAlliedGroup[]		The Alliance does not have a name for the NULL
 //} ;
 
 #define	MAX_CLAN_SKILL_SLOT		20
 #ifdef	MAX_CLAN_SKILL_SLOT
-	struct tagClanSKILL {
+	struct tagClanSKILL 
+	{
 		short	m_nSkillIDX;
-		DWORD	m_dwExpiredAbsSEC;	// 사용 만료 시간
-	//	short	m_nCount;			// 사용 가능 횟수 -> 누가 사용가능한 횟수?? 마스터만??
+		DWORD	m_dwExpiredAbsSEC;	// Use the expiration time
+	//	short	m_nCount;			// The number of available-the number of available?? who > Master only??
 	} ;
-	struct tagClanBIN {
-		union {
+	struct tagClanBIN 
+	{
+		union 
+		{
 			BYTE			m_pDATA[ 1 ];
 			tagClanSKILL	m_SKILL[ MAX_CLAN_SKILL_SLOT ];
 		} ;
@@ -2444,24 +2670,25 @@ struct wsv_CLAN_MEMBER_JOBnLEV : public t_PACKETHEADER {
 
 #endif
 
-struct tag_MY_CLAN : public tag_CLAN_ID {
-	int				m_iClanSCORE;		// 클랜 포인트
-	int				m_iClanRATE;		// 창고효율
+struct tag_MY_CLAN : public tag_CLAN_ID 
+{
+	int				m_iClanSCORE;		// Clan point
+	int				m_iClanRATE;		// Window efficiency
 	__int64			m_biClanMONEY;
-	short			m_nMemberCNT;		// 멤버 수
-	int				m_iClanCONT;		// 클랜 기여도
+	short			m_nMemberCNT;		// The number of members
+	int				m_iClanCONT;		// Clan contributions
 #ifdef	MAX_CLAN_SKILL_SLOT
-	tagClanBIN		m_ClanBIN;			// 클랜 바이너리 데이타..
+	tagClanBIN		m_ClanBIN;			// Clan binary data ...
 #endif
 
 #ifdef __CLAN_INFO_ADD
-	//          클랜 추가 변수 설정.        김영환 : 설정.
-	//          2006년 11월 22일
-	int             m_iRankPoint;       // 랭크 포인트 설정.
+	//          Clancy added parameter setting.        Azadeh: setting.
+	//          2006 November 22, 2009
+	int             m_iRankPoint;       // Rank points.
 
 
 #ifdef __EDIT_CLANDLG_CLANWAR
-	// (20061222:남병철) : 클랜전 보상 포인트 추가
+	// (20061222:Nam Byung Chul): clan I add reward points
 	int				m_iRewardPoint;
 #endif
 	
@@ -2473,15 +2700,17 @@ struct tag_MY_CLAN : public tag_CLAN_ID {
 	// char m_szClanMOTD[];
 } ;
 
-struct tag_CLAN_MEMBER {
+struct tag_CLAN_MEMBER 
+{
 	BYTE	m_btClanPOS;
-	BYTE	m_btChannelNO;		// 값이 0xff이면 접속하지 않는 유저다...
+	BYTE	m_btChannelNO;		// A value of 0xff indicates that the user does not access the [...]
 	int		m_iClanCONTRIBUTE;
 	short	m_nLEVEL;
 	short	m_nJOB;
 	// char m_szCharNAME[]
 } ;
-struct wsv_CLAN_COMMAND : public t_PACKETHEADER {
+struct wsv_CLAN_COMMAND : public t_PACKETHEADER 
+{
 	BYTE	m_btRESULT;
 	char	m_szStr[0];
 
@@ -2492,101 +2721,108 @@ struct wsv_CLAN_COMMAND : public t_PACKETHEADER {
 	*/
 
 	/*
-	// m_btRESULT == RESULT_CLAN_INFO 일경우
+	// m_btRESULT == RESULT_CLAN_INFO 일If
 	struct tag_CLAN_INFO
 	*/
 	/*
-	// m_btRESULT == RESULT_CLAN_ROSTER 일경우
+	// m_btRESULT == RESULT_CLAN_ROSTER If you are a
 	tag_CLAN_MEMBER	m_Members[ x ];
 	*/
 	/*
-	// m_btRESULT == RESULT_CLAN_KICK, RESULT_CLAN_POSITION 일경우
+	// m_btRESULT == RESULT_CLAN_KICK, RESULT_CLAN_POSITION If you are a
 	strujct {
-		char *m_szMember;	탈퇴자
-		char *m_szMaster;	탈퇴시킨자 == NULL일경우 스스로 나간것
+		char *m_szMember;	Unsubscribe now
+		char *m_szMaster;	If NULL == sleep that withdrawal, outgoing themselves
 	*/
 	/*
 	// m_btRESULT == RESULT_CLAN_JOINED
 	struct {
-		char *m_szMember;	신규 가입자
-		char *m_szMaster;	가입시킨자
+		char *m_szMember;	New subscribers
+		char *m_szMaster;	Join now
 	} ;
 	*/
 	/*
-	// m_btRESULT == RESULT_CLAN_SET :: 주변 사용자의 클랜 정보 설정
+	// m_btRESULT == RESULT_CLAN_SET :: Set the user's around the clan information
 	struct {
 		WORD		m_wObjIDX;
 		tag_CLAN_ID	;
 	} ;
 	*/
 } ;
-struct wsv_RESULT_CLAN_SET : public t_PACKETHEADER {
+struct wsv_RESULT_CLAN_SET : public t_PACKETHEADER 
+{
 	BYTE		m_btRESULT;
 	WORD		m_wObjIDX;
 	tag_CLAN_ID	m_ClanID;
 } ;
 
-#define	RESULT_CLAN_CREATE_OK			0x030		// 내가 창설 했다.
-#define RESULT_CLAN_JOIN_OK				0x031		// 내가 신규 가입됐다
+#define	RESULT_CLAN_CREATE_OK			0x030		// I had founded.
+#define RESULT_CLAN_JOIN_OK				0x031		// I was not registered?
 #define	RESULT_CLAN_DESTROY_OK			0x032
-#define RESULT_CLAN_MY_DATA				0x033		// 이미 가입된 클랜이 있는 상태에서 나의 클랜 정보
-#define	RESULT_CLAN_MOTD				0x034		// 클랜 공지 바뀌었다.
-#define	RESULT_CLAN_SET					0x035		// 주변 사용자의 클랜 정보 설정
-#define	RESULT_CLAN_SLOGAN				0x036		// 클랜 슬로건 바뀌었다
+#define RESULT_CLAN_MY_DATA				0x033		// If you have already joined clan is my clan Info
+#define	RESULT_CLAN_MOTD				0x034		// Clan notice.
+#define	RESULT_CLAN_SET					0x035		// Set the user's around the clan information
+#define	RESULT_CLAN_SLOGAN				0x036		// Clan slogan has been changed
 
 #define	RESULT_CLAN_CREATE_FAILED		0x041
 #define	RESULT_CLAN_CREATE_DUP_NAME		0x042
-#define	RESULT_CLAN_CREATE_NO_RIGHT		0x043		// 창설 권한 없다.
-#define	RESULT_CLAN_CREATE_NO_CONDITION	0x044		// 창설 조건 안맞는다.
+#define	RESULT_CLAN_CREATE_NO_RIGHT		0x043		// Established rights.
+#define	RESULT_CLAN_CREATE_NO_CONDITION	0x044		// Established condition.
 
-#define	RESULT_CLAN_DESTROYED			0x051		// 클랜 뽀개 졌다..
+#define	RESULT_CLAN_DESTROYED			0x051		// Clancy has been eating out ...
 #define	RESULT_CLAN_DESTROY_FAILED		0x052
-#define	RESULT_CLAN_DESTROY_NO_RIGHT	0x053		// 뽀갤 권한 없다.
+#define	RESULT_CLAN_DESTROY_NO_RIGHT	0x053		// Park a gallon, there is no authority.
 
-#define	RESULT_CLAN_JOIN_MEMBER			0x061		// 신규 가입했다 :: 전 클랜원 한테 전송..
+#define	RESULT_CLAN_JOIN_MEMBER			0x061		// New subscription:: ex-Klan won me a transfer ...
 #define	RESULT_CLAN_JOIN_FAILED			0x062
-#define	RESULT_CLAN_JOIN_NO_RIGHT		0x063		// 가입 시킬 권한이 없다.
-#define	RESULT_CLAN_JOIN_HAS_CLAN		0x064		// 다른 길드에 가입해 있다.
-#define	RESULT_CLAN_JOIN_MEMBER_FULL	0x065		// 멤버 꽉찼다.
+#define	RESULT_CLAN_JOIN_NO_RIGHT		0x063		// There is no authority to sign up.
+#define	RESULT_CLAN_JOIN_HAS_CLAN		0x064		// Join other guilds.
+#define	RESULT_CLAN_JOIN_MEMBER_FULL	0x065		// Full members.
 
-#define	RESULT_CLAN_INFO				0x071		// 클랜 정보
-#define	RESULT_CLAN_ROSTER				0x072		// 클랜 리스트
+#define	RESULT_CLAN_INFO				0x071		// Clan information
+#define	RESULT_CLAN_ROSTER				0x072		// Clan list
 
-#define	RESULT_CLAN_MEMBER_LOGIN		0x073		// 전체에게 보내지는 멤버 로그인
-#define	RESULT_CLAN_MEMBER_LOGOUT		0x074		// 전체에게 보내지는 멤버 로그아웃
-#define	RESULT_CLAN_MEMBER_POSITION		0x075		// 전체에게 보내지는 멤버 직위조절
+#define	RESULT_CLAN_MEMBER_LOGIN		0x073		// Total sent to Member login
+#define	RESULT_CLAN_MEMBER_LOGOUT		0x074		// Total members sent to log out
+#define	RESULT_CLAN_MEMBER_POSITION		0x075		// Adjust the position of the members sent to the entire
 
-#define	RESULT_CLAN_KICK				0x081		// 클랜에서 추방됨
-#define	RESULT_CLAN_QUIT				0x082		// 소속 클랜에서 삭제됨( 클랜변수 초기화 )
-#define	RESULT_CLAN_POSITION			0x083		// 클랜에서의 등급이 조정됐다.
-#define	RESULT_CLAN_MEMBER_JOBnLEV		0x084		// 로그인된 멤버의 레벨/직업
+#define	RESULT_CLAN_KICK				0x081		// Clan banished from as
+#define	RESULT_CLAN_QUIT				0x082		// Deleted from the clan of belonging (clan variable initialization)
+#define	RESULT_CLAN_POSITION			0x083		// Clancy was a rating of tuning in.
+#define	RESULT_CLAN_MEMBER_JOBnLEV		0x084		// The level of the Member/job logging
 
 
-// m_dwClanID의 클랜 마크를 서버에 요청
-struct cli_CLANMARK_REQ	: public t_PACKETHEADER {
+// m_dwClanID The request to the server, the clan of the mark
+struct cli_CLANMARK_REQ	: public t_PACKETHEADER 
+{
 	DWORD	m_dwClanID;
 } ;
-// m_btMARK데이타를 자신의 클랜 마크로 설정
-struct cli_CLANMARK_SET : public t_PACKETHEADER {
+// m_btMARK Data set as their clan
+struct cli_CLANMARK_SET : public t_PACKETHEADER 
+{
 	WORD	m_wMarkCRC16;
 //	BYTE	m_btMARK[ 0 ];
 } ;
-// m_dwClanID클랜의 클랜마크 데이타
-#define	RESULT_CLANMARK_TOO_MANY_UPDATE		0x0001	// 마크 갱신은 일정시간 후에 해야 한다...
-#define	RESULT_CLANMARK_DB_ERROR			0x0002	// 디비 갱신 오류
-#define	RESULT_CLANMAKR_SP_ERROR			0x0003	// 디비 SP 오류
-struct wsv_CLANMARK_REPLY : public t_PACKETHEADER {
+// m_dwClanID Clancy's clan mark data
+#define	RESULT_CLANMARK_TOO_MANY_UPDATE		0x0001	// Mark the update should be in after a period of time ...
+#define	RESULT_CLANMARK_DB_ERROR			0x0002	// D. non-renewal errors
+#define	RESULT_CLANMAKR_SP_ERROR			0x0003	// D. non-SP errors
+struct wsv_CLANMARK_REPLY : public t_PACKETHEADER 
+{
 	DWORD		m_dwClanID;
-	union {
+	union 
+	{
 		WORD	m_wMarkCRC16;
-		WORD	m_wFailedReason;	// m_dwClanID == 0 일경우 실패 원인 들어 있음.
+		WORD	m_wFailedReason;	// m_dwClanID == 0 If you fail in the cause.
 	} ;
 //	BYTE	m_btMARK[ 0 ];
 } ;
 
-struct cli_CLANMARK_REG_TIME : public t_PACKETHEADER {
+struct cli_CLANMARK_REG_TIME : public t_PACKETHEADER 
+{
 } ;
-struct wsv_CLANMARK_REG_TIME : public t_PACKETHEADER {
+struct wsv_CLANMARK_REG_TIME : public t_PACKETHEADER 
+{
 	WORD	m_wYear;
 	BYTE	m_btMon;
 	BYTE	m_btDay;
@@ -2595,57 +2831,62 @@ struct wsv_CLANMARK_REG_TIME : public t_PACKETHEADER {
 	BYTE	m_btSec;
 } ;
 
-struct gsv_CHEAT_CODE : public t_PACKETHEADER {
+struct gsv_CHEAT_CODE : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	char	m_szCheatCODE[0];
 } ;
 
 
 /*
-	아이템 제조 관련...
+	Manufacturing-related items ...
 */
 #define	CREATE_ITEM_STEP	4
 struct cli_CREATE_ITEM_REQ : public t_PACKETHEADER 
 {
 #ifdef __MILEAGESKILL
-	WORD				m_wSkillSLOT; // 사용할 제조 스킬
+	WORD				m_wSkillSLOT; // Use manufacturing skills
 #else
 	BYTE				m_wSkillSLOT;
 #endif
-	char	m_cTargetItemTYPE;						// 제조할 아이템 타입( t_eITEM의 값 )
-	short	m_nTargetItemNO;						// 제조할 아이템 번호
-	short	m_nUseItemINV[ CREATE_ITEM_STEP ];		// 제조시 소모할 아이템 인벤토리 번호
-//	short	m_nUseItemCNT[ CREATE_ITEM_STEP ];		// 제조시 소모할 아이템 갯수
+	char	m_cTargetItemTYPE;						// The manufacture of the item type (the value of t_eITEM)
+	short	m_nTargetItemNO;						// Manufacturing item number
+	short	m_nUseItemINV[ CREATE_ITEM_STEP ];		// The factory-use items the inventory number
+//	short	m_nUseItemCNT[ CREATE_ITEM_STEP ];		// Number of items use the factory
 } ;
-struct gsv_CREATE_ITEM_REPLY : public t_PACKETHEADER {
-	BYTE		m_btRESULT;								// 결과...
-	short		m_nStepORInvIDX;						// 제조 실패시 실패된 스텝, 성공시 들어간 인벤토리번호
-	short		m_nPRO_POINT[ CREATE_ITEM_STEP ];		// 진행 포인트
-	tagBaseITEM	m_CreatedITEM;							// 제조 성공시 제조된 아이템
+struct gsv_CREATE_ITEM_REPLY : public t_PACKETHEADER 
+{
+	BYTE		m_btRESULT;								// The result ...
+	short		m_nStepORInvIDX;						// Manufacturing went a step failed, successful failure: the inventory number
+	short		m_nPRO_POINT[ CREATE_ITEM_STEP ];		// Progress point
+	tagBaseITEM	m_CreatedITEM;							// Manufacturing success: manufactured items
 } ;
-#define	RESULT_CREATE_ITEM_SUCCESS				0x00	// 성공
-#define	RESULT_CREATE_ITEM_FAILED				0x01	// 실패
-#define	RESULT_CREATE_ITEM_INVALID_CONDITION	0x02	// 마나가 부족하다.
-#define	RESULT_CREATE_ITEM_NEED_ITEM			0x03	// 소모될 아이템이 부족하다
-#define	RESULT_CREATE_ITEM_INVALID_ITEM			0x04	// 소모될 아이템이 부적합하다
-#define	RESULT_CREATE_ITEM_NEED_SKILL_LEV		0x05	// 제조 스킬 레벨이 부족하다
+#define	RESULT_CREATE_ITEM_SUCCESS				0x00	// Success
+#define	RESULT_CREATE_ITEM_FAILED				0x01	// Failure
+#define	RESULT_CREATE_ITEM_INVALID_CONDITION	0x02	// Mana is scarce.
+#define	RESULT_CREATE_ITEM_NEED_ITEM			0x03	// The lack of an item be consumed
+#define	RESULT_CREATE_ITEM_INVALID_ITEM			0x04	// Be consumed items is invalid
+#define	RESULT_CREATE_ITEM_NEED_SKILL_LEV		0x05	// Manufacturing skill level is insufficient
 
-//struct cli_CREATE_ITEM_EXP_REQ : public t_PACKETHEADER {
+//struct cli_CREATE_ITEM_EXP_REQ : public t_PACKETHEADER 
+//{
 //} ;
 
-#define	REPORT_ITEM_CREATE_START				0x00	// 아이템 제조 시작
-#define	REPORT_ITEM_CREATE_SUCCESS				0x01	// 아이템 제조 성공
-#define	REPORT_ITEM_CREATE_FAILED				0x02	// 아이템 제조 실패
-#define	REPORT_ITEM_UPGRADE_START				0x03	// 아이템 제련 시작
-#define	REPORT_ITEM_UPGRADE_SUCCESS				0x04	// 아이템 제련 성공
-#define	REPORT_ITEM_UPGRADE_FAILED				0x05	// 아이템 제련 실패
+#define	REPORT_ITEM_CREATE_START				0x00	// Started the manufacture of the item
+#define	REPORT_ITEM_CREATE_SUCCESS				0x01	// Item manufacturing success
+#define	REPORT_ITEM_CREATE_FAILED				0x02	// Item manufacturing failures
+#define	REPORT_ITEM_UPGRADE_START				0x03	// Item No. started drilling
+#define	REPORT_ITEM_UPGRADE_SUCCESS				0x04	// Item No. drill success
+#define	REPORT_ITEM_UPGRADE_FAILED				0x05	// Item smelter failed
 
-struct cli_ITEM_RESULT_REPORT : public t_PACKETHEADER {
+struct cli_ITEM_RESULT_REPORT : public t_PACKETHEADER 
+{
 	BYTE	m_btREPORT;
 	BYTE	m_btItemType;
 	short	m_nItemNO;
 } ;
-struct gsv_ITEM_RESULT_REPORT : public t_PACKETHEADER {
+struct gsv_ITEM_RESULT_REPORT : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	BYTE	m_btREPORT;
 	BYTE	m_btItemType;
@@ -2653,85 +2894,101 @@ struct gsv_ITEM_RESULT_REPORT : public t_PACKETHEADER {
 } ;
 
 //---------------------------------------------------------
-#define	CRAFT_GEMMING_REQ			0x01			// 재밍
-#define CRAFT_BREAKUP_USE_SKILL		0x02			// 스킬로 분해
-#define CRAFT_BREAKUP_FROM_NPC		0x03			// npc 통해 분해
-#define	CRAFT_UPGRADE_USE_SKILL		0x04			// 스킬로 재련
-#define	CRAFT_UPGRADE_FROM_NPC		0x05			// npc 통해 재련
-#define CRAFT_DRILL_SOCKET_FROM_ITEM		0x06			//드릴아이템 사용으로 소켓생성..
-#define CRAFT_DRILL_SOCKET_FROM_NPC		0x07			//드릴아이템 사용으로 소켓생성..
+#define	CRAFT_GEMMING_REQ			0x01			// Re-Ming
+#define CRAFT_BREAKUP_USE_SKILL		0x02			// Broken down into skills
+#define CRAFT_BREAKUP_FROM_NPC		0x03			// Npc through decomposition
+#define	CRAFT_UPGRADE_USE_SKILL		0x04			// As a skill drill
+#define	CRAFT_UPGRADE_FROM_NPC		0x05			// Npc through Jae-ryeon
+#define CRAFT_DRILL_SOCKET_FROM_ITEM		0x06	// Create a socket with the use of the drill items. ..
+#define CRAFT_DRILL_SOCKET_FROM_NPC		0x07		// Create a socket with the use of the drill items. ..
 
 
-struct cli_CRAFT_ITEM_REQ : public t_PACKETHEADER {
+struct cli_CRAFT_ITEM_REQ : public t_PACKETHEADER 
+{
 	BYTE	m_btTYPE;
 } ;
-struct cli_CRAFT_GEMMING_REQ : public cli_CRAFT_ITEM_REQ {
-	BYTE	m_btEquipInvIDX;						// 장착된 무기 아이템 인벤 번호
-	BYTE	m_btJemInvIDX;							// 보석 아이템 인벤 번호
+struct cli_CRAFT_GEMMING_REQ : public cli_CRAFT_ITEM_REQ 
+{
+	BYTE	m_btEquipInvIDX;						// The weapon item equipped with Ben No.
+	BYTE	m_btJemInvIDX;							// A number of the jewellery item Ben
 } ;
-struct cli_CRAFT_BREAKUP_REQ : public cli_CRAFT_ITEM_REQ {
-	short	m_nSkillSLOTorNpcIDX;					// 사용 스킬슬롯 번호또는 npc번호
-	BYTE	m_btTargetInvIDX;						// 분리할 아이템 인벤 번호
+struct cli_CRAFT_BREAKUP_REQ : public cli_CRAFT_ITEM_REQ 
+{
+	short	m_nSkillSLOTorNpcIDX;					// Use the slot number or the skill npc number
+	BYTE	m_btTargetInvIDX;						// The number of the item that you want to detach
 } ;
 #define	UPGRADE_ITEM_STEP		3
-struct cli_CRAFT_UPGRADE_REQ : public cli_CRAFT_ITEM_REQ {
-	short	m_nSkillSLOTorNpcIDX;					// 사용 스킬슬롯 번호또는 npc번호
-	BYTE	m_btTargetInvIDX;						// 재련할 아이템 인벤 번호
-	BYTE	m_btUseItemINV[ UPGRADE_ITEM_STEP ];	// 재련시 소모할 아이템 인벤토리 번호
+struct cli_CRAFT_UPGRADE_REQ : public cli_CRAFT_ITEM_REQ 
+{
+	short	m_nSkillSLOTorNpcIDX;					// Use the slot number or the skill npc number
+	BYTE	m_btTargetInvIDX;						// Re do item drilling Ben No.
+	BYTE	m_btUseItemINV[ UPGRADE_ITEM_STEP ];	// Ash when the item inventory number use
 } ;
 
 
-struct cli_CRAFT_DRILL_SOCKET_REQ : public cli_CRAFT_ITEM_REQ {
-	short	m_nUseInvSLOTorNpcIDX;			//사용할 드릴아이템 인벤번호 또는 npc번호
-	BYTE	m_btTargetInvIDX;						//대상 아이템 인벤 번호
+struct cli_CRAFT_DRILL_SOCKET_REQ : public cli_CRAFT_ITEM_REQ 
+{
+	short	m_nUseInvSLOTorNpcIDX;			//Npc number drill items use Ben number or
+	BYTE	m_btTargetInvIDX;						//The number of the target item, Ben
 } ;
 
 
 
 #define	CRAFT_GEMMING_SUCCESS		0x01
-#define	CRAFT_GEMMING_NEED_SOCKET	0x02	// 소켓없다.
-#define	CRAFT_GEMMING_USED_SOCKET	0x03	// 재밍된 경우등....
+#define	CRAFT_GEMMING_NEED_SOCKET	0x02	// Socket.
+#define	CRAFT_GEMMING_USED_SOCKET	0x03	// If the re-dimming etc. ...
 
-#define	CRAFT_BREAKUP_SUCCESS_GEM	0x04	// 보석 분리 성공
-#define	CRAFT_BREAKUP_DEGRADE_GEM	0x05	// 보석 분리 성공, 보석등급 강등
-#define	CRAFT_BREAKUP_CLEARED_GEM	0x06	// 보석 분리 성공, 보석 삭제됨
+#define	CRAFT_BREAKUP_SUCCESS_GEM	0x04	// Jewelry separate success
+#define	CRAFT_BREAKUP_DEGRADE_GEM	0x05	// Jewelry separate success, gem-grade demotion.
+#define	CRAFT_BREAKUP_CLEARED_GEM	0x06	// Jewelry separate success, jewelry has been cleared.
 
-#define	CRAFE_BREAKUP_SUCCESS		0x07	// 아이템 분해 성공
-#define CRAFE_INVALID_ITEM				0x08 //유효하지 않은 아이템
-#define CRAFE_NOT_ENOUGH_MONEY		0x09  //돈불충분
-#define CRAFE_NOT_ENOUGH_MP             0x0A  //MP 불충분
-
-
-#define	CRAFT_UPGRADE_SUCCESS		0x10	// 재련 성공
-#define	CRAFT_UPGRADE_FAILED		0x11	// 재련 실패
-#define	CRAFT_UPGRADE_INVALID_MAT	0x12	// 재료 아이템이 잘못됐다.
-#define CRAFT_GIFTBOX_SUCCESS		0X13	// 선물 상자 분해
-
-//소켓드릴 시스템..                   허재영 (2005.10.27)
-#define CRAFT_DRILL_SOCKET_SUCCESS	0x20    //소캣 생성 성공
-#define CRAFT_DRILL_CLEAR_USEITME      0x21    // 드릴 아이템만 사라졌다..
-#define CRAFE_DRILL_INVALID_USEITEM   0x22    //드릴 아이템이 아니다.
-#define	CRAFT_DRILL_EXIST_SOCKET	        0x23	  // 소켓이 이미 있다.
-#define	CRAFT_DRILL_INVALID_TITEM	    0x24	  //소켓을뚫을 수 없는 아이템이다...
+#define	CRAFE_BREAKUP_SUCCESS		0x07	// Items disassembled success
+#define CRAFE_INVALID_ITEM				0x08 //Invalid item
+#define CRAFE_NOT_ENOUGH_MONEY		0x09  //Don insufficiency
+#define CRAFE_NOT_ENOUGH_MP             0x0A  //MP Insufficiency
 
 
+#define	CRAFT_UPGRADE_SUCCESS		0x10	// Re drilling success
+#define	CRAFT_UPGRADE_FAILED		0x11	// Re drill fail
+#define	CRAFT_UPGRADE_INVALID_MAT	0x12	// Material items was wrong.
+#define CRAFT_GIFTBOX_SUCCESS		0X13	// Gift box decomposition
 
-struct gsv_CRAFT_ITEM_REPLY : public t_PACKETHEADER {
+//Socket drill system. ..                   Heo Jae-Young (2005.10.27)
+#define CRAFT_DRILL_SOCKET_SUCCESS	0x20    //Small cat creation success
+#define CRAFT_DRILL_CLEAR_USEITME      0x21    // Drill items disappeared ...
+#define CRAFE_DRILL_INVALID_USEITEM   0x22    //Drill items.
+#define	CRAFT_DRILL_EXIST_SOCKET	        0x23	  // The socket is already in.
+#define	CRAFT_DRILL_INVALID_TITEM	    0x24	  //Sockets, impenetrable items ...
+
+struct tmp_InvItem
+{
+	byte py_Slot;
+	short py_ItemType;
+	short py_ItemNum;
+	byte py_ItemCnt;
+};
+
+struct gsv_CRAFT_ITEM_REPLY : public t_PACKETHEADER 
+{
 	BYTE			m_btRESULT;
-	BYTE			m_btOutCNT;			// 변경된 아이템 갯수
-	tag_SET_INVITEM	m_sInvITEM[ 0 ];	// 변경된 갯수 만큼 들어 있다... 
-										// 예외) CRAFT_UPGRADE_SUCCESS, CRAFT_UPGRADE_FAILED 일경우
-										// m_sInvITEM[ m_btOutCNT-1 ].m_iQuantity에 성공도 계산된값이 들어있음
+	BYTE			m_btOutCNT;			// Change the number of items
+	//tag_SET_INVITEM	m_sInvITEM[ 0 ];	// For as long as the number is changed ... 
+										// CRAFT_UPGRADE_SUCCESS, CRAFT_UPGRADE_FAILED, exception) if
+										// m_sInvITEM[ m_btOutCNT-1 ].m_iQuantity It also contains the calculated value of the success in the
+	//PY: trying this instead. The above code doesn't seem to transfer the itemtype and number
+	tmp_InvItem		m_sInvITEM[ 0 ];
 } ;
 
 
 /*
-///	퀘스트 관련 ...
+///	Quest related ...
 */
-struct cli_QUEST_REQ : public t_PACKETHEADER {
+struct cli_QUEST_REQ : public t_PACKETHEADER 
+{
 	BYTE	m_btTYPE;
 	BYTE	m_btQuestSLOT;
-	union { 
+	union 
+	{ 
 		int			m_iQuestID;
 		t_HASHKEY	m_TriggerHash;
 	} ;
@@ -2743,10 +3000,12 @@ struct cli_QUEST_REQ : public t_PACKETHEADER {
 #define	TYPE_QUEST_REQ_DO_TRIGGER				0x03
 
 
-struct gsv_QUEST_REPLY : public t_PACKETHEADER {
+struct gsv_QUEST_REPLY : public t_PACKETHEADER 
+{
 	BYTE	m_btResult;
 	BYTE	m_btQuestSLOT;
-	union {
+	union 
+	{
 		int			m_iQuestID;
 		t_HASHKEY	m_TriggerHash;
 	} ;
@@ -2755,76 +3014,86 @@ struct gsv_QUEST_REPLY : public t_PACKETHEADER {
 #define	RESULT_QUEST_REPLY_ADD_FAILED			0x02
 #define	RESULT_QUEST_REPLY_DEL_SUCCESS			0x03
 #define	RESULT_QUEST_REPLY_DEL_FAILED			0x04
-#define	RESULT_QUEST_REPLY_TRIGGER_SUCCESS		0x05		// 이 패킷을 받으면 클라이언트에서도 보상을 적용한다.
+#define	RESULT_QUEST_REPLY_TRIGGER_SUCCESS		0x05		// This packet is received, the client applies the compensation.
 #define	RESULT_QUEST_REPLY_TRIGGER_FAILED		0x06
 
-// 서버가 클라이언트에게 NPC가 갖고 있는 이벤트를 체크해 봐라....
-struct gsv_CHECK_NPC_EVENT : public t_PACKETHEADER {
+// The server to the client, check the events in the NPC have and voila ....
+struct gsv_CHECK_NPC_EVENT : public t_PACKETHEADER 
+{
 	short	m_nNpcIDX;
 } ;
 
 
-//--------------------------- Messenger 관련 패킷
-// 패킷 타입은 CLI_MESSENGER, WSV_MESSENGER로 통일, 세부 타입 m_btCMD에 의해 패킷 구조가 결정됨.
-#define	FRIEND_STATUS_NORMAL		0x000		// 일반
-#define FRIEND_STATUS_HUNT			0x001		// 사냥중
-#define	FRIEND_STATUS_STORE			0x002		// 장사중
-#define	FRIEND_STATUS_QUEST			0x003		// 퀘스트중
-#define	FRIEND_STATUS_EAT			0x004		// 식사중
-#define	FRIEND_STATUS_REST			0x005		// 휴식중
-#define	FRIEND_STATUS_ONLINE		0x007		// 접속됨		: 친구목록의 m_dwUserTAG가 접속했다.
-#define	FRIEND_STATUS_OFFLINE		0x008		// 접속끊김		: 친구목록의 m_dwUserTAG가 접속끊김
-#define	FRIEND_STATUS_REFUSE_MSG	0x009		// 모든 메세지 거부
+//--------------------------- Messenger Related packet
+// Packet types are CLI_MESSENGER, m_btCMD, WSV_MESSENGER with type determined by the packet structure.
+#define	FRIEND_STATUS_NORMAL		0x000		// General
+#define FRIEND_STATUS_HUNT			0x001		// During the hunt
+#define	FRIEND_STATUS_STORE			0x002		// Among the deals
+#define	FRIEND_STATUS_QUEST			0x003		// Quest of the
+#define	FRIEND_STATUS_EAT			0x004		// Table
+#define	FRIEND_STATUS_REST			0x005		// During a break
+#define	FRIEND_STATUS_ONLINE		0x007		// Access: m_dwUserTAG is in the list, access your friends.
+#define	FRIEND_STATUS_OFFLINE		0x008		// Disconnection: m_dwUserTAG of the list is a friend of disconnection
+#define	FRIEND_STATUS_REFUSE_MSG	0x009		// All the refuse message
 
-#define	FRIEND_STATUS_REFUSED		0x080		// 내 대화를 차단했다
-#define	FRIEND_STATUS_DELETED		0x081		// 나를 친구목록에서 삭제했다
-
-
-#define	MSGR_CMD_APPEND_REQ			0x001		// 친구 추가 요청	: 대상은 반드시 접속해 있어야 함
-#define MSGR_CMD_APPEND_ACCEPT		0x002		// 친구 추가 요청 승낙
-#define	MSGR_CMD_APPEND_REJECT		0x003		// 친구 추가 요청 거절
-#define	MSGR_CMD_NOT_FOUND			0x004		// 친구 추가 실패(대상이 접속이 끊긴경우등...)
-#define	MSGR_CMD_DELETE				0x005		// 친구 삭제		: 목록중에서 m_dwUserTAG를 삭제..
-#define	MSGR_CMD_LIST				0x006		// 친구 리스트	: 친구목록 요구
-#define	MSGR_CMD_REFUSE				0x007		// 메시지 차단	: 목록중에서 m_dwUserTAG의 메세지 거부
-#define	MSGR_CMD_CHANGE_STATUS		0x008		// 상태 변경
-
-#define	MSGR_CMD_LOGIN				0x080		// 서버에서만 사용
-#define	MSGR_CMD_LOGOUT				0x081		// 서버에서만 사용
+#define	FRIEND_STATUS_REFUSED		0x080		// My conversation was blocked
+#define	FRIEND_STATUS_DELETED		0x081		// I had to delete it from the list of friends
 
 
-struct tag_MCMD_HEADER : public t_PACKETHEADER {
+#define	MSGR_CMD_APPEND_REQ			0x001		// The target must be request: Add friends connect
+#define MSGR_CMD_APPEND_ACCEPT		0x002		// Add friend request acceptance
+#define	MSGR_CMD_APPEND_REJECT		0x003		// Refuse the request to add a friend
+#define	MSGR_CMD_NOT_FOUND			0x004		// Failed to add a friend (if the target is access etc. ..)
+#define	MSGR_CMD_DELETE				0x005		// Delete: delete the m_dwUserTAG from the list of friends and. ..
+#define	MSGR_CMD_LIST				0x006		// Friends list: ask your friends list
+#define	MSGR_CMD_REFUSE				0x007		// Block messages: a message of rejection from the list of m_dwUserTAG
+#define	MSGR_CMD_CHANGE_STATUS		0x008		// Status change
+
+#define	MSGR_CMD_LOGIN				0x080		// Use only on the server
+#define	MSGR_CMD_LOGOUT				0x081		// Use only on the server
+
+
+struct tag_MCMD_HEADER : public t_PACKETHEADER 
+{
 	BYTE	m_btCMD;
 } ;
-struct cli_MCMD_APPEND_REQ : public tag_MCMD_HEADER {		// 친구 추가 요청할때
+struct cli_MCMD_APPEND_REQ : public tag_MCMD_HEADER 
+{		// Add friend requests
 	char	m_szName[0];
 } ;
-struct cli_MCMD_APPEND_REPLY : public tag_MCMD_HEADER {		// 친구 추가 요청에 대한 응답
+struct cli_MCMD_APPEND_REPLY : public tag_MCMD_HEADER 
+{		// It is a response to a request to add a friend
 	WORD	m_wUserIDX;
 } ;
-struct cli_MCMD_TAG : public tag_MCMD_HEADER {				// 삭제, 차단 요청
+struct cli_MCMD_TAG : public tag_MCMD_HEADER 
+{				// Delete, block requests
 	DWORD	m_dwUserTAG;
 } ;
-struct cli_MCMD_STATUS_REQ : public tag_MCMD_HEADER {		// 내 상태 변경 요청
+struct cli_MCMD_STATUS_REQ : public tag_MCMD_HEADER 
+{		// My status change request
 	BYTE	m_btStatus;
 } ;
 
 
-struct wsv_MCMD_APPEND_REQ : public tag_MCMD_HEADER {		// 친구 추가 요청받았을때
+struct wsv_MCMD_APPEND_REQ : public tag_MCMD_HEADER 
+{		// When I received a request to add a friend
 	WORD	m_wUserIDX;
 	char	m_szName[0];
 } ;
-struct wsv_MCMD_APPEND_ACCEPT : public tag_MCMD_HEADER {	// 친구 추가 승낙일경우 리스트에 추가함
+struct wsv_MCMD_APPEND_ACCEPT : public tag_MCMD_HEADER 
+{	// If you add it to the list of additional consent, friends
 	DWORD	m_dwUserTAG;
 	BYTE	m_btStatus;
 	char	m_szName[0];
 } ;
-struct wsv_MCMD_STATUS_REPLY : public tag_MCMD_HEADER {		// 서버에서의 응답:: m_dwUserTAG상태 변경 통보
+struct wsv_MCMD_STATUS_REPLY : public tag_MCMD_HEADER 
+{		// Server response from: m_dwUserTAG state change notification
 	DWORD	m_dwUserTAG;
 	BYTE	m_btStatus;
 } ;
 
-struct wsv_MCMD_LIST : public tag_MCMD_HEADER {			// 친구 목록
+struct wsv_MCMD_LIST : public tag_MCMD_HEADER 
+{			// Friends list
 	BYTE	m_btFriendCNT;
 	/*
 	{
@@ -2835,19 +3104,21 @@ struct wsv_MCMD_LIST : public tag_MCMD_HEADER {			// 친구 목록
 } ;
 
 
-struct cli_MESSENGER_CHAT : public t_PACKETHEADER {
+struct cli_MESSENGER_CHAT : public t_PACKETHEADER 
+{
 	DWORD	m_dwUserTAG;
-	char	m_ToName[31];	// (20061102:남병철) : 1:1 채팅 받는사람 이름
+	char	m_ToName[31];	// (20061102: Nam Byung-Chul), 1:1 chat recipient name
 	char	m_szMSG[0];
 } ;
 
-struct wsv_MESSENGER_CHAT : public t_PACKETHEADER {
+struct wsv_MESSENGER_CHAT : public t_PACKETHEADER 
+{
 	DWORD	m_dwUserTAG;
-	char	m_FromName[31];	// (20061102:남병철) : 1:1 채팅 받는사람 이름
+	char	m_FromName[31];	// (20061102 :Nam Byung-Chul), 1:1 chat recipient name
 	char	m_szMSG[0];
 } ;
 
-//--------------------------- Chatting room 관련 패킷
+//--------------------------- Chatting room Related packet
 #define	CHAT_REQ_ROOM_LIST		0x001
 #define	CHAT_REQ_MAKE			0x002
 #define	CHAT_REQ_JOIN			0x003
@@ -2856,133 +3127,148 @@ struct wsv_MESSENGER_CHAT : public t_PACKETHEADER {
 
 #define	MAX_CHAT_ROOM_USERS		64
 
-struct tag_CHAT_HEADER : public t_PACKETHEADER {
+struct tag_CHAT_HEADER : public t_PACKETHEADER 
+{
 	BYTE	m_btCMD;
 } ;
 
-struct cli_CHAT_ROOM_MAKE : public tag_CHAT_HEADER {
+struct cli_CHAT_ROOM_MAKE : public tag_CHAT_HEADER 
+{
 	BYTE	m_btRoomTYPE;
-	BYTE	m_btMaxUSER;		// 최대 수용인원
+	BYTE	m_btMaxUSER;		// Maximum occupancy
 	// szTitle[]
 	// szPassword[]
 } ;
-struct cli_CHAT_ROOM_JOIN : public tag_CHAT_HEADER {
+struct cli_CHAT_ROOM_JOIN : public tag_CHAT_HEADER 
+{
 	BYTE	m_btRoomTYPE;
 	WORD	m_wRoomID;
 	// szPassword[]
 } ;
-struct cli_CHAT_ROOM_LIST : public tag_CHAT_HEADER {
+struct cli_CHAT_ROOM_LIST : public tag_CHAT_HEADER 
+{
 	BYTE	m_btRoomTYPE;
 	WORD	m_wFromRoomID;
 } ;
-struct cli_CHAT_ROOM_KICK : public tag_CHAT_HEADER {
+struct cli_CHAT_ROOM_KICK : public tag_CHAT_HEADER 
+{
 	t_HASHKEY	m_HashUSER;
 } ;
 
-struct tag_CHAT_ROOM {
+struct tag_CHAT_ROOM 
+{
 	BYTE	m_btRoomTYPE;
 	short	m_nRoomIDX;
 	char	m_cUserCNT;
 	// szTitle[]
 } ;
-struct wsv_CHAT_ROOM_USER : public tag_CHAT_HEADER {
+struct wsv_CHAT_ROOM_USER : public tag_CHAT_HEADER 
+{
 	WORD	m_wUserID;
 #ifdef __PRIVATECHAT2
-	DWORD	m_dwDBID;	// (20061101:남병철) : 채팅룸에서 개별 채팅 기능 추가
+	DWORD	m_dwDBID;	// (20061101: Nam Byung Chul): add individual chat rooms chat
 #endif	
 	// szName[]
 } ;
 /*
-struct wsv_CHAT_ROOM_JOIN : public tag_CHAT_HEADER {
-	WORD	m_wUserID;	// 자신
-	szRoomName[]		// 방이름
+struct wsv_CHAT_ROOM_JOIN : public tag_CHAT_HEADER 
+{
+	WORD	m_wUserID;	// Yourself
+	szRoomName[]		// Name of room
 	{
 		WORD	m_wUserID;
 		szUserName[];
 	} x ???
 } ;
 */
-struct wsv_CHAT_ROOM_LIST : public tag_CHAT_HEADER {
+struct wsv_CHAT_ROOM_LIST : public tag_CHAT_HEADER 
+{
 	char	m_cRoomCNT;
 	// tag_CHAT_ROOM[]
 } ;
 
-#define	CHAT_REPLY_ROOM_MAKED		0x001	// 만들기 성공			m_wUserID(자신)
+#define	CHAT_REPLY_ROOM_MAKED		0x001	// Creating success m_wUserID (myself)
 #define	CHAT_REPLY_MAKE_FAILED		0x002
 
-#define	CHAT_REPLY_ROOM_JOINED		0x010	// 참가 성공			wsv_CHAT_ROOM_JOIN[]
-#define	CHAT_REPLY_FULL_USERS		0x011	// 인원 만땅
-#define	CHAT_REPLY_INVALIED_PASS	0x012	// 비번 틀림
-#define CHAT_REPLY_ROOM_NOT_FOUND	0x013	// 방 없어 졌다
-#define CHAT_REPLY_USER_ADD			0x014	// 사용자 추가			m_wUserID, szName[]
-#define	CHAT_REPLY_KICKED			0x015	// 추방 당했다			m_wUserID
-#define CHAT_REPLY_USER_LEFT		0x016	// 방에서 나갔다.		m_wUserID
-#define	CHAT_REPLY_USER_LEFT_NAME	0x017	// 방에서 나갔다.		사용자 이름으로 탈퇴...
-#define CHAT_REPLY_MAKE_TITLE_DUP	0x018	// (20061027:남병철) : 방제 중복으로 방만들기 실패
+#define	CHAT_REPLY_ROOM_JOINED		0x010	// Participated in the successful wsv_CHAT_ROOM_JOIN []
+#define	CHAT_REPLY_FULL_USERS		0x011	// Personnel only land
+#define	CHAT_REPLY_INVALIED_PASS	0x012	// Must be off duty
+#define CHAT_REPLY_ROOM_NOT_FOUND	0x013	// The room was not
+#define CHAT_REPLY_USER_ADD			0x014	// In the add users m_wUserID, szName, []
+#define	CHAT_REPLY_KICKED			0x015	// Were deported m_wUserID
+#define CHAT_REPLY_USER_LEFT		0x016	// Went out of the room.		m_wUserID
+#define	CHAT_REPLY_USER_LEFT_NAME	0x017	// Went out of the room.		To unsubscribe the user name ...
+#define CHAT_REPLY_MAKE_TITLE_DUP	0x018	// (20061027: Nam Byung Chul): could not create the room to duplicate prevention
 
 #define	CHAT_REPLY_ROOM_LIST		0x020
 #define	CHAT_REPLY_ROOM_LIST_END	0x021
 
-struct cli_CHATROOM_MSG : public t_PACKETHEADER {
+struct cli_CHATROOM_MSG : public t_PACKETHEADER 
+{
 	char m_szMSG[0];
 } ;
-struct wsv_CHATROOM_MSG : public t_PACKETHEADER {
+struct wsv_CHATROOM_MSG : public t_PACKETHEADER 
+{
 	WORD m_wObjectID;
 	char m_szMSG[0];
 } ;
 
 
-//--------------------------- 쪽지 관련 패킷
-#define	MEMO_REQ_CONTENTS			0x001	// 수신된 전체 쪽지 내용 요구
-#define MEMO_REQ_SEND				0x002	// 쪽지 전송 요구
-#define MEMO_REQ_RECEIVED_CNT		0x003	// 보관된 쪽지 갯수 요구
+//--------------------------- Note related packet
+#define	MEMO_REQ_CONTENTS			0x001	// The complete contents of the note needs to receive
+#define MEMO_REQ_SEND				0x002	// Note transport needs
+#define MEMO_REQ_RECEIVED_CNT		0x003	// Number of request archived note
 
-struct cli_MEMO : public t_PACKETHEADER {
+struct cli_MEMO : public t_PACKETHEADER 
+{
 	BYTE m_btTYPE;
 	/*
-	struct tagReqMemoSend {
+	struct tagReqMemoSend 
+	{
 		// szTargetCHAR[]
-		// szMemoContent[]			// 255자 미만
+		// szMemoContent[]			// 255 Characters or less
 	} ;
 	*/
 } ;
 
-#define	MEMO_REPLY_RECEIVED_CNT			0x001	// 보관된 쪽지 갯수
-#define	MEMO_REPLY_CONTENTS				0x002	// 쪽지 내용들...
-#define	MEMO_REPLY_SEND_OK				0x003	// 전송 성공
-#define	MEMO_REPLY_SEND_INVALID_TARGET	0x004	// 대상 오류, 보내기 실패
-#define	MEMO_REPLY_SEND_NOT_EXIST		0x005	// 대상이 존제하지 않는다.
-#define	MEMO_REPLY_SEND_REFUSED			0x006	// 쪽지 수신 거부 상태로 보내기 실패
-#define MEMO_REPLY_SEND_FULL_MEMO		0x007	// 상대방 수신함이 꽉차서 보내기 실패
-#define MEMO_REPLY_SEND_INVALID_CONTENT	0x008	// 내용오류
+#define	MEMO_REPLY_RECEIVED_CNT			0x001	// Number of archived note
+#define	MEMO_REPLY_CONTENTS				0x002	// The contents of the note.
+#define	MEMO_REPLY_SEND_OK				0x003	// Transfer success
+#define	MEMO_REPLY_SEND_INVALID_TARGET	0x004	// Send your inquiry to the target error, failure
+#define	MEMO_REPLY_SEND_NOT_EXIST		0x005	// The subject of John j.
+#define	MEMO_REPLY_SEND_REFUSED			0x006	// Send your inquiry to the State fails, bouncing a note
+#define MEMO_REPLY_SEND_FULL_MEMO		0x007	// Failed to send the opponent received so this
+#define MEMO_REPLY_SEND_INVALID_CONTENT	0x008	// Content error
 struct wsv_MEMO : public t_PACKETHEADER {
 	BYTE	m_btTYPE;
-	short	m_nRecvCNT[0];						//  m_btTYPE == MEMO_REPLY_RECEIVED_CNT 일경우 받은 쪽지 갯수
+	short	m_nRecvCNT[0];						//  m_btTYPE == MEMO_REPLY_RECEIVED_CNT Number of messages when the
 	/*
-	struct tagReplyMemoCONTENTS {
-		// DWORD dwReceivedDATE			// classTIME::GetCurrentAbsSecond()함수로 얻어진 시간임.
-		// szFrom[]						// 보낸이
-		// szMemo[]						// 내용
+	struct tagReplyMemoCONTENTS 
+	{
+		// DWORD dwReceivedDATE			// classTIME::GetCurrentAbsSecond()Obtained as a function of time.
+		// szFrom[]						// Sent
+		// szMemo[]						// Content
 	} ;
 	*/
 } ;
 
 
-#define	REQ_MALL_ITEM_LIST					0x01	// 리스트 요청
-#define	REQ_MALL_ITEM_FIND_CHAR				0x02	// 케릭 이름 체크
-#define	REQ_MALL_ITEM_BRING					0x03	// 꺼내오기
-#define	REQ_MALL_ITEM_GIVE					0x04	// 선물하기
-struct cli_MALL_ITEM_REQ : public t_PACKETHEADER {
+#define	REQ_MALL_ITEM_LIST					0x01	// List request
+#define	REQ_MALL_ITEM_FIND_CHAR				0x02	// Jun'ya name check
+#define	REQ_MALL_ITEM_BRING					0x03	// To come out
+#define	REQ_MALL_ITEM_GIVE					0x04	// To present a
+struct cli_MALL_ITEM_REQ : public t_PACKETHEADER 
+{
 	BYTE	m_btReqTYPE;
-	short	m_nDupCnt;								// REQ_MALL_ITEM_BRING, REQ_MALL_ITEM_GIVE시에 갯수..
-	BYTE	m_btInvIDX[0];							// REQ_MALL_ITEM_GIVE일경우 0~39 사이의 인벤토리 번호
-	// char m_szCharName[]							// REQ_MALL_ITEM_BRING, REQ_MALL_ITEM_GIVE 요청시
-	// char m_szDesc[]								// REQ_MALL_ITEM_GIVE 요청시 덧붙일말(선물할때 메세지)::최대 80자
+	short	m_nDupCnt;								// REQ_MALL_ITEM_BRING, REQ_MALL_ITEM_GIVE Number at. ..
+	BYTE	m_btInvIDX[0];							// REQ_MALL_ITEM_GIVE A number from 0 to 39 when an inventory between
+	// char m_szCharName[]							// REQ_MALL_ITEM_BRING, REQ_MALL_ITEM_GIVE Request:
+	// char m_szDesc[]								// REQ_MALL_ITEM_GIVE Request message (when present):: up to 80 characters
 } ;
 
-#define	REPLY_MALL_ITEM_CHECK_CHAR_FOUND	0x01	// 대상 찾았다
-#define	REPLY_MALL_ITEM_CHECK_CHAR_NONE		0x02	// 대상 없다.
-#define	REPLY_MALL_ITEM_CHECK_CHAR_INVALID	0x03	// 자기 자신 계정등..잘못된 대상
+#define	REPLY_MALL_ITEM_CHECK_CHAR_FOUND	0x01	// Found the target
+#define	REPLY_MALL_ITEM_CHECK_CHAR_NONE		0x02	// There is no target.
+#define	REPLY_MALL_ITEM_CHECK_CHAR_INVALID	0x03	// His own account, etc. .. Invalid target
 #define	REPLY_MALL_ITEM_BRING_SUCCESS		0x04
 #define	REPLY_MALL_ITEM_BRING_FAILED		0x05
 #define	REPLY_MALL_ITME_GIVE_SUCCESS		0x06
@@ -2992,180 +3278,188 @@ struct cli_MALL_ITEM_REQ : public t_PACKETHEADER {
 #define	REPLY_MALL_ITEM_LIST_END			0x0a
 #define	REPLY_MALL_ITEM_NOT_FOUND			0x0b
 
-struct gsv_MALL_ITEM_REPLY : public t_PACKETHEADER {
+struct gsv_MALL_ITEM_REPLY : public t_PACKETHEADER 
+{
 	BYTE				m_btReplyTYPE;
-	BYTE				m_btCntOrIdx;				// 갯수 / 몰 인벤토리 인덱스
+	BYTE				m_btCntOrIdx;				// 2 bathrooms/Mall inventory index
 
-	/* MALL_ITEM_REQ_LIST 응답 :: m_nCntOrIdx 갯수만큼..
+	/* MALL_ITEM_REQ_LIST Reply: as long as the number of m_nCntOrIdx ..:
 		m_btReplyTYPE == REPLY_MALL_ITEM_LIST_START
 			m_btReplyTYPE == REPLY_MALL_ITEM_LIST_DATA
 			{
-				m_btCntOrIdx :: 갯수
+				m_btCntOrIdx :: 2 bathrooms
 				{
 					tagBaseITEM
-					szFrom[]		// 선물한 케릭
+					szFrom[]		// Presented by Rick Cain
 					if ( '\0' != szFrom[0] ) {
-						// szDesc[]	// 선물할때 메세지
-						// szTo[]	// 선물한 대상 케릭 이름
+						// szDesc[]	// When the gift message
+						// szTo[]	// The name of the target presented by Rick Cain
 					}
 				}
 			}
 		m_btReplyTYPE == REPLY_MALL_ITEM_LIST_END
 	*/
-	// REPLY_MALL_ITEM_BRING_SUCCESS응답 :: m_nCntOrIdx에는 몰 인벤토리 인덱스 m_BringITEM[0]에는 추가된 아이템
+	// REPLY_MALL_ITEM_BRING_SUCCESS Reply:: m_nCntOrIdx m_BringITEM the Mall inventory index [0] added items to the
 	union {
-		tag_SET_INVITEM	m_BringITEM[0];				// MALL_ITEM_REQ_BRING에 대한 응답(변경된 인벤토리 정보) :: m_btCntOrIdx의 몰 인벤토리 아이템이 이동
+		tag_SET_INVITEM	m_BringITEM[0];				// MALL_ITEM_REQ_BRING In response to (change the inventory information): m_btCntOrIdx go to the Mall of the inventory items
 	} ;
 } ;
 
 
 #define	BILLING_MSG_FREE_USER				0x00	//
 
-//#define	BILLING_MSG_FEE_TYPE1				0x01	//  /요금: 귀하는 정액요금제 사용자 입니다. (2004년06월01일)
-//#define	BILLING_MSG_FEE_TYPE2				0x02	//         귀하는 정량요금제 사용자 입니다. (18시간20분20초)
+//#define	BILLING_MSG_FEE_TYPE1				0x01	//  /Rates: flat fare system. (June 01, 2004)
+//#define	BILLING_MSG_FEE_TYPE2				0x02	//         Your quantitative plan. (18 hours 20 minutes 20 seconds)
 
-#define	BILLING_MSG_PAY_FU					0x01	// FU	로그인 된 사용자는 무료 아이디 사용자임을 나타낸다.
-#define	BILLING_MSG_PAY_FA					0x02	// FA	로그인 된 사용자는 개인정액 사용자임을 나타낸다.
-#define	BILLING_MSG_PAY_FAP					0x03	// FAP	로그인 된 사용자는 개인정액 사용자(플레티넘)임을 나타낸다.
-#define	BILLING_MSG_PAY_FQ					0x04	// FQ	로그인 된 사용자는 개인정량 사용자임을 나타낸다.
-#define	BILLING_MSG_PAY_GU					0x05	// GU	로그인 된 사용자는 게임방 사용자임을 나타낸다.
-#define	BILLING_MSG_PAY_GQ					0x06	// GQ	게임방에서 로그인을 시도하였으나 게임방의 과금기간(시간)이 만료되어 개인정량으로 로그인 되었음을 나타낸다.
-#define	BILLING_MSG_PAY_IQ					0x07	// IQ	게임방에서 로그인을 시도하였으나 이미 계약된 IP 숫자를 모두 사용하고 있어 개인정량으로 로그인 되었음을 나타낸다.
-
-
-#define	BILLING_MSG_KICKOUT_CHEAT_DETECT	0x21	// 스핵등 치트 발견되서 종료
-#define	BILLING_MSG_KICKOUT_ALREADY_LOGIN	0x22	// 이미 접속된 계정이라 접속 종료
-#define	BILLING_MSG_KICKOUT_TIME_EXPIRED	0x23	// 과금 시간 만료
-#define	BILLING_MSG_KICKOUT_DUP_LOGIN		0x24	// 다른 넘이 접속해서 접속 종료
-#define BILLING_MSG_KICKOUT_NO_RIGHT		0x25	// 접속할 권한이 없다...
-#define	BILLING_MSG_KICKOUT_OUT_OF_IP		0x26	// pc방에서 접속할수 있는 ip 갯수가 초과
-#define	BILLING_MSG_KICKOUT_EXIST_ACCOUNT	0x27	// 접속되어 있는 계정을 짤랐다.
-
-#define	BILLING_MSG_JPN_NEED_CHARGE			0x41	// 일본 과금 충전 필요!!! gsv_BILLING_MESSAGE2 패킷구조로 전송되고 m_dwPayFlag에 필요한 과금 플레그 셋팅되어 있음
-
-//#define	BILLING_MSG_TIME_ALERT				0x31	// 남은 시간 통보
-//#define	BILLING_MSG_TIME_EXPIRED			0x32	// <종료> 결제 시간이 다되어 게임을 종료합니다.
-
-#define	BILLING_MSG_TYPE_SET_DATE			0x81	// 만료 일자 설정	szMsg = 200309101025
-#define	BILLING_MSG_TYPE_SET_TIME			0x82	// 만료 시간 설정	szMsg = 남은분
-#define	BILLING_MSG_TYPE_TIME_ALERT			0x83	// 남은 시간 경고	szMsg = 남은분
-
-#define	BILLING_MSG_KICKOUT_TAIWAN			0xf0	// 대만 과금서버에서 짤라라 통보 받았을때..
-#define	BILLING_MSG_TYPE_TAIWAN				0xf1	// 대만 과금서버에서 받은 메세지.. 보여주기만 하면 됨
+#define	BILLING_MSG_PAY_FU					0x01	// FU	Indicates that the user ID of the logged in user for free.
+#define	BILLING_MSG_PAY_FA					0x02	// FA	Indicates that the user is logged in, the user your cum.
+#define	BILLING_MSG_PAY_FAP					0x03	// FAP	Logged in user is personal cum users (over-tea).
+#define	BILLING_MSG_PAY_FQ					0x04	// FQ	Indicates that the user is signed in, individual quantitative user.
+#define	BILLING_MSG_PAY_GU					0x05	// GU	Indicates that the user is signed in, games room with users.
+#define	BILLING_MSG_PAY_GQ					0x06	// GQ	Tried to sign, but in the games room games room billing period (time), this indicates that your stint as a login has expired.
+#define	BILLING_MSG_PAY_IQ					0x07	// IQ	The games room has already been contracted but try to log IP numbers I've been using all of the individual metering has been logged in with.
 
 
-struct gsv_BILLING_MESSAGE : public t_PACKETHEADER {
+#define	BILLING_MSG_KICKOUT_CHEAT_DETECT	0x21	// Hodges ended in nuclear, etc. is found cheating
+#define	BILLING_MSG_KICKOUT_ALREADY_LOGIN	0x22	// Already have an account with access to La exit
+#define	BILLING_MSG_KICKOUT_TIME_EXPIRED	0x23	// Billing time expiration
+#define	BILLING_MSG_KICKOUT_DUP_LOGIN		0x24	// Connect the other end of this over dial-in
+#define BILLING_MSG_KICKOUT_NO_RIGHT		0x25	// No permission to access ...
+#define	BILLING_MSG_KICKOUT_OUT_OF_IP		0x26	// Pc can access the room exceeded the bet by ip
+#define	BILLING_MSG_KICKOUT_EXIST_ACCOUNT	0x27	// Cut the connected account.
+
+#define	BILLING_MSG_JPN_NEED_CHARGE			0x41	// Japan billing charge needed!!! Gsv_BILLING_MESSAGE2 m_dwPayFlag packet structure and set the required billing in Flex
+
+//#define	BILLING_MSG_TIME_ALERT				0x31	// Time remaining notice
+//#define	BILLING_MSG_TIME_EXPIRED			0x32	// Is the payment time games < end > exit.
+
+#define	BILLING_MSG_TYPE_SET_DATE			0x81	// Set an expiration date, szMsg = 200,309,101,025
+#define	BILLING_MSG_TYPE_SET_TIME			0x82	// Set the expiration time, the remaining minutes szMsg =
+#define	BILLING_MSG_TYPE_TIME_ALERT			0x83	// Time remaining warning szMsg = remaining minutes
+
+#define	BILLING_MSG_KICKOUT_TAIWAN			0xf0	// Taiwan cut when he was informed of the billing server in the La. ..
+#define	BILLING_MSG_TYPE_TAIWAN				0xf1	// Taiwan received a message from the server to the billing ... All you need to do is show as
+
+
+struct gsv_BILLING_MESSAGE : public t_PACKETHEADER 
+{
 	BYTE	m_btTYPE;
 	// char m_szMsg[];
 } ;
-struct gsv_BILLING_MESSAGE2: public t_PACKETHEADER {
+struct gsv_BILLING_MESSAGE2: public t_PACKETHEADER 
+{
 	BYTE	m_btTYPE;
-	char	m_cFunctionTYPE;						// 소분류( A ~ R )
+	char	m_cFunctionTYPE;						// ISO classification (A-R)
 	DWORD	m_dwPayFlag;
 } ;
 
-// 한국 과금 결제 비트~
-#define	PAY_FLAG_KR_FU				(0x01 << BILLING_MSG_PAY_FU)	// FU	로그인 된 사용자는 무료 아이디 사용자임을 나타낸다.
-#define	PAY_FLAG_KR_FA				(0x01 << BILLING_MSG_PAY_FA)	// FA	로그인 된 사용자는 개인정액 사용자임을 나타낸다.
-#define	PAY_FLAG_KR_FAP				(0x01 << BILLING_MSG_PAY_FAP)	// FAP	로그인 된 사용자는 개인정액 사용자(플레티넘)임을 나타낸다.
-#define	PAY_FLAG_KR_FQ				(0x01 << BILLING_MSG_PAY_FQ)	// FQ	로그인 된 사용자는 개인정량 사용자임을 나타낸다.
-#define	PAY_FLAG_KR_GU				(0x01 << BILLING_MSG_PAY_GU)	// GU	로그인 된 사용자는 게임방 사용자임을 나타낸다.
-#define	PAY_FLAG_KR_GQ				(0x01 << BILLING_MSG_PAY_GQ)	// GQ	게임방에서 로그인을 시도하였으나 게임방의 과금기간(시간)이 만료되어 개인정량으로 로그인 되었음을 나타낸다.
-#define	PAY_FLAG_KR_IQ				(0x01 << BILLING_MSG_PAY_IQ)	// IQ	게임방에서 로그인을 시도하였으나 이미 계약된 IP 숫자를 모두 사용하고 있어 개인정량으로 로그인 되었음을 나타낸다.
+// South Korea billing payment bit ~
+#define	PAY_FLAG_KR_FU				(0x01 << BILLING_MSG_PAY_FU)	// FU	Indicates that the user ID of the logged in user for free.
+#define	PAY_FLAG_KR_FA				(0x01 << BILLING_MSG_PAY_FA)	// FA	Indicates that the user is logged in, the user your cum.
+#define	PAY_FLAG_KR_FAP				(0x01 << BILLING_MSG_PAY_FAP)	// FAP	Logged in user is personal cum users (over-tea).
+#define	PAY_FLAG_KR_FQ				(0x01 << BILLING_MSG_PAY_FQ)	// FQ	Indicates that the user is signed in, individual quantitative user.
+#define	PAY_FLAG_KR_GU				(0x01 << BILLING_MSG_PAY_GU)	// GU	Indicates that the user is signed in, games room with users.
+#define	PAY_FLAG_KR_GQ				(0x01 << BILLING_MSG_PAY_GQ)	// GQ	Tried to sign, but in the games room games room billing period (time), this indicates that your stint as a login has expired.
+#define	PAY_FLAG_KR_IQ				(0x01 << BILLING_MSG_PAY_IQ)	// IQ	The games room has already been contracted but try to log IP numbers I've been using all of the individual metering has been logged in with.
 
 // #define	PAY_FLAG_KR_PLATINUM		( FLAG_PAY_FAP|FLAG_PAY_GU )
 
-// 일본 과금 결제 비트~
-//#define	FLAG_JPAY_CHAT			(0x01 << 0)						// 0	Free Play 	캐릭작성, 채팅
-#define	PAY_FLAG_JP_BATTLE			(0x01 << 0)	 					// 1	Entry	배틀, 베이식 필드
-#define	PAY_FLAG_JP_COMMUNITY		(0x01 << 1)	 					// 2	Community	친구목록, 채팅방
-#define	PAY_FLAG_JP_TRADE			(0x01 << 2)	 					// 3	Trade	거래, 상점
-#define	PAY_FLAG_JP_STOCK_SPACE		(0x01 << 3)	 					// 4	Stock Space	뱅크
-#define	PAY_FLAG_JP_EXTRA_STOCK		(0x01 << 4)	 					// 5	Extra Stock	추가뱅크 스페이스
-#define	PAY_FLAG_JP_STARSHIP_PASS	(0x01 << 5)	 					// 6	Starship Pass	행성간 이동
-#define	PAY_FLAG_JP_DUNGEON_ADV		(0x01 << 6)	 					// 7	Dungeon Adventure	던젼 필드
-#define	PAY_FLAG_JP_EXTRA_CHAR		(0x01 << 7)	 					// 8	Extra Character	작성가능 캐릭 추가
+// Japan billing payment bit ~
+//#define	FLAG_JPAY_CHAT			(0x01 << 0)						// 0	Free Play 	Written by Carrick, chat
+#define	PAY_FLAG_JP_BATTLE			(0x01 << 0)	 					// 1	Entry	Battle, Bay expression fields
+#define	PAY_FLAG_JP_COMMUNITY		(0x01 << 1)	 					// 2	Community	Friends list, chat room
+#define	PAY_FLAG_JP_TRADE			(0x01 << 2)	 					// 3	Trade	Deals, shop
+#define	PAY_FLAG_JP_STOCK_SPACE		(0x01 << 3)	 					// 4	Stock Space	Bank
+#define	PAY_FLAG_JP_EXTRA_STOCK		(0x01 << 4)	 					// 5	Extra Stock	Extra Bank space
+#define	PAY_FLAG_JP_STARSHIP_PASS	(0x01 << 5)	 					// 6	Starship Pass	Interplanetary move
+#define	PAY_FLAG_JP_DUNGEON_ADV		(0x01 << 6)	 					// 7	Dungeon Adventure	Dungeon field
+#define	PAY_FLAG_JP_EXTRA_CHAR		(0x01 << 7)	 					// 8	Extra Character	It is possible to write Carrick added
 
-#define	PAY_FLAG_JP_ALL				(0xff << 0)						//      모든 과금 결제~
+#define	PAY_FLAG_JP_ALL				(0xff << 0)						//      All billing payment ~
 
 
-// 과금형태에 따라 플레이 가능여부를 체크할 비트...
-// 한국 과금중 FLAG_PAY_FAP,FLAG_PAY_GU의 경우는 아래 모든 비트 on 
-// 이외 한국 과금은 PLAY_FLAG_EXTRA_STOCK, PLAY_FLAG_EXTRA_CHAR 비트 off
-#define	PLAY_FLAG_BATTLE			(0x01 << 0)	 					// 1	Entry	배틀, 베이식 필드
-#define	PLAY_FLAG_COMMUNITY			(0x01 << 1)	 					// 2	Community	친구목록, 채팅방
-#define	PLAY_FLAG_TRADE				(0x01 << 2)	 					// 3	Trade	거래, 상점
-#define	PLAY_FLAG_STOCK_SPACE		(0x01 << 3)	 					// 4	Stock Space	뱅크
-#define	PLAY_FLAG_EXTRA_STOCK		(0x01 << 4)	 					// 5	Extra Stock	추가뱅크 스페이스
-#define	PLAY_FLAG_STARSHIP_PASS		(0x01 << 5)	 					// 6	Starship Pass	행성간 이동
-#define	PLAY_FLAG_DUNGEON_ADV		(0x01 << 6)	 					// 7	Dungeon Adventure	던젼 필드
-#define	PLAY_FLAG_EXTRA_CHAR		(0x01 << 7)	 					// 8	Extra Character	작성가능 캐릭 추가
+// Depending on your type of play and check whether charging is a bit ...
+// In the case of FLAG_PAY_FAP, FLAG_PAY_GU of Korea billing every bit on below 
+// Aside from the penalties South Korea PLAY_FLAG_EXTRA_STOCK, PLAY_FLAG_EXTRA_CHAR bit off
+#define	PLAY_FLAG_BATTLE			(0x01 << 0)	 					// 1	Entry	배Framework, the Bay, the expression field
+#define	PLAY_FLAG_COMMUNITY			(0x01 << 1)	 					// 2	Community	Friends list, chat room
+#define	PLAY_FLAG_TRADE				(0x01 << 2)	 					// 3	Trade	Deals, shop
+#define	PLAY_FLAG_STOCK_SPACE		(0x01 << 3)	 					// 4	Stock Space	Bank
+#define	PLAY_FLAG_EXTRA_STOCK		(0x01 << 4)	 					// 5	Extra Stock	Extra Bank space
+#define	PLAY_FLAG_STARSHIP_PASS		(0x01 << 5)	 					// 6	Starship Pass	Interplanetary move
+#define	PLAY_FLAG_DUNGEON_ADV		(0x01 << 6)	 					// 7	Dungeon Adventure	Dungeon field
+#define	PLAY_FLAG_EXTRA_CHAR		(0x01 << 7)	 					// 8	Extra Character	It is possible to write Carrick added
 
 // 한국 기본 과금
 #define	PLAY_FLAG_KOREA_DEFAULT		( PLAY_FLAG_BATTLE | PLAY_FLAG_COMMUNITY | PLAY_FLAG_TRADE | PLAY_FLAG_STOCK_SPACE | PLAY_FLAG_STARSHIP_PASS | PLAY_FLAG_DUNGEON_ADV )
 #define	PLAY_FLAG_TAIWAN_DEFAULT	PLAY_FLAG_KOREA_DEFAULT
 
 
-#define	EXT_BILLING_MSG_PAY_KOREA			0x1001	// 한국 과금 정보
-#define	EXT_BILLING_MSG_PAY_JAPAN			0x1002	// 일본 과금 플래그
-#define	EXT_BILLING_MSG_PAY_TAIWAN			0x1003	// 대만 과금 타입번호
+#define	EXT_BILLING_MSG_PAY_KOREA			0x1001	// South Korea-billing information
+#define	EXT_BILLING_MSG_PAY_JAPAN			0x1002	// Japan billing flag
+#define	EXT_BILLING_MSG_PAY_TAIWAN			0x1003	// Taiwan billing type number
 
-#define	EXT_BILLING_MSG_TYPE_SET_DATE		0x1010	// 만료 일자 설정	m_dwPayType = m_dwPlayingFlag = 0	szMsg = 타입\t200309101025\t타입\t200309101025...
-#define	EXT_BILLING_MSG_TYPE_SET_TIME		0x1011	// 만료 시간 설정	m_dwPayType = m_dwPlayingFlag = 0	szMsg = 타입\t남은분\t타입\t남은분...
-#define EXT_BILLING_MSG_TYPE_TIME_EXPIRED	0x1012	// PayType=0이고 m_dwPlayingFlag[0]에 만료된 과금 플레그있음
-#define EXT_BILLING_MSG_TYPE_TIME_ALERT		0x1013	// PayType=0이고 m_dwPlayingFlag[0]에 시간경고되는 과금 플레그있음
+#define	EXT_BILLING_MSG_TYPE_SET_DATE		0x1010	// Set an expiration date m_dwPayType = m_dwPlayingFlag = 0 200309101025 = type \ t200309101025\t type \ szMsg t. ..
+#define	EXT_BILLING_MSG_TYPE_SET_TIME		0x1011	// Set the expiration time of m_dwPayType = m_dwPlayingFlag = 0, szMsg = type \ t t t type \ remaining minutes remaining minutes \ ...
+#define EXT_BILLING_MSG_TYPE_TIME_EXPIRED	0x1012	// PayType = 0 and m_dwPlayingFlag [0] in the billing end on flags
+#define EXT_BILLING_MSG_TYPE_TIME_ALERT		0x1013	// PAyType = 0 and m_dwPlayingFlag [0] in time, charges that are warning flags
 
-struct gsv_BILLING_MESSAGE_EXT : public t_PACKETHEADER {
+struct gsv_BILLING_MESSAGE_EXT : public t_PACKETHEADER 
+{
 	WORD	m_wMsgTYPE;
 	DWORD	m_dwPayType;
-	DWORD	m_dwPlayingFlag[ 4 ];	// 여유있게~ :: 32 * 4 = 128
+	DWORD	m_dwPlayingFlag[ 4 ];	// Free to be~ :: 32 * 4 = 128
 	// char m_szMsg[];
 } ;
 
 
 
 //-------------------------------------------------------------------------------------------------
-struct gsv_GODDNESS_MODE : public t_PACKETHEADER {
-	BYTE	m_btOnOff;								// 적용/삭제
-	WORD	m_wObjectIDX;							// 대상 서버 케릭터 인덱스
+struct gsv_GODDNESS_MODE : public t_PACKETHEADER 
+{
+	BYTE	m_btOnOff;								// Apply/remove
+	WORD	m_wObjectIDX;							// The destination server characters index
 } ;
 
 //-------------------------------------------------------------------------------------------------
-struct gsv_PATSTATE_CHANGE : public t_PACKETHEADER { // GSV_PATSTATE_CHANGE
-	BYTE	m_btOnOff;								// 카트 소환 가능/불가능(1/0) 
-	DWORD	m_dwCoolTIME;							// 카트 소환 불가능 상태이면 여기에 쿨타임 값
-	short	m_nMaxPatHP;							// 카트 체력
-	WORD	m_wObjectIDX;							// 사용할 카트 체력 
+struct gsv_PATSTATE_CHANGE : public t_PACKETHEADER  // GSV_PATSTATE_CHANGE
+{ 
+	BYTE	m_btOnOff;								// Cart recall possible/impossible (1/0) 
+	DWORD	m_dwCoolTIME;							// It is impossible to summon the cart, here's a cool time value
+	short	m_nMaxPatHP;							// Cart fitness
+	WORD	m_wObjectIDX;							// Use the cart's stamina 
 } ;
 
 
 //-------------------------------------------------------------------------------------------------
-struct gsv_CHARSTATE_CHANGE : public t_PACKETHEADER {
+struct gsv_CHARSTATE_CHANGE : public t_PACKETHEADER 
+{
 	WORD	m_wObjectIDX;
 	DWORD	m_dwFLAG;
 };
 
 
-struct cli_CART_RIDE : public t_PACKETHEADER {
+struct cli_CART_RIDE : public t_PACKETHEADER 
+{
 	BYTE	m_btType;
-	WORD	m_wOwnerObjIDX;				// 태울 아바타
-	WORD	m_wGuestObjIDX;				// 탈 아바타
+	WORD	m_wOwnerObjIDX;				// Burn avatar
+	WORD	m_wGuestObjIDX;				// Tal-avatar
 } ;
 struct gsv_CART_RIDE : public cli_CART_RIDE {
 
 } ;
-#define	CART_RIDE_REQ				0x01	// 탈래 ?	m_wGuestObjIDX에게만 전송됨
-#define	CART_RIDE_ACCEPT			0x02	// 탈께		주변 모든 케릭에 전송됨
-#define	CART_RIDE_REFUSE			0x03	// 안탈래	m_wOwnerObjIDX에게만 전송됨
-#define	CART_RIDE_OWNER_NOT_FOUND	0x04	// 태워 준다던 케릭이 사라졌다
-#define	CART_RIDE_GUEST_NOT_FOUND	0x05	// 태우려던 케릭이 사라졌다
+#define	CART_RIDE_REQ				0x01	// Tal?	M_wGuestObjIDX are sent only to
+#define	CART_RIDE_ACCEPT			0x02	// Ride after all around sent Rick
+#define	CART_RIDE_REFUSE			0x03	// Antalya-Rae m_wOwnerObjIDX are sent only to
+#define	CART_RIDE_OWNER_NOT_FOUND	0x04	// Gives IKE was Rick ride gone
+#define	CART_RIDE_GUEST_NOT_FOUND	0x05	// Burn dawn jun'ya disappeared
 
 
-enum EGSV_WARNING_MSGCODE		// m_dwWarningCode에 적용
+enum EGSV_WARNING_MSGCODE		// m_dwWarningCode Apply to the
 {
-	EGSV_PARTY_EXP_LIMIT = 0,						// 파티 경험치 획득 제한 경고 메시지 (ex. "파티 구성원의 레벨차이가 큽니다.")
-	EGSV_DONT_DUPLICATE_EXPERIENCE_MILEAGE_ITEM_USE,// 마일리지 아이템 중복사용 경고 (ex. "중복 사용할 수 없는 아이템입니다.")
-	EGSV_EXPERIENCE_MILEAGE_ITEM_EXPIRED			// 경험치 마일리지 아이템 만료 (ex. "경험치 아이템이 만료 되었습니다.")
+	EGSV_PARTY_EXP_LIMIT = 0,						// A warning message is limited to acquire an experience party (ex. "there is a difference in the level of the members of the party.")
+	EGSV_DONT_DUPLICATE_EXPERIENCE_MILEAGE_ITEM_USE,// Use the duplicate item warning mileage (ex: "can't use duplicate items.")
+	EGSV_EXPERIENCE_MILEAGE_ITEM_EXPIRED			// Experience mileage expiring items (ex: "experience the item has expired.")
 };
 
 struct gsv_WARNING_MSGCODE : public t_PACKETHEADER 
@@ -3175,17 +3469,18 @@ struct gsv_WARNING_MSGCODE : public t_PACKETHEADER
 
 
 //-------------------------------------------------------------------------------------------------
-//	김영환 2006.09.18 추가.
-struct gsv_cli_USER_MSG_1LV : public t_PACKETHEADER {
-	WORD	m_Sub_Type;	 // 1: 유저 죽었다.
-	WORD	m_Data;		// 예약 변수[아직 사용 안함.]
+//	Azadeh 2006.09.18 added.
+struct gsv_cli_USER_MSG_1LV : public t_PACKETHEADER 
+{
+	WORD	m_Sub_Type;	 // 1: The user has died.
+	WORD	m_Data;		// Booking for variables [not yet disabled.]
 };
 
 
 #ifdef __EXPERIENCE_ITEM
 struct gsv_MILEAGE_ITEM_TIME : public t_PACKETHEADER
 {
-	DWORD	dwIndex;	// 마일리지 아이템 인덱스(종류) (ex. 0~2:창고무료,확장,모양 / 3:카트게이지 / 4:경험치2배)
+	DWORD	dwIndex;	// Mileage item index (categories) (ex: 0 to 2: free, extended, form the warehouse/3: cart gauge/4: experience 2 times)
 	WORD	wYear;
 	BYTE	btMonth;
 	BYTE	btDay;
@@ -3195,16 +3490,18 @@ struct gsv_MILEAGE_ITEM_TIME : public t_PACKETHEADER
 
 struct cli_MILEAGE_ITEM_TIME : public t_PACKETHEADER
 {
-	DWORD	dwIndex;		// 마일리지 아이템 인덱스(종류) (ex. 0~2:창고무료,확장,모양 / 3:카트게이지 / 4:경험치2배)
-	DWORD	dwCharIndex;	// 캐릭터 인덱스
+	DWORD	dwIndex;		// Mileage item index (categories) (ex: 0 to 2: free, extended, form the warehouse/3: cart gauge/4: experience 2 times)
+	DWORD	dwCharIndex;	// Character index
 };
 #endif
 
-// 2007.02.13/김대성/추가 - 클라이언트와 서버시간 동기화
-struct cli_SERVER_TIME : public t_PACKETHEADER {
+// 2007.02.13/Kim Dae-Seong/add-in client and server time synchronization
+struct cli_SERVER_TIME : public t_PACKETHEADER 
+{
 	__int64	m_ClientTime;
 };
-struct gsv_SERVER_TIME : public t_PACKETHEADER {
+struct gsv_SERVER_TIME : public t_PACKETHEADER 
+{
 	__int64	m_ClientTime;
 	__int64	m_ServerTime;
 	int wYear;
@@ -3215,12 +3512,14 @@ struct gsv_SERVER_TIME : public t_PACKETHEADER {
 	int wSec;
 };
 
-struct cli_LOGIN_REQ2 : public t_PACKETHEADER {
+struct cli_LOGIN_REQ2 : public t_PACKETHEADER 
+{
 	DWORD	m_dwSeq;
 	char szSessionKey[33];
 } ;
 
-struct srv_LOGIN_REPLY2 : public t_PACKETHEADER {
+struct srv_LOGIN_REPLY2 : public t_PACKETHEADER 
+{
 	char sztxtAccount[36];
 	char szMD5PW[33];
 } ;
@@ -3233,8 +3532,10 @@ struct srv_LOGIN_REPLY2 : public t_PACKETHEADER {
 
 //-------------------------------------------------------------------------------------------------
 #define	__T_PACKET
-struct t_PACKET {
-	union {
+struct t_PACKET 
+{
+	union 
+	{
 		t_PACKETHEADER				m_HEADER;
 		BYTE						m_pDATA[ MAX_PACKET_SIZE ];
 		t_NETWORK_STATUS			m_NetSTATUS;
@@ -3562,7 +3863,7 @@ struct t_PACKET {
 		cli_CRAFT_GEMMING_REQ		m_cli_CRAFT_GEMMING_REQ;
 		cli_CRAFT_BREAKUP_REQ		m_cli_CRAFT_BREAKUP_REQ;
 		cli_CRAFT_UPGRADE_REQ		m_cli_CRAFT_UPGRADE_REQ;
-		cli_CRAFT_DRILL_SOCKET_REQ  m_cli_CRAFT_DRILL_SOKCET_REQ;   //소켓 생성 요청...
+		cli_CRAFT_DRILL_SOCKET_REQ  m_cli_CRAFT_DRILL_SOKCET_REQ;   //Socket creation request ...
 
 									
 		gsv_CRAFT_ITEM_REPLY		m_gsv_CRAFT_ITEM_REPLY;
@@ -3590,7 +3891,8 @@ struct t_PACKET {
 
 		cli_SCREEN_SHOT_TIME		m_cli_SCREEN_SHOT_TIME;
 		gsv_SCREEN_SHOT_TIME		m_gsv_SCREEN_SHOT_TIME;
-		gsv_CHAR_HPMP_INFO			m_gsv_CHAR_HPMP_INFO;
+		gsv_CHAR_HPMP_INFO			m_gsv_CHAR_HPMP_INFO;			//HP and MP sent from server
+		gsv_CHAR_STAT_INFO			m_gsv_CHAR_STAT_INFO;			//Stats sent from server Attack, def, dodge etc.
 
 
 		cli_SUMMON_CMD				m_cli_SUMMON_CMD;
@@ -3602,40 +3904,40 @@ struct t_PACKET {
 		gsv_CART_RIDE				m_gsv_CART_RIDE;
 
 
-		//마일리지 아이템 관련... 새로추가된..  패킷타입......
+		//Mileage related items ... The newly added ...  Packet type ...
 		gsv_MILEAGE_INV_DATA		m_gsv_MILEAGE_INV_DATA;
-		gsv_DESTROY_MILEAGE_ITEM	m_gsv_DESTROY_MILEAGE_ITEM;		//기간 만료로 파괴될 아이템
-		gsv_NOTIFY_MILEAGE_ITEM		m_gsv_NOTIFY_MILEAGE_ITEM;      //아이템 정보 변동된 아이템 ..
-		gsv_SET_MILEAGE_INV			m_gsv_SET_MILEAGE_INV;			//변경된 마일리지 인벤정보.
+		gsv_DESTROY_MILEAGE_ITEM	m_gsv_DESTROY_MILEAGE_ITEM;		//The item will be destroyed with the expiration of a period of
+		gsv_NOTIFY_MILEAGE_ITEM		m_gsv_NOTIFY_MILEAGE_ITEM;      //The information moves the items items ...
+		gsv_SET_MILEAGE_INV			m_gsv_SET_MILEAGE_INV;			//Altered mileage Ben.
 
 		cli_EQUIP_MILEAGE_ITEM		m_cli_EQUIP_MILEAGE_ITEM;
 		gsv_EQUIP_MILEAGE_ITEM		m_gsv_EQUIP_MILEAGE_ITEM;
 
-		cli_USE_MILEAGE_ITEM		m_cli_USE_MILEAGE_ITEM;			//마일리지 아이템 사용
+		cli_USE_MILEAGE_ITEM		m_cli_USE_MILEAGE_ITEM;			//Use the mileage items
 		gsv_USE_MILEAGE_ITEM		m_gsv_USE_MILEAGE_ITEM;             
 
 		cli_DUMMY_1					m_cli_DUMMY_1;
 
 		// Begin - Antonio - 2006-07-24  오후 3:40:13
-		// 클랜전 관련 추가
-		gsv_cli_CLAN_WAR_OK			m_gsv_cli_ClanWar_OK;			// 클랜전 참가 확인. 메시지
-		gsv_cli_CLAN_WAR_TIME		m_gsv_cli_ClanWar_Time;			// 클랜전 관련 남은 시간
-		gsv_cli_CLAN_WAR_ERR		m_gsv_cli_ClanWar_Err;			// 클랜전 관련 오류
-		gsv_cli_CLAN_WAR_PROGRESS	m_gsv_cli_ClanWar_Progress;		//	클랜전 진행. 메시지 타입
+		// Clan relevant additional
+		gsv_cli_CLAN_WAR_OK			m_gsv_cli_ClanWar_OK;			// Clan exhibition. Message
+		gsv_cli_CLAN_WAR_TIME		m_gsv_cli_ClanWar_Time;			// Clan relevant time remaining
+		gsv_cli_CLAN_WAR_ERR		m_gsv_cli_ClanWar_Err;			// Clancy I related errors
+		gsv_cli_CLAN_WAR_PROGRESS	m_gsv_cli_ClanWar_Progress;		//	Clancy I. Message type
 		// End   - Antonio
 
-		// 홍근 클랜전 보강
-		gsv_cli_CLAN_WAR_BOSS_HP      m_gsv_cli_ClanWar_BOSS_HP;     // 클랜전 보스 몹 HP 전송 구조체
+		// Hong Keun clan I reinforcement
+		gsv_cli_CLAN_WAR_BOSS_HP      m_gsv_cli_ClanWar_BOSS_HP;     // Clancy, former boss mob HP transmission structures
 
 
 		gsv_WARNING_MSGCODE			m_gsv_WARNING_MSGCODE;
 
-		//  유저 중요 메시지 추가.  ----------------------------------------
+		//  The user adds the important message.  ----------------------------------------
 		gsv_cli_USER_MSG_1LV		m_gsv_User_MSG_1LV;
 
 
 #ifdef __EXPERIENCE_ITEM
-		cli_MILEAGE_ITEM_TIME		m_cli_MIELAGE_ITEM_TIME;		//특정 마일리지 아이템의 남은 시간 요청.
+		cli_MILEAGE_ITEM_TIME		m_cli_MIELAGE_ITEM_TIME;		//For the rest of time requests a specific mileage items.
 		gsv_MILEAGE_ITEM_TIME		m_gsv_MIELAGE_ITEM_TIME;		
 #endif
 		gsv_SERVER_TIME				m_gsv_Server_Time;

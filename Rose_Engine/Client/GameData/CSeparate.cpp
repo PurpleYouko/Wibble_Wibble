@@ -135,6 +135,8 @@ void CSeparate::SetItem( CItem* pItem )
 			CItem*  pMaterialItem = NULL;
 
 			int iCompositionIdx = ITEM_DECOMPOSITION_NUMBER( Item.GetTYPE(), Item.GetItemNO() );
+			//PY temporary fix for items that point off the end of the break list
+			if(iCompositionIdx > 2028) iCompositionIdx = 2028; //There are currently only 2028 entries in LIST_BREAK.STB and some items point to 2300 +
 			if( int iRawMaterial = ITEM_BREAK_POTISION( iCompositionIdx ) )
 			{
 
@@ -531,14 +533,21 @@ void CSeparate::ClearResultItemSet()
 	m_ResultItemSet.clear();
 }
 
-void CSeparate::AddResultItemSet( tag_SET_INVITEM& Item )
+void CSeparate::AddResultItemSet( tag_SET_INVITEM Item )
 {
+	ClientLog (LOG_NORMAL, "AddResultItemSet:: item type: %i item Number: %i", Item.m_ITEM.GetTYPE(),Item.m_ITEM.GetItemNO());
+	// m_ResultItemSet starts out with a size of zero here
+
 	for(int i = 0; i <  m_ResultItemSet.size(); i++)
 	{
 		tag_SET_INVITEM TempInvItem = m_ResultItemSet[i];
+		//ClientLog (LOG_NORMAL, "AddResultItemSet:: Set tempInvItem to record %i of the record set",i);
+		
 		if( TempInvItem.m_ITEM.IsEqual(Item.m_ITEM.GetTYPE(), Item.m_ITEM.GetItemNO()) && Item.m_ITEM.IsEnableDupCNT())
 		{
 			m_ResultItemSet[i] = Item;
+			//m_ResultItemSet[i].m_ITEM.IncQuantity1();
+			ClientLog (LOG_NORMAL, "AddResultItemSet:: item added to an existing field of ResultSet. Field now contains %i",m_ResultItemSet[i].m_ITEM.GetQuantity1());
 			return;
 		}		
 	}
@@ -550,6 +559,7 @@ void CSeparate::ApplyResultItemSet()
 	std::vector<tag_SET_INVITEM>::iterator iter;
 	for( iter = m_ResultItemSet.begin(); iter != m_ResultItemSet.end(); ++iter )
 	{
+		ClientLog (LOG_NORMAL, "ApplyResultItemSet:: item %i being set to inventory. Slot %i ItemType %i ItenNum %i",iter,iter->m_btInvIDX,iter->m_ITEM.GetTYPE(), iter->m_ITEM.GetItemNO());
 		g_pAVATAR->Set_ITEM( iter->m_btInvIDX, iter->m_ITEM );
 	}
 }

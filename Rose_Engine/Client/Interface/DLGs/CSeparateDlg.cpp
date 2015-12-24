@@ -270,7 +270,7 @@ void CSeparateDlg::Update( CObservable* pObservable, CTObject* pObj )
 			{
 				CItem* pItem = pEvent->GetItem();
 
-				assert( pItem && m_OutputItemSlots[iIndex].GetIcon() == NULL );
+				//assert( pItem && m_OutputItemSlots[iIndex].GetIcon() == NULL );
 
 
 				if( pItem && m_OutputItemSlots[iIndex].GetIcon() == NULL )

@@ -265,9 +265,11 @@ bool CObjUSER::AddNewSkill( int iSkillIDX, int iSkillSlotNO, int iSkillLevel ,bo
 		return false;
 
 	/// Learn skills if applicable
-	if ( this->Skill_LEARN( iSkillSlotNO, iSkillIDX , bSubPOINT ) ) {
+	if ( this->Skill_LEARN( iSkillSlotNO, iSkillIDX , bSubPOINT ) ) 
+	{
 		/// If the result in the change in the speed of the passive skill.
-		this->Update_SPEED ();
+		//PY: NOPE. This is now controlled by the server
+		//this->Update_SPEED ();
 	}
 
 	m_SkillSlot.SetSkillSlot( iSkillSlotNO, iSkillIDX, iSkillLevel ); 
@@ -366,7 +368,8 @@ void CObjUSER::Update (bool bUpdateBONE )
 	CObjAVT::Update( bUpdateBONE );
 
 	// 7. Attack, the moving speed update.
-	this->Update_SPEED ();
+	//PY: NOPE. Server does this now
+	//this->Update_SPEED ();
 }
 
 
@@ -754,7 +757,10 @@ void	CObjUSER::UpdateAbility()
 	
 	// changing the position of UpdateInventory () and Update_SPEED ().
 	UpdateInventory();///The maximum amount of possession may have been changed.
-	Update_SPEED();	
+	
+	//PY: I just sent in the move speed from the server. Why would i want it to be calculated again so that the damn values are different?
+	//just NO. Commenting this out
+	//Update_SPEED();	
 	
 
 }		
@@ -1035,51 +1041,47 @@ short CObjUSER::GetPsv_ATKSPEED (float fCurSpeed, short nRightWeaponItemNo)
 /// arua Also adds value changed by the state.					2005/7/12 : nAvy
 int CObjUSER::GetCur_MaxHP ()
 { 
-	return this->m_Battle.m_nMaxHP + m_EndurancePack.GetStateValue( ING_INC_MAX_HP ) + m_AruaAddHp; 
+	//return this->m_Battle.m_nMaxHP + m_EndurancePack.GetStateValue( ING_INC_MAX_HP ) + m_AruaAddHp; 
+	return this->m_Battle.m_nMaxHP;			//PY: removed the extra stuff so it will only return the value sent in from the server
 };
 
-/// If the function returns a value more haejyeoseo held by the key
 /// arua Also adds value changed by the state.					2005/7/12 : nAvy
 int	CObjUSER::GetCur_MaxMP ()
 { 
-	return this->m_Battle.m_nMaxMP + m_EndurancePack.GetStateValue( ING_INC_MAX_MP ) + m_AruaAddMp; 
+	//return this->m_Battle.m_nMaxMP + m_EndurancePack.GetStateValue( ING_INC_MAX_MP ) + m_AruaAddMp; 
+	return this->m_Battle.m_nMaxMP;			// PY: Nope. not adding any extra stuff. MaxMP is now set from the server only.       
 };
 //------------------------------------------------------------------------------------
 /// @brief aura Values for the changed conditions by					2005/7/13 : nAvy
+/// PY: Removing all the add on stuff so that it just compares the raw stats
 //------------------------------------------------------------------------------------
 int CObjUSER::GetCur_CRITICAL()		
 { 
-	return GetMinStateValue( AT_CRITICAL,
-		GetDef_CRITICAL() + m_EndurancePack.GetStateValue( ING_INC_CRITICAL ) - m_EndurancePack.GetStateValue( ING_DEC_CRITICAL ) + m_AruaAddCritical );
+	return GetMinStateValue( AT_CRITICAL, GetDef_CRITICAL()); // + m_EndurancePack.GetStateValue( ING_INC_CRITICAL ) - m_EndurancePack.GetStateValue( ING_DEC_CRITICAL ) + m_AruaAddCritical );
 }
 
 int CObjUSER::GetCur_ATK()
 { 
-	return GetMinStateValue( AT_ATK,
-		GetDef_ATK() + m_EndurancePack.GetStateValue( ING_INC_APOWER ) - m_EndurancePack.GetStateValue( ING_DEC_APOWER ) + m_AruaAddAttackPower );
+	return GetMinStateValue( AT_ATK, GetDef_ATK()); // + m_EndurancePack.GetStateValue( ING_INC_APOWER ) - m_EndurancePack.GetStateValue( ING_DEC_APOWER ) + m_AruaAddAttackPower );
 }
 
 int CObjUSER::GetCur_DEF()
 { 
-	return GetMinStateValue( AT_DEF,
-		GetDef_DEF() + m_EndurancePack.GetStateValue( ING_INC_DPOWER ) - m_EndurancePack.GetStateValue( ING_DEC_DPOWER ) + m_AruaAddDefence );
+	return GetMinStateValue( AT_DEF, GetDef_DEF()); // + m_EndurancePack.GetStateValue( ING_INC_DPOWER ) - m_EndurancePack.GetStateValue( ING_DEC_DPOWER ) + m_AruaAddDefence );
 }
 
 int CObjUSER::GetCur_AVOID()
 {
-	return GetMinStateValue( AT_AVOID,
-		GetDef_AVOID() + m_EndurancePack.GetStateValue( ING_INC_AVOID ) - m_EndurancePack.GetStateValue( ING_DEC_AVOID ) );
+	return GetMinStateValue( AT_AVOID, GetDef_AVOID()); // + m_EndurancePack.GetStateValue( ING_INC_AVOID ) - m_EndurancePack.GetStateValue( ING_DEC_AVOID ) );
 }
 
 int	CObjUSER::GetCur_RES()
 {
-	return GetMinStateValue( AT_RES,
-		GetDef_RES() + m_EndurancePack.GetStateValue( ING_INC_RES ) - m_EndurancePack.GetStateValue( ING_DEC_RES ) );
+	return GetMinStateValue( AT_RES, GetDef_RES()); // + m_EndurancePack.GetStateValue( ING_INC_RES ) - m_EndurancePack.GetStateValue( ING_DEC_RES ) );
 }
 int	CObjUSER::GetCur_HIT()
 {
-	return GetMinStateValue( AT_HIT,
-		GetDef_HIT() + m_EndurancePack.GetStateValue( ING_INC_HIT ) - m_EndurancePack.GetStateValue( ING_DEC_HIT ) );
+	return GetMinStateValue( AT_HIT, GetDef_HIT()); // + m_EndurancePack.GetStateValue( ING_INC_HIT ) - m_EndurancePack.GetStateValue( ING_DEC_HIT ) );
 }
 
 //------------------------------------------------------------------------------------
@@ -1099,17 +1101,17 @@ int CObjUSER::GetOri_MaxMP()
 //------------------------------------------------------------------------------------
 /// @brief Arua stat buff additional calculations for the jammed state 2005/7/13 : navy
 //------------------------------------------------------------------------------------
-void CObjUSER::Calc_AruaAddAbility()
+void CObjUSER::Calc_AruaAddAbility()		//PY: adding the fairy. We need to disable this
 {
 	if( IsApplyNewVersion() )
 	{
 		if( m_IsAroa )
 		{
-			m_AruaAddHp			= GetDef_MaxHP() * 0.2;
-			m_AruaAddMp			= GetDef_MaxMP() * 0.2;
-			m_AruaAddCritical	= GetDef_CRITICAL() * 0.2;
-			m_AruaAddAttackPower	= GetDef_ATK() * 0.2;
-			m_AruaAddDefence		= GetDef_DEF() * 0.2;
+			m_AruaAddHp			= GetDef_MaxHP(); //* 0.2;
+			m_AruaAddMp			= GetDef_MaxMP(); // * 0.2;
+			m_AruaAddCritical	= GetDef_CRITICAL(); // * 0.2;
+			m_AruaAddAttackPower	= GetDef_ATK(); // * 0.2;
+			m_AruaAddDefence		= GetDef_DEF(); // * 0.2;
 		}
 		else
 		{

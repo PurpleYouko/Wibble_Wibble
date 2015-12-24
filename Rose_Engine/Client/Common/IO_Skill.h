@@ -9,33 +9,33 @@
 //-------------------------------------------------------------------------------------------------
 
 enum {
-	SKILL_TYPE_01 = 1,						//1.기본동작
-	SKILL_TYPE_02 ,							//2.제조스킬
-	SKILL_TYPE_03 ,							//3.데미지액션
-	SKILL_TYPE_04 ,							//4.무기파워업
-	SKILL_TYPE_05 ,							//5.무기파워업
-	SKILL_TYPE_06 ,							//6.마법발사
-	SKILL_TYPE_07 ,							//7.지역마법데미지
-	SKILL_TYPE_08 ,							//8.상태지속(셀프)
-	SKILL_TYPE_09 ,							//9.상태지속(타겟)
-	SKILL_TYPE_10 ,							//10.회복마법(셀프)
-	SKILL_TYPE_11 ,							//11.회복마법(타겟)
-	SKILL_TYPE_12 ,							//12.상태지속(변경)(셀프)
-	SKILL_TYPE_13 ,							//13.상태지속(변경)(타겟)
-	SKILL_TYPE_14 ,							//14.소환마법
-	SKILL_TYPE_15 ,							// 패시브 스킬
+	SKILL_TYPE_01 = 1,						//1.The default behavior
+	SKILL_TYPE_02 ,							//2.Manufacturing skill
+	SKILL_TYPE_03 ,							//3.Damage in action
+	SKILL_TYPE_04 ,							//4.Weapon power-up
+	SKILL_TYPE_05 ,							//5.Weapon power-up
+	SKILL_TYPE_06 ,							//6.Magic launch
+	SKILL_TYPE_07 ,							//7.Local magic damage
+	SKILL_TYPE_08 ,							//8.State persistence (self)
+	SKILL_TYPE_09 ,							//9.State persistence (target)
+	SKILL_TYPE_10 ,							//10.Restoration magic (self)
+	SKILL_TYPE_11 ,							//11.Restoration magic (target)
+	SKILL_TYPE_12 ,							//12.State persistence (change) (self)
+	SKILL_TYPE_13 ,							//13.State persistence (change) (target)
+	SKILL_TYPE_14 ,							//14.Summoning magic
+	SKILL_TYPE_15 ,							// Passive skill
 	SKILL_TYPE_PASSIVE = SKILL_TYPE_15,		
 	SKILL_TYPE_16 ,							// Emotion
 	SKILL_TYPE_17 ,							// Self & damage
-	SKILL_TYPE_18 ,							/// 추가 2004.4.8 : warp skill
-	SKILL_TYPE_19,							/* 추가 2004.6.16 :
-											능력치 변경(10번유형) & 데미지공격(3번유형)
-													기존의 3번스킬 유형으로 타겟에게 데미지를 주고, 자신에게는
-													지정된 능력치(21번,24번 칼럼)의 수치(22,25번칼럼)가 증가된다.
-													스킬성공계산식을 적용하여 성공시에만 능력치 변경을 적용시킨다.
-													(타겟에 데미지공격을 하면서 HP,MP 뺏어오기 개념)
+	SKILL_TYPE_18 ,							/// Add 2004.4.8 : warp skill
+	SKILL_TYPE_19,							/* Add 2004.6.16 :
+											Change the strength value (10 times) and damage attacks (3 times)
+													Existing types of damaging a target skill three times, giving a
+													The specified strength value (21 times, 24 times columnist) levels (22, 25 times columnist) is increased.
+													By applying the formula of success upon success skill and ability to apply the changes.
+													(HP, MP, while the damage at the target attack took the concept to come)
 											*/
-	SKILL_TYPE_20,							//20.부활
+	SKILL_TYPE_20,							//20.The resurrection
 } ;
 
 enum
@@ -103,96 +103,96 @@ enum
 
 enum enumSKILL_TAGER_FILTER
 {
-	SKILL_TARGET_FILTER_SELF = 0,			///< 자기 자신
-	SKILL_TARGET_FILTER_GROUP = 1,			///< 그룹(파티)원
-	SKILL_TARGET_FILTER_GUILD = 2,			///< 길드원
-	SKILL_TARGET_FILTER_FRIEND_ALL = 3,		///< 아군 (아바타, 소환몹)
-	SKILL_TARGET_FILTER_MOB = 4,			///< 모든 몬스터 (소환몹,적군몹)
-	SKILL_TARGET_FILTER_ENEMY_ALL = 5,		///< 적 PC + 몬스터 	
-	SKILL_TARGET_FILTER_ENEMY_PC = 6,		///< 적 PC( 적 상태 포함 )
-	SKILL_TARGET_FILTER_ALL_PC = 7,			///< 모든 PC
-	SKILL_TARGET_FILTER_ALL_CHAR = 8,		///< 모든 캐릭터( 몬스터, 플레이어 )	
-	SKILL_TARGET_FILTER_DEAD_USER = 9,		/// 죽은 사용자
-	SKILL_TARGET_FILTER_ENEMY_MOB = 10,		/// 적 몬스터
+	SKILL_TARGET_FILTER_SELF = 0,			///< Self
+	SKILL_TARGET_FILTER_GROUP = 1,			///< Group (party) won
+	SKILL_TARGET_FILTER_GUILD = 2,			///< Guild
+	SKILL_TARGET_FILTER_FRIEND_ALL = 3,		///< Spiked (avatar, summoning AdMob)
+	SKILL_TARGET_FILTER_MOB = 4,			///< All Monster (summoning AdMob, the enemy mob)
+	SKILL_TARGET_FILTER_ENEMY_ALL = 5,		///< Ever PC + Monster 	
+	SKILL_TARGET_FILTER_ENEMY_PC = 6,		///< Ever PC (status)
+	SKILL_TARGET_FILTER_ALL_PC = 7,			///< All PC
+	SKILL_TARGET_FILTER_ALL_CHAR = 8,		///< All characters (monsters, player)	
+	SKILL_TARGET_FILTER_DEAD_USER = 9,		/// Dead users
+	SKILL_TARGET_FILTER_ENEMY_MOB = 10,		/// Enemy monsters
 	SKILL_TARGET_FILTER_MAX,
 };
 
 //-------------------------------------------------------------------------------------------------
 
 #ifdef __SERVER
-	#define	SKILL_NAME(I)						g_SkillList.m_SkillDATA.m_ppNAME[ I ]			// 스킬 이름
-	#define SKILL_DESC(I)						g_SkillList.m_SkillDATA.m_ppDESC[ I ]			// 스킬 설명
+	#define	SKILL_NAME(I)						g_SkillList.m_SkillDATA.m_ppNAME[ I ]			// Skill name
+	#define SKILL_DESC(I)						g_SkillList.m_SkillDATA.m_ppDESC[ I ]			// Skill description
 #else
 	#define	SKILL_NAME(I)						CStringManager::GetSingleton().GetSkillName( I )
 	#define SKILL_DESC(I)						CStringManager::GetSingleton().GetSkillDesc( I )
 #endif
 
-#define	SKILL_1LEV_INDEX(S)					g_SkillList.m_SkillDATA.GetData( S ,  1 )
-#define	SKILL_LEVEL(S)						g_SkillList.m_SkillDATA.GetData( S ,  2 )
-#define	SKILL_NEED_LEVELUPPOINT(S)			g_SkillList.m_SkillDATA.GetData( S ,  3 )
-#define	SKILL_TAB_TYPE(S)					g_SkillList.m_SkillDATA.GetData( S ,  4 )
-#define SKILL_TYPE( I )						g_SkillList.m_SkillDATA.GetData( I ,  5 )
+#define	SKILL_1LEV_INDEX(S)					g_SkillList.m_SkillDATA.GetData( S ,  1 )		// First skill id of the block
+#define	SKILL_LEVEL(S)						g_SkillList.m_SkillDATA.GetData( S ,  2 )		// Skill Level
+#define	SKILL_NEED_LEVELUPPOINT(S)			g_SkillList.m_SkillDATA.GetData( S ,  3 )		// SP to level up
+#define	SKILL_TAB_TYPE(S)					g_SkillList.m_SkillDATA.GetData( S ,  4 )		// Skill Tree Tab ID
+#define SKILL_TYPE( I )						g_SkillList.m_SkillDATA.GetData( I ,  5 )		// Skill Type
 
-#define SKILL_DISTANCE( I )					g_SkillList.m_SkillDATA.GetData( I ,  6 )		//	타겟과의 거리
-#define SKILL_WARP_PLANET_NO( I )			g_SkillList.m_SkillDATA.GetData( I ,  6 )		//	워프 스킬일 경우 존이 위치한 행성 번호
+#define SKILL_DISTANCE( I )					g_SkillList.m_SkillDATA.GetData( I ,  6 )		// Range
+#define SKILL_WARP_PLANET_NO( I )			g_SkillList.m_SkillDATA.GetData( I ,  6 )		// Warp to Planet
 
-#define SKILL_CLASS_FILTER( I )				g_SkillList.m_SkillDATA.GetData( I ,  7 )	
-#define	SKILL_SCOPE(S)						g_SkillList.m_SkillDATA.GetData( S ,  8 )		// 적용범위
-#define	SKILL_POWER(S)						g_SkillList.m_SkillDATA.GetData( S ,  9 )
-#define	SKILL_ITEM_MAKE_NUM		SKILL_POWER	// 제조번호
-#define SKILL_HARM( I )						g_SkillList.m_SkillDATA.GetData( I , 10 )	
+#define SKILL_CLASS_FILTER( I )				g_SkillList.m_SkillDATA.GetData( I ,  7 )		// Skill target type
+#define	SKILL_SCOPE(S)						g_SkillList.m_SkillDATA.GetData( S ,  8 )		// AOE range
+#define	SKILL_POWER(S)						g_SkillList.m_SkillDATA.GetData( S ,  9 )		// Skill Power
+#define	SKILL_ITEM_MAKE_NUM					SKILL_POWER										// Craft Skill Number
+#define SKILL_HARM( I )						g_SkillList.m_SkillDATA.GetData( I , 10 )		
 
-#define SKILL_SUCCESS_RATIO( I )			g_SkillList.m_SkillDATA.GetData( I , 13 )		//	성공률
-#define SKILL_DURATION( I )					g_SkillList.m_SkillDATA.GetData( I , 14 )		//	지속 시간
-#define	SKILL_DAMAGE_TYPE(S)				g_SkillList.m_SkillDATA.GetData( S , 15 )		// 적용될 계산식 유형
+#define SKILL_SUCCESS_RATIO( I )			g_SkillList.m_SkillDATA.GetData( I , 13 )		// Success rate
+#define SKILL_DURATION( I )					g_SkillList.m_SkillDATA.GetData( I , 14 )		// Skill Duration
+#define	SKILL_DAMAGE_TYPE(S)				g_SkillList.m_SkillDATA.GetData( S , 15 )		// The type of the formula to be applied
 
 
 #define	SKILL_USE_PROPERTY_CNT				2
-#define	SKILL_USE_PROPERTY(S,T)				g_SkillList.m_SkillDATA.GetData( S , 16+(T)*2 )
-#define	SKILL_USE_VALUE(S,T)				g_SkillList.m_SkillDATA.GetData( S , 17+(T)*2 )
+#define	SKILL_USE_PROPERTY(S,T)				g_SkillList.m_SkillDATA.GetData( S , 16+(T)*2 )	// Consumption id. MP, HP, Stamina or whatever
+#define	SKILL_USE_VALUE(S,T)				g_SkillList.m_SkillDATA.GetData( S , 17+(T)*2 )	// Amount consumed
 
 
 #define	SKILL_RELOAD_TIME(S)				g_SkillList.m_SkillDATA.GetData( S , 20 )
 
-// 패시브(지속성) 스킬일 경우 일정시간 상승시킬 능력치...
+// Passive (persistence) to elevate a period of time when the ability of skill ...
 //#define	SKILL_INCREASE_ABILITY_CNT			2
 //#define	SKILL_INCREASE_ABILITY(S,T)			g_SkillList.m_SkillDATA.GetData( S , 21+(T)*3 )
 //#define	SKILL_INCREASE_ABILITY_VALUE(S,T)	g_SkillList.m_SkillDATA.GetData( S , 22+(T)*3 )
 //#define	SKILL_CHANGE_ABILITY_RATE(S,T)		g_SkillList.m_SkillDATA.GetData( S , 23+(T)*3 )
 
-#define	SKILL_WARP_ZONE_NO( S )				g_SkillList.m_SkillDATA.GetData( S , 21 )		/// 워프 스킬일 경우 워프할 존 번호
-#define	SKILL_WARP_ZONE_XPOS( S )			g_SkillList.m_SkillDATA.GetData( S , 22 )		/// 워프 스킬일 경우 워프할 존 위치
-#define	SKILL_WARP_ZONE_YPOS( S )			g_SkillList.m_SkillDATA.GetData( S , 23 )
+#define	SKILL_WARP_ZONE_NO( S )				g_SkillList.m_SkillDATA.GetData( S , 21 )		// If you have the warp skill, a Warp zone number
+#define	SKILL_WARP_ZONE_XPOS( S )			g_SkillList.m_SkillDATA.GetData( S , 22 )		// X position
+#define	SKILL_WARP_ZONE_YPOS( S )			g_SkillList.m_SkillDATA.GetData( S , 23 )		// Y position
 
 
 
 #define	MAX_SKILL_RELOAD_TYPE				20	// 0~19
-#define	SKILL_RELOAD_TYPE(S)				g_SkillList.m_SkillDATA.GetData( S , 27 )		// 스킬여백
+#define	SKILL_RELOAD_TYPE(S)				g_SkillList.m_SkillDATA.GetData( S , 27 )		// Skill margin
 
-#define	SKILL_SUMMON_PET(S)					g_SkillList.m_SkillDATA.GetData( S , 28 )		//	소환몹 번호
+#define	SKILL_SUMMON_PET(S)					g_SkillList.m_SkillDATA.GetData( S , 28 )		//	Summon mob number
 
-#define	SKILL_ACTION_MODE(S)				g_SkillList.m_SkillDATA.GetData( S , 29 )		// 스킬공격 유형
-// 사용시 장착하고 있어야하는 장비.  T = 0 ~ 3
-#define	SKILL_NEED_WEAPON_CNT				5		// <--- 2004. 2. 26 4->5로 늘림고 이후 컬럼 번호+1 by icarus
-#define	SKILL_NEED_WEAPON(S,T)				g_SkillList.m_SkillDATA.GetData( S , 30+(T) )
+#define	SKILL_ACTION_MODE(S)				g_SkillList.m_SkillDATA.GetData( S , 29 )		// Skill attack type
+// The use of the equipment to be fitted.  T = 0 ~ 3
+#define	SKILL_NEED_WEAPON_CNT				5		// <--- 2004.2. 26 4-increase and subsequent columns to 5 numbers + > 1 by icarus
+#define	SKILL_NEED_WEAPON(S,T)				g_SkillList.m_SkillDATA.GetData( S , 30+(T) )	// required Equipment type
 
-// LIST_CLASS.stb 참조 번호...
-#define	SKILL_AVAILBLE_CLASS_SET(S)			g_SkillList.m_SkillDATA.GetData( S , 35 )
+// LIST_CLASS.stb Reference number...
+#define	SKILL_AVAILBLE_CLASS_SET(S)			g_SkillList.m_SkillDATA.GetData( S , 35 )		// required job	
 
-// 최초 배울때 소속 조합 체크...
+// When you learn to check the first belonging to the Union...
 #define	SKILL_AVAILBLE_UNION_CNT			3
-#define	SKILL_AVAILBLE_UNION(S,T)			g_SkillList.m_SkillDATA.GetData( S , 36+(T) )
+#define	SKILL_AVAILBLE_UNION(S,T)			g_SkillList.m_SkillDATA.GetData( S , 36+(T) )	// Union skills??
 
 
-// 최초로 배울때 미리 소유하고 있어야하는 스킬. T = 0 ~ 2
+// The first to be owned by advance when learning a skill. T = 0 ~ 2
 #define	SKILL_NEED_SKILL_CNT				3
-#define	SKILL_NEED_SKILL_INDEX(S,T)			g_SkillList.m_SkillDATA.GetData( S , 39+(T)*2 )
-#define	SKILL_NEDD_SKILL_LEVEL(S,T)			g_SkillList.m_SkillDATA.GetData( S , 40+(T)*2 )
+#define	SKILL_NEED_SKILL_INDEX(S,T)			g_SkillList.m_SkillDATA.GetData( S , 39+(T)*2 )	// Prerequisite skill
+#define	SKILL_NEDD_SKILL_LEVEL(S,T)			g_SkillList.m_SkillDATA.GetData( S , 40+(T)*2 )	// Prerequisite skill level
 
-// 최초로 배우거나 레벨업시 필요한 조건 능력치. T = 0 ~ 2
+// The first condition need to learn or level up ability. T = 0 ~ 2
 #define	SKILL_NEED_ABILITY_TYPE_CNT			2
-#define	SKILL_NEED_ABILITY_TYPE(S,T)		g_SkillList.m_SkillDATA.GetData( S , 45+(T)*2 )	// 값은 AT_DEX~AT_SENSE 만 사용됨
-#define	SKILL_NEED_ABILITY_VALUE(S,T)		g_SkillList.m_SkillDATA.GetData( S , 46+(T)*2 )
+#define	SKILL_NEED_ABILITY_TYPE(S,T)		g_SkillList.m_SkillDATA.GetData( S , 45+(T)*2 )	// Required Ability. The value is used only for AT_DEX-AT_SENSE
+#define	SKILL_NEED_ABILITY_VALUE(S,T)		g_SkillList.m_SkillDATA.GetData( S , 46+(T)*2 )	// Required Ability Level
 
 
 #define SKILL_SCRIPT1( I )					g_SkillList.m_SkillDATA.GetData( I , 49 )		
@@ -200,78 +200,80 @@ enum enumSKILL_TAGER_FILTER
 #define SKILL_RESERVE_02( I )				g_SkillList.m_SkillDATA.GetData( I , 50 )		
 #define SKILL_ICON_NO( I )					g_SkillList.m_SkillDATA.GetData( I , 51 )		
 
-// 캐스팅 동작
+// Casting operation
 #define	SKILL_ANI_CASTING(S)				g_SkillList.m_SkillDATA.GetData( S , 52 )
 #define	SKILL_ANI_CASTING_SPEED(S)			g_SkillList.m_SkillDATA.GetData( S , 53 )
 
-/// 캐스팅 루프 동작
+/// Cast loop action
 #define	SKILL_ANI_CASTING_REPEAT(S)			g_SkillList.m_SkillDATA.GetData( S , 54 )
 #define	SKILL_ANI_CASTING_REPEAT_CNT(S)		g_SkillList.m_SkillDATA.GetData( S , 55 )
 
-/// 캐스팅 이펙트
+/// Cast effect
 #define SKILL_CASTING_EFFECT_CNT			4
 #define SKILL_CASTING_EFFECT( I,T )			g_SkillList.m_SkillDATA.GetData( I , 56 + (T * 3) )
 #define SKILL_CASTING_EFFECT_POINT( I,T )	g_SkillList.m_SkillDATA.GetData( I , 57 + (T * 3) )
 #define SKILL_CASTING_SOUND( I,T )			g_SkillList.m_SkillDATA.GetData( I , 58 + (T * 3) )
 
-// 실제 동작
+// Actual behavior
 #define	SKILL_ANI_ACTION_TYPE(S)			g_SkillList.m_SkillDATA.GetData( S , 68 )
 #define	SKILL_ANI_ACTION_SPEED(S)			g_SkillList.m_SkillDATA.GetData( S , 69 )
 #define	SKILL_ANI_HIT_COUNT(S)				g_SkillList.m_SkillDATA.GetData( S , 70 )
 
-/// 발사 총알 이펙트
+/// To launch a bullet effects
 #define SKILL_BULLET_NO( I )				g_SkillList.m_SkillDATA.GetData( I , 71 )
 #define SKILL_BULLET_LINKED_POINT( I )		g_SkillList.m_SkillDATA.GetData( I , 72 )
 #define SKILL_BULLET_FIRE_SOUND( I )		g_SkillList.m_SkillDATA.GetData( I , 73 )
 
-/// 타격 이펙트
-#define SKILL_HIT_EFFECT( I )				g_SkillList.m_SkillDATA.GetData( I , 74 )			//	타격 효과
-#define SKILL_HIT_EFFECT_LINKED_POINT( I )	g_SkillList.m_SkillDATA.GetData( I , 75 )			//	타격 효과
-#define SKILL_HIT_SOUND( I )				g_SkillList.m_SkillDATA.GetData( I , 76 )			//	타격 효과음
+/// Blow effects
+#define SKILL_HIT_EFFECT( I )				g_SkillList.m_SkillDATA.GetData( I , 74 )			//	Blow effects
+#define SKILL_HIT_EFFECT_LINKED_POINT( I )	g_SkillList.m_SkillDATA.GetData( I , 75 )			//	Blow effects
+#define SKILL_HIT_SOUND( I )				g_SkillList.m_SkillDATA.GetData( I , 76 )			//	Blow effects
 
-/// 연타 더미 이펙트
+/// Battered pile effect
 #define SKILL_HIT_DUMMY_EFFECT_CNT			2
-#define SKILL_HIT_DUMMY_EFFECT( I, T )					g_SkillList.m_SkillDATA.GetData( I , 77 + 3*T )			//	더미 타격 효과
-#define SKILL_HIT_DUMMY_EFFECT_LINKED_POINT( I, T )		g_SkillList.m_SkillDATA.GetData( I , 78 + 3*T )			//	더미 타격 효과
-#define SKILL_HIT_DUMMY_SOUND( I, T )					g_SkillList.m_SkillDATA.GetData( I , 79 + 3*T )			//	더미 타격 효과음
+#define SKILL_HIT_DUMMY_EFFECT( I, T )					g_SkillList.m_SkillDATA.GetData( I , 77 + 3*T )			//	The effect of hitting a pile of
+#define SKILL_HIT_DUMMY_EFFECT_LINKED_POINT( I, T )		g_SkillList.m_SkillDATA.GetData( I , 78 + 3*T )			//	The effect of hitting a pile of
+#define SKILL_HIT_DUMMY_SOUND( I, T )					g_SkillList.m_SkillDATA.GetData( I , 79 + 3*T )			//	Hitting a pile of sound effects
 
-#define SKILL_AREA_HIT_EFFECT( I )			g_SkillList.m_SkillDATA.GetData( I , 83 )								//	지역 타격 효과
-#define SKILL_AREA_HIT_SOUND( I )			g_SkillList.m_SkillDATA.GetData( I , 84 )								//	지역 타격 효과음
+#define SKILL_AREA_HIT_EFFECT( I )			g_SkillList.m_SkillDATA.GetData( I , 83 )								//	The local strike effects
+#define SKILL_AREA_HIT_SOUND( I )			g_SkillList.m_SkillDATA.GetData( I , 84 )								//	Local blow effects
 
 #define	SKILL_LEVELUP_NEED_ZULY( I )		g_SkillList.m_SkillDATA.GetData( I , 85 )				
 
 
-#define	SKILL_ATTRIBUTE( I )				g_SkillList.m_SkillDATA.GetData( I , 86 )///1 : 아바타 스킬 , 2: PAT스킬 , 3: 공통 스킬
+#define	SKILL_ATTRIBUTE( I )				g_SkillList.m_SkillDATA.GetData( I , 86 )			///1 : Avatar 2: PAT skill, skill, 3: common skill
 
 
 
-#define SKILL_INCREASE_ABILITY_CNT			3														// 88~99
-#define SKILL_STATE_STB( I,C )				g_SkillList.m_SkillDATA.GetData( I , 88+(C)*4 )		// 상태 번호
-#define SKILL_INCREASE_ABILITY( I,C )		g_SkillList.m_SkillDATA.GetData( I , 89+(C)*4 )		// 변경능력치.
-#define SKILL_INCREASE_ABILITY_VALUE( I,C )	g_SkillList.m_SkillDATA.GetData( I , 90+(C)*4 )		// 변경수치.
-#define SKILL_CHANGE_ABILITY_RATE( I,C )	g_SkillList.m_SkillDATA.GetData( I , 91+(C)*4 )		// 변경비율.
+#define SKILL_INCREASE_ABILITY_CNT			3													// 88~99
+#define SKILL_STATE_STB( I,C )				g_SkillList.m_SkillDATA.GetData( I , 88+(C)*4 )		// Status effect
+#define SKILL_INCREASE_ABILITY( I,C )		g_SkillList.m_SkillDATA.GetData( I , 89+(C)*4 )		// The ability to change.
+#define SKILL_INCREASE_ABILITY_VALUE( I,C )	g_SkillList.m_SkillDATA.GetData( I , 90+(C)*4 )		// Change the figures.
+#define SKILL_CHANGE_ABILITY_RATE( I,C )	g_SkillList.m_SkillDATA.GetData( I , 91+(C)*4 )		// The rate of change.
 
 
-#define SKILL_CANT_USE_OTHER_SKILL( I )		g_SkillList.m_SkillDATA.GetData( I , 100 )
+#define SKILL_CANT_USE_OTHER_SKILL( I )		g_SkillList.m_SkillDATA.GetData( I , 100 )			// Blocks this skill from being learned
 
-#define SKILL_CHILD_SKILL_CNT				5														// 101~110
-#define SKILL_CHILD_SKILL_INDEX( I,C )		g_SkillList.m_SkillDATA.GetData( I , 101+(C)*2 )		// 하위 스킬
-#define SKILL_CHILD_SKILL_LEVEL( I,C )		g_SkillList.m_SkillDATA.GetData( I , 102+(C)*2 )		// 하위 스킬 레벨
+#define SKILL_CHILD_SKILL_CNT				5													// 101~110
+#define SKILL_CHILD_SKILL_INDEX( I,C )		g_SkillList.m_SkillDATA.GetData( I , 101+(C)*2 )	// Unlocks this skill
+#define SKILL_CHILD_SKILL_LEVEL( I,C )		g_SkillList.m_SkillDATA.GetData( I , 102+(C)*2 )	// Unlocks this skill level
 
-#define SKILL_SLOT_NUM( I )					g_SkillList.m_SkillDATA.GetData( I , 111 )			// 슬롯 번호
-#define SKILL_NEED_SKILLBOOK( I )			g_SkillList.m_SkillDATA.GetData( I , 112 )			// 필요 스킬북
+																								
+
+#define SKILL_SLOT_NUM( I )					g_SkillList.m_SkillDATA.GetData( I , 111 )			// Slot number
+#define SKILL_NEED_SKILLBOOK( I )			g_SkillList.m_SkillDATA.GetData( I , 112 )			// Skill in the North
 
 
-// 11, 12, 21~26 컬럼이 비어 있다..추가 할때 그곳 써도 될듯.
+// 11, 12, 21~26 Column is empty. .. When there seemed to be further justified.
 
 #define SKILL_ATTRIBUTE_AVATAR				1
 #define SKILL_ATTRIBUTE_CART				2
 #define SKILL_ATTRIBUTE_CASTLEGEAR			4
 
 
-#define	SA_STOP						0	// 스킬 적용후 정지
-#define	SA_ATTACK					1	// 스킬 적용후 타겟을 공격
-#define	SA_RESTORE					2	// 스킬 사용후 이전 명령 복귀
+#define	SA_STOP						0	// After applying a skill stop
+#define	SA_ATTACK					1	// After applying targeted attack skill
+#define	SA_RESTORE					2	// After returning the previous command using a skill
 
 #ifdef	__SERVER
 	#define	SKILL_RELOAD_SECOND(S)			g_SkillList.m_pReloadTIME[ S ]
@@ -282,13 +284,13 @@ class CSkillLIST
 private:
 	int			m_iSkillCount;	
 
-	float	   *m_pCastingAniSPEED;		/// 미리 계산되어진 스킬 케스팅 동작 속도
-	float	   *m_pActionAniSPEED;		/// 미리 계산되어지 스킬 실제 동작 속도.
+	float	   *m_pCastingAniSPEED;		/// Calculated in advance skill casting speed
+	float	   *m_pActionAniSPEED;		/// Calculate the actual speed is a skill.
 	
-	std::vector<int>	m_list_Common;			//공통 스킬 리스트.	.
-	std::vector<int>	m_list_Job_Skill[4][4];	//1레벨 스킬 리스트.
-											//솔져, 뮤즈, 호커, 딜러.
-											//솔져 : 기본, 한손, 양손, 2차전직스킬	
+	std::vector<int>	m_list_Common;			//Common skill list.	.
+	std::vector<int>	m_list_Job_Skill[4][4];	//Rank 1 skill list.
+											//The soldier, Muse, hawker, the dealer.
+											//Soldier: Basic, with one hand, two hands, the second ex-skill	
 	std::vector<int>	m_list_Cart;
 	std::vector<int>	m_list_Castlegear;
 	std::vector<int>	m_list_Unique;

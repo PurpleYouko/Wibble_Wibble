@@ -139,7 +139,7 @@ public   :
 	
 
 	void Recv_gsv_CLEAR_STATUS ();
-	void Recv_gsv_SPEED_CHANGED ();
+	void Recv_gsv_SPEED_CHANGED ();				//0x07b8	Speed change packet??
 
 	void Recv_gsv_TRADE_REQ ();
 	void Recv_gsv_TRADE_REPLY ();
@@ -229,6 +229,9 @@ public   :
 	//----------------------------------------------------------------------------------------------------	
 	void Recv_gsv_SET_HPnMP();
 	void Recv_gsv_CHAR_HPMP_INFO();
+
+	// PY: New function to receive all stats from the server
+	void Recv_gsv_CHAR_STAT_INFO();
 
 	//----------------------------------------------------------------------------------------------------	
 	///

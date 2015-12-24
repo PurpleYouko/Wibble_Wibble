@@ -168,7 +168,8 @@ void CUserDATA::Cal_BattleAbility ()
 	Cal_RecoverHP ();
 	Cal_RecoverMP ();
 
-	if ( this->GetCur_MOVE_MODE() <= MOVE_MODE_RUN ) {
+	if ( this->GetCur_MOVE_MODE() <= MOVE_MODE_RUN ) 
+	{
 		m_iAddValue[ AT_STR	  ] += m_PassiveAbilityFromValue[ AT_STR	-AT_STR ];
 		m_iAddValue[ AT_DEX	  ] += m_PassiveAbilityFromValue[ AT_DEX	-AT_STR ];
 		m_iAddValue[ AT_INT	  ] += m_PassiveAbilityFromValue[ AT_INT	-AT_STR ];
@@ -200,8 +201,8 @@ void CUserDATA::Cal_BattleAbility ()
 	Cal_DropRATE ();
 	m_Battle.m_fRateUseMP = ( 100 - this->GetCur_SaveMP() ) / 100.f;
 
-	if ( GetCur_HP() > GetCur_MaxHP() ) SetCur_HP( GetCur_MaxHP() );
-	if ( GetCur_MP() > GetCur_MaxMP() ) SetCur_MP( GetCur_MaxMP() );
+	//if ( GetCur_HP() > GetCur_MaxHP() ) SetCur_HP( GetCur_MaxHP() );
+	//if ( GetCur_MP() > GetCur_MaxMP() ) SetCur_MP( GetCur_MaxMP() );
 
 	if ( IsApplyNewVersion() && this->GetCur_MOVE_MODE() <= MOVE_MODE_RUN ) {
 		// 대만 보행모드면...
@@ -214,10 +215,12 @@ void CUserDATA::Cal_BattleAbility ()
 
 	// 2차 전직할 경우 한국, 일본을 제외한 국가는 HP, mp, def 등을 + 해준다.
 	// 05.11.16 - 김주현 : 홍근형이 선 작업.
+	
+	//PY: this whole switch is now useless since we want the values that come from the client to be displayed as they are
+	/*
 	if( IsApplyNewVersion() )
 	{
 		SetDef_IMMUNITY( 0 );
-	
 		switch( GetCur_JOB() )
 		{
 			case CLASS_SOLDIER_121	:	// 2차 나이트
@@ -228,14 +231,16 @@ void CUserDATA::Cal_BattleAbility ()
 			case CLASS_MIXER_322	:	// 2차 스카우트
 			case CLASS_MERCHANT_421	:	// 2차 부즈주아
 			case CLASS_MERCHANT_422	:	// 2차 아티쟌
-				this->m_Battle.m_nMaxHP += 300;
-				this->m_Battle.m_nATT   += 30;
+				this->m_Battle.m_nMaxHP += 300;			//PY: Looks like just increased stuff for if you have a job. Totally not needed any more
+				this->m_Battle.m_nATT   += 30;				//PY:	left this along for now since I'm only working on HP and MaxHP
 				this->m_Battle.m_nDEF   += 25;
 				this->m_Battle.m_nRES   += 20;
 				SetDef_IMMUNITY( 30 );
 				break;
 		}
+		
 	}
+	*/
 
 }
 void CUserDATA::Cal_RecoverHP ()
@@ -337,13 +342,21 @@ void CUserDATA::Cal_AddAbility ()
 extern bool IsIROSE ();
 int CUserDATA::Cal_MaxHP ()
 {
+	//PY: set elsewhere so just return the value
+	return m_Battle.m_nMaxHP;
+	//don't need teh rest of this any more
+
 	int iA = 0, iM1 = 0;
 
 #ifdef _NEWSTATUS
 		// 05.12.06 : 김주현 - 신버젼용 HP 계산식 변경. 모든 직업 통일. [(LV+5)*SQRT(LV+20)*3.5+(STR*2)]+아이템 증가치
 		float fC;
 		iA=5,	iM1=20, fC=3.5f;
-		m_Battle.m_nMaxHP  = (short)( ( this->GetCur_LEVEL()+iA ) * sqrtf(this->GetCur_LEVEL()+iM1) * fC + ( this->GetCur_STR()*2 ) + this->m_iAddValue[ AT_MAX_HP ] );
+		//m_Battle.m_nMaxHP  = (short)( ( this->GetCur_LEVEL()+iA ) * sqrtf(this->GetCur_LEVEL()+iM1) * fC + ( this->GetCur_STR()*2 ) + this->m_iAddValue[ AT_MAX_HP ] );
+		//PY: This whole thing is kinda stupid actually. Let it just return the existing Battle.m_nMaxHP value that we set in the 0x07ec packet
+		//m_Battle.m_nMaxHP = GetCur_MaxHP();		//this version of GetCur_MaxHP() is virtual and returns zero so what's the frickin point of it
+		if(m_Battle.m_nMaxHP < 10)
+			m_Battle.m_nMaxHP = 10;				//PY: just to stop Avatars coming in with zero health
 		
 #else
 	int iM2 = 0;
@@ -413,14 +426,19 @@ int CUserDATA::Cal_MaxHP ()
 	
 #endif
 
-	iA = this->GetPassiveSkillValue( AT_PSV_MAX_HP ) + (short)( m_Battle.m_nMaxHP * this->GetPassiveSkillRate( AT_PSV_MAX_HP ) / 100.f );
-	m_Battle.m_nMaxHP += iA;
+	//PY: No this is not happening. Just give us the unmodified version
+	//iA = this->GetPassiveSkillValue( AT_PSV_MAX_HP ) + (short)( m_Battle.m_nMaxHP * this->GetPassiveSkillRate( AT_PSV_MAX_HP ) / 100.f );
+	//m_Battle.m_nMaxHP += iA;
 
 	return m_Battle.m_nMaxHP;
 }
 //-------------------------------------------------------------------------------------------------
 int CUserDATA::Cal_MaxMP ()
 {
+	//PY: set elsewhere so just return the value
+	return m_Battle.m_nMaxHP;
+	//the rest of this is no longer needed
+	
 	int   iA, iM2;
 	float fM1;
 
@@ -456,6 +474,10 @@ int CUserDATA::Cal_MaxMP ()
 //-------------------------------------------------------------------------------------------------
 int CUserDATA::Cal_MaxWEIGHT ()
 {
+	//PY modified in 0x07ed packet from server
+	return this->m_Battle.m_nMaxWEIGHT;
+	//the rest of this is now useless
+
 	// * ITEM = 800 + (LV * 4) + (STR * 6) + 스킬 소지량
 	this->m_Battle.m_nMaxWEIGHT  = (int) ( 1100 + ( this->GetCur_LEVEL() * 5 ) + ( this->GetCur_STR() * 6 ) );
 	this->m_Battle.m_nMaxWEIGHT += this->m_iAddValue[ AT_WEIGHT ];
@@ -477,6 +499,10 @@ int CUserDATA::Cal_MaxWEIGHT ()
 //-------------------------------------------------------------------------------------------------
 int CUserDATA::Cal_AvoidRATE ()
 {
+	//PY: Set elsewhere now so just return the value
+	return m_Battle.m_nAVOID;
+	//the rest of this is no longer needed
+	
 	tagITEM *pITEM;
 	int iDefDura = 0;
 
@@ -528,6 +554,10 @@ int CUserDATA::Cal_AvoidRATE ()
 int CUserDATA::Cal_CRITICAL ()
 {
 
+	//PY: Crit set elsewhere so just return it
+	return m_Battle.m_iCritical;
+	//the rest of this is no longer needed
+
 #if defined(_GBC)
 	m_Battle.m_iCritical  = (int)( GetCur_SENSE() + ( GetCur_CON() + 20 ) * 0.2f );
 #else
@@ -553,6 +583,11 @@ int CUserDATA::Cal_CRITICAL ()
 //-------------------------------------------------------------------------------------------------
 int CUserDATA::Cal_RESIST ()
 {
+	//PY: Set elsewhere so just return the value
+	return this->m_Battle.m_nRES;
+	//the rest of this is no longer needed
+
+
 	int iTotRES=0, iTotGradeRES=0;
 	int iTotNewKrRes = 0;
 	int iRes = 0, iGradeRES = 0, iGradeRateRES = 0;
@@ -599,6 +634,10 @@ int CUserDATA::Cal_RESIST ()
 //-------------------------------------------------------------------------------------------------
 int CUserDATA::Cal_HIT ()
 {
+	//Set elsewhere so just return the value
+	return this->m_Battle.m_nHIT;
+	//the rest of this is no longer needed
+	
 	int iHitRate;
 	tagITEM*pRightWPN; 
 
@@ -670,6 +709,10 @@ float CUserDATA::Cal_NEWKRAttack(int AttckPWR, unsigned short igrade)
 //-------------------------------------------------------------------------------------------------
 int CUserDATA::Cal_ATTACK ()
 {
+	//PY: We already set the attack value elsewhere so just return it
+	return this->m_Battle.m_nATT;
+	//the rest of this function is no longer needed
+	
 	int iAP = 0;
 
 	if ( this->GetCur_MOVE_MODE() <= MOVE_MODE_RUN ) 
@@ -945,6 +988,9 @@ int CUserDATA::Cal_ATTACK ()
 //-------------------------------------------------------------------------------------------------
 int CUserDATA::Cal_DEFENCE ()
 {
+	//PY: just return defense. Don't need the rest of this stuff
+	return this->m_Battle.m_nDEF;
+
 	int iTotDEF=0, iTotGradeDEF=0, iTotGRADE=0;
 	float iDefRATE = 0;
 	int iTotPatPartsDEF = 0;
@@ -2375,10 +2421,10 @@ BYTE CUserDATA::Skill_LEARN( short nSkillSLOT, short nSkillIDX, bool bSubPOINT )
 						case CLASS_MIXER_322	:	// 2차 스카우트
 						case CLASS_MERCHANT_421	:	// 2차 부즈주아
 						case CLASS_MERCHANT_422	:	// 2차 아티쟌
-							this->m_Battle.m_nMaxHP += 300;
-							this->m_Battle.m_nATT   += 30;
-							this->m_Battle.m_nDEF   += 25;
-							this->m_Battle.m_nRES   += 20;
+							//this->m_Battle.m_nMaxHP += 300;			//PY: Nope. You don't get to modify my MaxHP. That's the server's job now
+							//this->m_Battle.m_nATT   += 30;
+							//this->m_Battle.m_nDEF   += 25;
+							//this->m_Battle.m_nRES   += 20;
 							SetDef_IMMUNITY( 30 );
 							break;
 					}
@@ -2943,6 +2989,11 @@ void  CUserDATA::SetCur_HP (short nValue)
 
 	this->m_GrowAbility.m_nHP = nValue;				
 }	
+
+void CUserDATA::SetCur_MaxHP(short nValue)
+{
+	this->m_GrowAbility.m_MaxHP = nValue;
+}
 
 
 void  CUserDATA::SetCur_MP (short nValue)	

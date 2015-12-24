@@ -87,7 +87,8 @@ void CIconItem::Draw()
 		assert( 0 && "Item is Empty @CIconItem::Draw()" );
 		return;
 	}
-
+	if(Item.GetTYPE() == 0 || Item.GetItemNO() == 0)
+		return;
 	m_iIconGraphicID	= ITEM_ICON_NO( Item.GetTYPE(), Item.GetItemNO() );
 
 

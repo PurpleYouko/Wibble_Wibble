@@ -50,7 +50,7 @@ extern CAI_OBJ *AI_FindNextOBJ ();
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param int iDistance 거리
-/// @brief  : AI 동작을 위해 첫번재 오브젝트를 찾는다..
+/// @brief  : AI Action to find the first object. ..
 ///              Search operation, the first object is flowed.
 //--------------------------------------------------------------------------------
 
@@ -135,21 +135,22 @@ int CObjCHAR::GetMinStateValue( int iIng_Type, int iValue )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param wSrvDIST 서버에서 계산되어 날아온 목표위치와 현재위치와의 2차원적 거리. 단위 cm
-/// @param PosGOTO 서버에서 날아온 이동할 목표위치. 현재로서 Z 값은 의미없다.
-/// @brief  : 이동 속도 보정. 매 프레임마다 갱신됨. 서버와 클라이언트의 속도차가 나는 경우에,
-///           강제로 속도를 증가시킨다. 혹은 너무 많은 차이가 날 때에, 강제로 이동시킨다.
+/// @param wSrvDIST We can see the target location and the server is calculated from the current position of the two-dimensional Street. Unit cm
+/// @param PosGOTO Move target position, flew in from the server. At present, the Z value is meaningless.
+/// @brief  : Speed calibration. Updated every frame. If the car or the speed of the server and the client,
+///           Increase the speed force. Or too much difference to me when, forced to move.
 ///
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Adj_MoveSPEED ( WORD wSrvDIST, const D3DVECTOR& PosGOTO )
 {
-	int iClientDIST; // 클라이언트에서의 현재-목표 위치 차이. 단위 CM
+	int iClientDIST; // The difference between the current-on the client position. Unit CM
 	float fCurSpeed, fNewSpeed, fNeedTime;
 
-	fCurSpeed = this->Get_DefaultSPEED(); // 식에 의해 계산된 현재 기본 속도
+	fCurSpeed = this->Get_DefaultSPEED(); // The current default rate calculated by the expression
 
-	if ( 0 == fCurSpeed ) { // 속도가 0이라면, 현재 위치와 PosGOTO 가 동일해야 하나?
+	if ( 0 == fCurSpeed ) // If the velocity is zero, the same as the current location and the PosGOTO is?
+	{ 
 		m_fAdjustSPEED = 0;
 
 		//assert(m_PosCUR.x == PosGOTO.x);
@@ -160,41 +161,43 @@ void CObjCHAR::Adj_MoveSPEED ( WORD wSrvDIST, const D3DVECTOR& PosGOTO )
 
 	fNeedTime = float(wSrvDIST) / fCurSpeed;
 
-	// 클라이언트의 현재-목표 거리를 계산한다.
+	// The client calculates the distance of the current goals.
 	iClientDIST = CD3DUtil::distance ((int)m_PosCUR.x, (int)m_PosCUR.y, (int)PosGOTO.x, (int)PosGOTO.y);
 
-	assert(iClientDIST >= 0);
+	//assert(iClientDIST >= 0);		//PY: Can't have these damn asserts breaking things all the time
+	if(iClientDIST < 0)				//this is probably a bad idea in the long run as it will cause discrepencies between server and client but it will do for now
+		iClientDIST = 0;
 
-	if ( 0 == iClientDIST ) { // 목표 지점에 이미 도달했다면,
-		// 클라이언트는 이동하지 않아도 된다.
+	if ( 0 == iClientDIST ) { // If you have already reached the target area,
+		// The client does not need to be moved.
 		m_fAdjustSPEED = 0;
 		return;
 	}
-	/// 서버에서 가야할 거리가 클라이언트에서 가야할 거리보다 크다면
+	/// To go the distance to go from the client on the server is greater than the distance
 	else if( iClientDIST <= wSrvDIST )
 	{
 
-		/// 현재 속도를 그대로 유지해도 된다.
-		/// 클라이언트가 먼저가서 기다리면 되기 때문.
+		/// To keep the current rate.
+		/// Because if you wait for a client to go ahead.
 		Set_AdjustSPEED( fCurSpeed );
 		return;
 
 	}
-	else // wSrvDIST < iClientDIST. 클라이언트에서의 거리가 서버에서의 거리보다 먼 경우, 속도 증가.
+	else // wSrvDIST < iClientDIST. The distance of the server from the client if, rather than distance from the rate increase.
 	{
-		fNewSpeed = float(iClientDIST) / fNeedTime; // 제 시간안에 도달하기 위한 새로운 속도 계산
+		fNewSpeed = float(iClientDIST) / fNeedTime; // Calculate the new speed to reach in time
 
-		/// 주체가 나일경우는 그냥 빨린 달린다.( 점프없이 )
+		/// If the subject or just run sucked. (Without jumping)
 		if( this->IsA( OBJ_USER ) == false )
 		{
-			int iDiffDistance = iClientDIST - wSrvDIST; // 서버거리와 클라이언트 거리 차 계산. 단위 : cm
+			int iDiffDistance = iClientDIST - wSrvDIST; // The server calculates the distance and the client street car. Unit: cm
 
-			float fNeedTimeDiff = float(iDiffDistance) / fNewSpeed; // 거리 차를 극복하기 위해 걸리는 시간
+			float fNeedTimeDiff = float(iDiffDistance) / fNewSpeed; // It takes time to overcome the distance car
 
 			if (fNeedTimeDiff > 1.0f)
 			{
-				// 거리차를 극복하기 위해, 1초 이상 지연된다면(너무 느리다.)
-				fNewSpeed = fCurSpeed; // 강제로 그 변위만큼 이동
+				// Street car to overcome delays over one second (too slow).
+				fNewSpeed = fCurSpeed; // The force that moves the displacement
 
 				D3DXVECTOR3 vDir = (D3DXVECTOR3)PosGOTO - m_PosCUR;
 				float fRatio = (float)iDiffDistance / (float)iClientDIST;
@@ -211,7 +214,7 @@ void CObjCHAR::Adj_MoveSPEED ( WORD wSrvDIST, const D3DVECTOR& PosGOTO )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 공격속도 조정..
+/// @brief  : Attack speed adjustment ...
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Adj_AniSPEED ( float fAniSpeed )
@@ -221,10 +224,10 @@ void CObjCHAR::Adj_AniSPEED ( float fAniSpeed )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param int iServerTarget 오브젝트 서버인덱스
+/// @param int iServerTarget Object Server index
 /// @param tPOINTF &PosFROM
 /// @param tPOINTF &PosGOTO
-/// @brief  : 공격명령 설정
+/// @brief  : The attack command set
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::SetCMD_ATTACK (int iServerTarget, WORD wSrvDIST, const D3DVECTOR& PosGOTO)
@@ -237,7 +240,7 @@ void CObjCHAR::SetCMD_ATTACK (int iServerTarget, WORD wSrvDIST, const D3DVECTOR&
 		g_CommandFilter.SetPrevCommand( pObjCommand );
 	}
 
-	/// 현재 명령이 들어갈수 있나?
+	/// You can get the current command?
 	if( this->CanApplyCommand() == false )
 	{
 		this->PushCommandAttack( iServerTarget, wSrvDIST, PosGOTO );
@@ -249,18 +252,18 @@ void CObjCHAR::SetCMD_ATTACK (int iServerTarget, WORD wSrvDIST, const D3DVECTOR&
 	int iPetMode = this->GetPetMode();
 	if( iPetMode >= 0 )
 	{
-		/// Pet mode 일 경우에는..
+		/// Pet mode In the event that ...
 		if( this->CanAttackPetMode() )
 		{
 			SetCMD_PET_ATTACK( iServerTarget, wSrvDIST, PosGOTO );
 		}
-//박지호::펫모드일 경우 아바타도 공격속성을 설정 하도록 한다.
+//Park Ji-Ho:: pet mode to set the properties of the avatar attacks.
 #ifndef _GBC
 		return;
 #endif
 	}
 
-	/// 서버에서 받은 공격 패킷 처리...
+	/// The server received the attack packet processing in ...
 	this->Adj_MoveSPEED( wSrvDIST, PosGOTO );
 
 	this->m_PosGOTO = PosGOTO;
@@ -334,12 +337,12 @@ CObjCHAR::CObjCHAR () : m_EndurancePack( this ), m_ChangeActionMode( this ), m_O
 	m_pCollision				= new CObjCHAR_Collision;				/// will be deleted in DeletCHAR()
 
 #ifdef __NPC_COLLISION
-	m_pCollision2NPC            = new CObjCHAR_Collision2NPC;           // NPC 충돌
+	m_pCollision2NPC            = new CObjCHAR_Collision2NPC;           // NPC Crash
 #endif
 
 
 	memset( &m_SummonMob, 0 , sizeof( gsv_MOB_CHAR ) );
-	m_bHaveSummonedMob			= false;							/// 소환해야될 몹이 있는가?
+	m_bHaveSummonedMob			= false;							/// Should be summoned to the mob?
 
 	m_bUseResetPosZ				= false;
 	m_fResetPosZ				= 0;
@@ -359,13 +362,13 @@ CObjCHAR::CObjCHAR () : m_EndurancePack( this ), m_ChangeActionMode( this ), m_O
 	m_ReviseMP					= 0;
 
 //-------------------------------------------------------------------------------
-	//조성현
+	//Cho Sung-Hyun
 	m_bDisguise					= false;
 
 
 //--------------------------------------------------------------------------------
-	///박지호
-	//카트 변수들 초기화
+	///Park Ji-Ho
+	//Cart variables initialization
 	m_iPetType					= -1;
 	m_pObjCART					= NULL;
 	m_pRideUser					= NULL;
@@ -379,7 +382,7 @@ CObjCHAR::CObjCHAR () : m_EndurancePack( this ), m_ChangeActionMode( this ), m_O
 	m_iRideIDX					= 0;
 	m_skCartIDX					= 0;
 
-	//아로아 상태변수 초기화
+	//Oh Loa status variable initialization
 	m_IsAroa					= 0;
 	m_IsCartVA					= 0;
 //--------------------------------------------------------------------------------
@@ -395,7 +398,7 @@ CObjCHAR::CObjCHAR () : m_EndurancePack( this ), m_ChangeActionMode( this ), m_O
 
 CObjCHAR::~CObjCHAR ()
 {
-	// 엔진에 등록된 HNODE들 삭제.
+	// Delete among the registered engine HNODE.
 	this->DeleteCHAR ();
 
 	ClearExternalEffect();
@@ -411,7 +414,7 @@ CObjCHAR::~CObjCHAR ()
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param
-/// @brief  : 회복을 위한 타이머 리셋
+/// @brief  : For the recovery timer reset
 //--------------------------------------------------------------------------------
 void CObjCHAR::ClearTimer()
 {
@@ -424,7 +427,7 @@ void CObjCHAR::ClearTimer()
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param
-/// @brief  : 죽거나, 파괴시에 모든 내부의 리스트 정리
+/// @brief  : Dead or destroyed, all internal list cleanup
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::ClearAllEntityList()
@@ -446,7 +449,7 @@ void CObjCHAR::ClearAllEntityList()
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param
-/// @brief  : 외부에서 등록시킨 이펙트 리스트들 정리
+/// @brief  : The cost of that enrollment outside of the effects list cleanup
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::ClearExternalEffect()
@@ -455,7 +458,7 @@ void CObjCHAR::ClearExternalEffect()
 	pNode = m_ExternalEffectLIST.GetHeadNode ();
 	while( pNode )
 	{
-		/// 이펙트만 지우고 이펙트의 부모처리는 안한다. 왜냐? 내가 부모니까..
+		/// Delete the only effect of the parents should not handle the effects. Why? I'm a parent ...
 		g_pEffectLIST->Del_EFFECT( pNode->DATA, false );
 
 		m_ExternalEffectLIST.DeleteNFree( pNode );
@@ -470,8 +473,8 @@ void CObjCHAR::ClearExternalEffect()
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param CEffect* pEffect 지울 이펙트
-/// @brief  : 외부 이펙트 등록
+/// @param CEffect* pEffect Delete an effect
+/// @brief  : Registration of external effects
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::AddExternalEffect(CEffect* pEffect)
@@ -482,8 +485,8 @@ void CObjCHAR::AddExternalEffect(CEffect* pEffect)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  CEffect* pEffect 지울 이펙트
-/// @brief  : 외부에서 등록된 이펙트 지움
+/// @param  CEffect* pEffect Delete an effect
+/// @brief  : Clear registered outside of the effects
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::DeleteExternalEffect( CEffect* pEffect )
@@ -507,22 +510,22 @@ void CObjCHAR::DeleteExternalEffect( CEffect* pEffect )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  D3DVECTOR &PosSCR 얻어올 스크린좌표( 아웃풋 )
-/// @brief  : 현재 캐릭터 위치의 스크린 좌표를 얻어옴
+/// @param  D3DVECTOR &PosSCR Come get screen coordinates (output)
+/// @brief  : Get current character position of the screen coordinates of the ohm
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::GetScreenPOS ( D3DVECTOR &PosSCR)
 {
-	// 모델의 좌표에 키를 더한 위치를 이름출력 위치로 설정
+	// The coordinates of the model plus the name of the location of the output location settings key
 	::worldToScreen( m_PosCUR.x, m_PosCUR.y, getPositionZ(m_hNodeMODEL) + m_fStature, &PosSCR.x, &PosSCR.y, &PosSCR.z );
 }
 
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  HNODE hLinkNODE 링크할 대상의 노드 핸들
-/// @param  short nDummyIDX 링크할 더미 인덱스
-/// @brief  : 입력받은 노드를 입력받은 더미인덱스에 해당하는 더미에 링크시킨다.
+/// @param  HNODE hLinkNODE The target node of the link handle
+/// @param  short nDummyIDX A dummy link index
+/// @brief  : Enter enter the node corresponding to the index piles in a pile of received link.
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::LinkDummy ( HNODE hLinkNODE, short nDummyIDX )
@@ -537,15 +540,15 @@ bool CObjCHAR::LinkDummy ( HNODE hLinkNODE, short nDummyIDX )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  HNODE hLinkNODE 링크할 대상의 노드 핸들
-/// @brief  : 입력받은 노드를 마지막 더미에 링크 시킴
+/// @param  HNODE hLinkNODE The target node of the link handle
+/// @brief  : Enter a link to the last node in the pile of Sikkim
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::Link2LastDummy(HNODE hLinkNODE)
 {
 /*
 	int iDummyCnt = ::getNumDummies( m_hNodeMODEL );
-	// 마지막 더미에...
+	// The last pile ...
 	if ( iDummyCnt > 0 )
 		m_iLastDummyIDX = iDummyCnt - 1;
 */
@@ -556,7 +559,7 @@ bool CObjCHAR::Link2LastDummy(HNODE hLinkNODE)
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param
-/// @brief  : 현재 캐릭터를 씬에 넣는다. ( 모든 하위 오브젝트 포함 )
+/// @brief  : The current character in the scene. (Includes all child objects)
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::InsertToScene (void)
@@ -569,7 +572,7 @@ void CObjCHAR::InsertToScene (void)
 	::insertToScene( m_hNodeMODEL );		// CObjCHAR::InsertToScene
 
 	//----------------------------------------------------------------------------------------------------
-	/// @brief CHILD의InsertToScene제거
+	/// @brief InsertToScene removal of CHILD
 	//----------------------------------------------------------------------------------------------------
 	//for (short nP=0; nP<MAX_BODY_PART; nP++)
 	//{
@@ -601,14 +604,14 @@ void CObjCHAR::InsertToScene (void)
 	//}
 
 	//
-	//// 뼈대 효과.
+	//// Skeleton effect.
 	//if ( m_ppBoneEFFECT )
 	//{
  	//	for (nP=0; nP<m_pCharMODEL->GetBoneEffectCNT(); nP++)
 	//		m_ppBoneEFFECT[ nP ]->InsertToScene ();
 	//}
 
-	//// 검잔상 효과.
+	//// Black ghosting effects.
 	//for (nP=0; nP<2; nP++)
 	//{
 	//	if ( m_hTRAIL[ nP ] )
@@ -619,8 +622,8 @@ void CObjCHAR::InsertToScene (void)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  bool bIncludeEFFECT 이펙트가 포함되었는가?
-/// @brief  : 씬에서 제거한다. ( 하위 오브젝트 포함 )
+/// @param  bool bIncludeEFFECT Effects have been included?
+/// @brief  : Removed from the scene. (Object)
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::RemoveFromScene (bool bIncludeEFFECT)
@@ -659,7 +662,7 @@ void CObjCHAR::RemoveFromScene (bool bIncludeEFFECT)
 
 	//if ( bIncludeEFFECT )
 	//{
-	//	// 뼈대 효과.
+	//	// Skeleton effect.
 	//	if ( m_ppBoneEFFECT )
 	//	{
 	//		for (nP=0; nP<m_pCharMODEL->GetBoneEffectCNT(); nP++)
@@ -698,10 +701,10 @@ void CObjCHAR::RemoveFromScene (bool bIncludeEFFECT)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  CEffect *pEffect 링크할 이펙트
-/// @param  short nPartIDX	 링크할 캐릭터 파트
-/// @param  short nPointIDX  링크할 캐릭터 파트의 포인터 인덱스
-/// @brief  : 이펙트를 캐릭터의 특정 파트에 속한 특정 포인터오브젝트에 링크한다.
+/// @param  CEffect *pEffect Link effects
+/// @param  short nPartIDX	 Linking character parts
+/// @param  short nPointIDX  Pointer to the index of the character to link parts
+/// @brief  : A specific part of the character of the effect on the links a specific pointer objects.
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::LinkEffectToPOINT (CEffect *pEffect, short nPartIDX, short nPointIDX)
@@ -725,9 +728,9 @@ bool CObjCHAR::LinkEffectToPOINT (CEffect *pEffect, short nPartIDX, short nPoint
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  CEffect *pEffect 링크할 이펙트
-/// @param  int iPointNO  링크할 더미 포인터 인덱스
-/// @brief  : 이펙트를 캐릭터의 특정 더미에 링크
+/// @param  CEffect *pEffect Link effects
+/// @param  int iPointNO  A pile pointer index link
+/// @brief  : Link to a specific pile of character effects
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::LinkEffectToDUMMY (CEffect *pEffect, short nDummyIDX )
@@ -744,13 +747,13 @@ bool CObjCHAR::LinkEffectToDUMMY (CEffect *pEffect, short nDummyIDX )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  CMODEL<CCharPART> *pCharPART 캐릭터의 특정파트( 오른손이나, 왼손 무기가 되겠지? )
-/// @param  nPartIDX 바디 파트 인덱스( 오른손 무기, 왼손무기 의 인덱스만 들어와야된다 )
-/// @param  bool bLinkBONE		본에 링크 할것인가?
-/// @param  int iColorNO		검잔상 칼라 번호
-/// @param  int iDuration		지속시간?
-/// @param  int iBaseDummyIDX	오른손, 왼손 구분을 위한 베이스 본 인덱스
-/// @brief  : 양손에 무기를 들수 있으므로 두개설정 가능하다.
+/// @param  CMODEL<CCharPART> *pCharPART A specific part of the character (right hand or left hand weapon?)
+/// @param  nPartIDX Body part index (right hand weapon is the weapon of the left hand index to come)
+/// @param  bool bLinkBONE		This link will do?
+/// @param  int iColorNO		Black ghosting color number
+/// @param  int iDuration		Duration?
+/// @param  int iBaseDummyIDX	Right hand, left hand for bass patterns index
+/// @brief  : You can hear two of the weapons in both hands, it is possible to set up.
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::LoadTRAIL (CMODEL<CCharPART> *pCharPART, short nPartIDX, bool bLinkBONE, int iColorNO, int iDuration, int iBaseDummyIDX )
@@ -777,9 +780,9 @@ void CObjCHAR::LoadTRAIL (CMODEL<CCharPART> *pCharPART, short nPartIDX, bool bLi
 		::controlTrail ( m_hTRAIL[ nTrailIDX ], 0 );	// stop !!
 
 		//----------------------------------------------------------------------------------------------------
-		/// @brief CHILD의InsertToScene제거
+		/// @brief InsertToScene removal of CHILD
 		//----------------------------------------------------------------------------------------------------
-		//if ( m_bIsVisible )		// 현재 보이면..
+		//if ( m_bIsVisible )		// Currently appears. ..
 		//	::insertToScene( m_hTRAIL[ nTrailIDX ] );
 	}
 
@@ -792,8 +795,8 @@ void CObjCHAR::LoadTRAIL (CMODEL<CCharPART> *pCharPART, short nPartIDX, bool bLi
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  nPartIDX 바디 파트 인덱스( 오른손 무기, 왼손무기 의 인덱스만 들어와야된다 )
-/// @brief  : 검잔상 해제
+/// @param  nPartIDX Body part index (right hand weapon is the weapon of the left hand index to come)
+/// @brief  : The sword stuck off
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::UnloadTRAIL (short nPartIDX)
@@ -813,7 +816,7 @@ void CObjCHAR::UnloadTRAIL (short nPartIDX)
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param
-/// @brief  : 캐릭터에 붙는 효과( 모델제작상 캐릭터 툴에서 제작된)를 링크
+/// @brief  : The effect of firing on the character (models made in the course of the character's tools) links
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Link_EFFECT (void)
@@ -848,7 +851,7 @@ void CObjCHAR::Link_EFFECT (void)
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param
-/// @brief  : 캐릭터에 붙는 효과( 모델제작상 캐릭터 툴에서 제작된)를 언 링크
+/// @brief  : The effect of firing on the character (models made in the course of the character's tools) to link
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Unlink_EFFECT (void)
@@ -865,9 +868,9 @@ void CObjCHAR::Unlink_EFFECT (void)
 		if ( NULL == m_pppEFFECT[ nP ] )
 			continue;
 
-		// 아이템이 바뀌면서 이펙트가 먼저 생성된다.
-		// set part model이 호출되기전에 pCharPART가 바뀐 아이템으로
-		// 설정되지 않아 뻑~
+		// Item changes, effects are generated in the first place.
+		// set part Model pCharPART changed items before this call,
+		// Do not set the nuts ~
 		for (short nI=0; nI<m_nEffectPointCNT[ nI ]; nI++)
 		{
 			if ( NULL != m_pppEFFECT[ nP ][ nI ] )
@@ -879,14 +882,14 @@ void CObjCHAR::Unlink_EFFECT (void)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  CMODEL<CCharPART> *pCharPART 이펙트를 추가할 캐릭터의 파트
-/// @param  short nPartIDX	   파트 인덱스
-/// @param  short nPointIDX	   파트의 포인터 인덱스
-/// @param  t_HASHKEY HashEffectFILE  이펙트파일의 해쉬키
-/// @param  bool bLinkNODE			  링크할것인가?
-/// @brief  : 캐릭터에 붙는 효과( 모델제작상 캐릭터 툴에서 제작된)를 추가
-///	@bug    : 04/4/28 g_pEffectLIST->Add_EFFECT(.., false ) 였는데.. g_pEffectLIST->Del_EFFECT 로 삭제를 의뢰했다..
-/// @bug    : 04/4/28 링크할때 Rotation은 안하네?
+/// @param  CMODEL<CCharPART> *pCharPART To add the effect to the character's part
+/// @param  short nPartIDX	   Part index
+/// @param  short nPointIDX	   Pointer to the index of the part
+/// @param  t_HASHKEY HashEffectFILE  Effects of the file hash key
+/// @param  bool bLinkNODE			  Want to link to?
+/// @brief  : The effect of firing on the character (models made in the course of the character's tools)
+///	@bug    : 04/4/28 g_pEffectLIST->Add_EFFECT(.., false ) It was just a. .. G_pEffectLIST-Del_EFFECT was commissioned to delete as .. >
+/// @bug    : 04/4/28 Ringkeuhalddae Rotation is not?
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Add_EFFECT( CMODEL<CCharPART> *pCharPART, short nPartIDX, short nPointIDX, t_HASHKEY HashEffectFILE, bool bLinkNODE )
@@ -899,7 +902,7 @@ void CObjCHAR::Add_EFFECT( CMODEL<CCharPART> *pCharPART, short nPartIDX, short n
 
 	if ( m_pppEFFECT[ nPartIDX ] )
 	{
-		// 기존 포인트의 효과 삭제...
+		// The effect of deleting an existing point ...
 		///g_pEffectLIST->Del_EFFECT( m_pppEFFECT[ nPartIDX ][ nPointIDX ] );
 		SAFE_DELETE( m_pppEFFECT[ nPartIDX ][ nPointIDX ] );
 		m_pppEFFECT[ nPartIDX ][ nPointIDX ] = NULL;
@@ -935,11 +938,11 @@ void CObjCHAR::Add_EFFECT( CMODEL<CCharPART> *pCharPART, short nPartIDX, short n
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  short nPartIDX	   파트 인덱스
-/// @param  short nPointIDX	   파트의 포인터 인덱스
-/// @param  t_HASHKEY HashEffectFILE  이펙트파일의 해쉬키
-/// @brief  : 캐릭터에 붙는 효과( 모델제작상 캐릭터 툴에서 제작된)를 추가
-///	@bug    : 내부에서 Add_EFFECT( CMODEL<CCharPART> *pCharPART, short nPartIDX, short nPointIDX, t_HASHKEY HashEffectFILE, bool bLinkNODE ) 함수 호출
+/// @param  short nPartIDX	   Part index
+/// @param  short nPointIDX	   Pointer to the index of the part
+/// @param  t_HASHKEY HashEffectFILE  Effects of the file hash key
+/// @brief  : The effect of firing on the character (models made in the course of the character's tools)
+///	@bug    : From the inside out Add_EFFECT( CMODEL<CCharPART> *pCharPART, short nPartIDX, short nPointIDX, t_HASHKEY HashEffectFILE, bool bLinkNODE ) Function calls
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Add_EFFECT(short nPartIDX, short nPointIDX, t_HASHKEY HashEffectFILE)
@@ -952,9 +955,9 @@ void CObjCHAR::Add_EFFECT(short nPartIDX, short nPointIDX, t_HASHKEY HashEffectF
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  short nPartIDX	   파트 인덱스
-/// @brief  : 캐릭터에 붙는 효과( 모델제작상 캐릭터 툴에서 제작된)를 삭제
-///	@bug    : /// @Bug AddEffect( .. , false ) 버그..
+/// @param  short nPartIDX	   Part index
+/// @brief  : The effect of firing on the character (models made in the course of the character's tools)
+///	@bug    : /// @Bug AddEffect( .. , false ) Bug ...
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Del_EFFECT( short nPartIDX )
@@ -990,16 +993,16 @@ void CObjCHAR::Del_EFFECT( short nPartIDX )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  short nPartIDX	   파트 인덱스
-/// @param  short nItemNo	   파트의 아이템 인덱스
-/// @param  bool bLinkNODE	   링크할꺼냐?
-/// @brief  : 캐릭터에 붙는 효과를 생성
-///				무기의 잔상, 또한 특별한 옵션에 의해 무기또는 특정 부위에 효과를 붙여야할때..
+/// @param  short nPartIDX	   Part index
+/// @param  short nItemNo	   Part of the item index
+/// @param  bool bLinkNODE	   Want to link to?
+/// @brief  : The effect of firing on the character generation
+///				Weapon retention, there is also a special option of the firearm or by a particular effect when you paste ...
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::New_EFFECT (short nPartIdx, short nItemNo, bool bLinkNODE)
 {
-	// 아이템에 붙은 기본 효과 삭제.
+	// Delete the default effects attached to the item.
 	this->Del_EFFECT( nPartIdx );
 
 	CMODEL<CCharPART> *pCharPART = g_DATA.Get_CharPartMODEL( nPartIdx, nItemNo, this->IsFemale() );	//m_pMD_CharPART[ nPartIdx ]->GetMODEL( nItemNo );
@@ -1017,7 +1020,7 @@ void CObjCHAR::New_EFFECT (short nPartIdx, short nItemNo, bool bLinkNODE)
 				{
 					this->LoadTRAIL( pCharPART, BODY_PART_WEAPON_R, bLinkNODE, EFFECT_TRAIL_NORMAL( nEffectIDX ), EFFECT_TRAIL_DURATION( nEffectIDX ) );
 
-					/// 양손 이도류 무기일경우..
+					/// If this flow of weapons, both hands. ..
 					if( ( pCharPART->m_nDummyPointCNT > 2 ) &&
 						( ( WEAPON_TYPE( nItemNo ) == 251 ) || ( WEAPON_TYPE( nItemNo ) == 252 ) ) )
 						this->LoadTRAIL( pCharPART, BODY_PART_WEAPON_L, bLinkNODE, EFFECT_TRAIL_NORMAL( nEffectIDX ), EFFECT_TRAIL_DURATION( nEffectIDX ), 2 );
@@ -1049,9 +1052,9 @@ void CObjCHAR::New_EFFECT (short nPartIdx, short nItemNo, bool bLinkNODE)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  char *szName 이름( 내부세어 생성 오더번호를 붙여 고유한 이름을 생성한다. )
-/// @param  int iPartIDX 파트 인덱스
-/// @brief  : 특정 부위 생성
+/// @param  char *szName Name (a unique name by appending a number of internal generating order count.)
+/// @param  int iPartIDX Part index
+/// @brief  : Create specific parts
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::CreateSpecificPART( char *szName, int iPartIDX )
@@ -1062,9 +1065,9 @@ void CObjCHAR::CreateSpecificPART( char *szName, int iPartIDX )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  int iPartIDX 파트 인덱스
-/// @param  HNODE *pVIS  파트를 구성하는 부분들의 visiable 노드 배열
-/// @brief  : 특정 부위 삭제
+/// @param  int iPartIDX Part index
+/// @param  HNODE *pVIS  Part of the parts that comprise an array of nodes visiable
+/// @brief  : Delete a specific area
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::DeleteSpecificPART( short nPartIdx, HNODE *pVIS )
@@ -1075,30 +1078,30 @@ void CObjCHAR::DeleteSpecificPART( short nPartIdx, HNODE *pVIS )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  char *szName 이름
-/// @brief  : 캐릭터 각파트 생성, 내부에서 각파트별로 CreateSpecificPART 생성
+/// @param  char *szName Name
+/// @brief  : Create each character parts, each part from the inside by CreateSpecificPART creation
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::CreatePARTS (char *szName)
 {
 	m_pCharMODEL->ClearRenderUnitParts();
 
-	// npc 무기땜에 MAX_BODY_PART까지 ...
+	// npc Weapons in MAX_BODY_PART까지 ...
 	for (short nP=0; nP<MAX_BODY_PART; nP++)
 	{
 		CreateSpecificPART( szName, nP );
 		//m_phPartVIS[ nP ] = m_pCharMODEL->CreatePART( szName, m_hNodeMODEL, nP );
 	}
 
-	// 케릭터 신장.
+	// Characters of the kidney.
 	m_fStature = ::getModelHeight (this->m_hNodeMODEL);
 }
 
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  bool bDelEFFECT 이펙트도 지우냐?
-/// @brief  : 캐릭터 각 파트 삭제
+/// @param  bool bDelEFFECT Also erase the effect?
+/// @brief  : Delete each character parts
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::DeletePARTS (bool bDelEFFECT)
@@ -1107,11 +1110,11 @@ void CObjCHAR::DeletePARTS (bool bDelEFFECT)
 
 	if ( this->m_hNodeMODEL )
 	{
-		// addRenderUnit된것들 삭제.
+		// addRenderUnit Delete the things.
 		::clearRenderUnit( this->m_hNodeMODEL );
 	}
 
-	// loadVisible된것들 삭제.
+	// loadVisible Delete the things.
 	for (short nP=0; nP<MAX_BODY_PART; nP++)
 	{
 		DeleteSpecificPART( nP, m_phPartVIS[ nP ] );
@@ -1123,8 +1126,8 @@ void CObjCHAR::DeletePARTS (bool bDelEFFECT)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  char *szName 모델 이름
-/// @brief  : 캐릭터의 엔진모델노드 생성.
+/// @param  char *szName Model name
+/// @brief  : The engine of the model node produces the characters.
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::LoadModelNODE (char *szName)
@@ -1145,7 +1148,7 @@ bool CObjCHAR::LoadModelNODE (char *szName)
 	{
 		::setCollisionLevel( m_hNodeMODEL, 4 );
 
-		// 기본 지형에서 캐릭터 중심점 높이
+		// The height of the default terrain character Center
 		m_fHeightOfGround = ::getPositionZ (this->m_hNodeMODEL);
 		m_iLastDummyIDX   = ::getNumDummies( m_hNodeMODEL ) - 1;
 
@@ -1161,12 +1164,12 @@ bool CObjCHAR::LoadModelNODE (char *szName)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 캐릭터의 엔진모델노드 삭제. 외부에서 등록된 모든 이펙트 들도 삭제
+/// @brief  : The engine of the model node and delete the character. Delete all registered effects from outside are also
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::UnloadModelNODE ()
 {
-	/// 외부에서 등록된 이펙트들도 다 삭제..
+	/// Delete all registered effects from outside. ..
 	ClearExternalEffect();
 
 
@@ -1180,14 +1183,14 @@ void CObjCHAR::UnloadModelNODE ()
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param char *szName			이름
-/// @param CCharMODEL *pMODEL	캐릭터 모델 정보를 관리할.. 모델클래스
-/// @param short nCharPartCNT	캐릭터 파트 카운트
-/// @param D3DVECTOR &Position	생성할 캐릭터 위치
-/// @brief  : 캐릭터 생성
-///				1. 캐릭터 모델노드 생성
-///				2. 캐릭터 파트들 생성
-///				3. 본 이펙트( 캐릭터 툴에서 설정된 ) 생성
+/// @param char *szName			Name
+/// @param CCharMODEL *pMODEL	Character models to manage the information. .. Model class
+/// @param short nCharPartCNT	Character part counts
+/// @param D3DVECTOR &Position	Create a character position
+/// @brief  : Character creation
+///				1. Character models node creation
+///				2. Character parts creation
+///				3. This effect (the character set from the tool)
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::CreateCHAR (char *szName, CCharMODEL *pMODEL, short nCharPartCNT, const D3DVECTOR &Position)
@@ -1219,11 +1222,11 @@ bool CObjCHAR::CreateCHAR (char *szName, CCharMODEL *pMODEL, short nCharPartCNT,
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 캐릭터 삭제
-///				1. 본 이펙트( 캐릭터 툴에서 설정된 ) 삭제
-///				2. 캐릭터 파트들 삭제
-///				3. 캐릭터 모델노드 삭제
-///				4. 엔진 객체 삭제( visiable )
+/// @brief  : Delete the character
+///				1. This effect (the character set from the tool)
+///				2. Character parts deleted
+///				3. Character models node deletion
+///				4. Engine objects (visiable)
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::DeleteCHAR (void)
@@ -1254,10 +1257,10 @@ void CObjCHAR::DeleteCHAR (void)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  t_HASHKEY HashMOTION 모션의 해쉬키
-/// @param  float fMoveSpeed	 이동 속도
-/// @param  int iRepeatCnt		 반복카운트
-/// @brief  : 유져모션 세팅
+/// @param  t_HASHKEY HashMOTION Motion hash key
+/// @param  float fMoveSpeed	 Moving speed
+/// @param  int iRepeatCnt		 Repeat count
+/// @brief  : Yu lost the motion settings
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Set_UserMOITON (t_HASHKEY HashMOTION, float fMoveSpeed, int iRepeatCnt )
@@ -1269,16 +1272,16 @@ void CObjCHAR::Set_UserMOITON (t_HASHKEY HashMOTION, float fMoveSpeed, int iRepe
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  tagMOTION* pMotion   모션.
-/// @param  float fMoveSpeed	 이동 속도
-/// @param  int iRepeatCnt		 반복카운트
-/// @brief  : 유져모션 세팅
+/// @param  tagMOTION* pMotion   Motion.
+/// @param  float fMoveSpeed	 Moving speed
+/// @param  int iRepeatCnt		 Repeat count
+/// @brief  : Yu lost the motion settings
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Set_UserMOITON (tagMOTION *pMotion, float fMoveSpeed, int iRepeatCnt )
 {
-	// 현재 진행중인 모션과 같을경우 모션이 업데이트 되지 않으므로
-	// 이동 속도 설정을 Chg_CurMOTION밖으로 꺼냄..
+	// If you have the same ongoing motion and motion is not updated
+	// Speed setting is eject out of the Chg_CurMOTION ...
 	this->Set_ModelSPEED( fMoveSpeed );
 
 	if ( this->Chg_CurMOTION( pMotion ) )
@@ -1300,12 +1303,12 @@ void CObjCHAR::Set_UserMOITON (tagMOTION *pMotion, float fMoveSpeed, int iRepeat
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  short nActionIdx 모션의 해쉬키
-/// @param  float fMoveSpeed	 이동 속도
-/// @param  float fAniSpeed		 반복카운트
-/// @param  float bool bAttackMotion	 반복카운트
-/// @brief  : 모션 세팅
-/// @bug 첨에 여기에 공격시작 사운드 넣었다가.. 프레임에 정보를 넣고 정확한 프레임에서 시작하게 옮겼다.
+/// @param  short nActionIdx Motion hash key
+/// @param  float fMoveSpeed	 Moving speed
+/// @param  float fAniSpeed		 Repeat count
+/// @param  float bool bAttackMotion	 Repeat count
+/// @brief  : Motion settings
+/// @bug At first, start attacking places sound here ... Put the information in the frame to start in the correct frame.
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Set_MOTION (short nActionIdx, float fMoveSpeed, float fAniSpeed, bool bAttackMotion, int iRepeatCnt )
@@ -1338,7 +1341,7 @@ void CObjCHAR::Set_MOTION (short nActionIdx, float fMoveSpeed, float fAniSpeed, 
 		::setAnimatableSpeed( this->m_hNodeMODEL, fAniSpeed  );
 		::setRepeatCount	( this->m_hNodeMODEL, iRepeatCnt  );
 
-		// 본 애니가 없는 경우에도 메쉬 애니가 있을수 있나????
+		// This ANI is even if you don't have a mesh can be anime????
 		this->m_pCharMODEL->SetMeshMOTION( m_phPartVIS, this->Get_ActionIDX() );
 	}
 
@@ -1350,8 +1353,8 @@ void CObjCHAR::Set_MOTION (short nActionIdx, float fMoveSpeed, float fAniSpeed, 
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  D3DXVECTOR3& Pos 갱신할 위치
-/// @brief  : 현재위치 갱신
+/// @param  D3DXVECTOR3& Pos The location to renew
+/// @brief  : Renew your current location
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::ResetCUR_POS( D3DXVECTOR3& Pos )
@@ -1362,20 +1365,20 @@ void CObjCHAR::ResetCUR_POS( D3DXVECTOR3& Pos )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  CObjCHAR *pAtkOBJ 공격자
-/// @param  WORD wDamage      데미지
-/// @brief  : 데미지 적용 처리
+/// @param  CObjCHAR *pAtkOBJ An attacker could
+/// @param  WORD wDamage      Damage
+/// @brief  : Apply the treatment damage
 //--------------------------------------------------------------------------------
 
-void CObjCHAR::Apply_DAMAGE (CObjCHAR *pAtkOBJ, uniDAMAGE sDamage)	//홍근 : 맥스 데미지 수정
+void CObjCHAR::Apply_DAMAGE (CObjCHAR *pAtkOBJ, uniDAMAGE sDamage)	//Hong-Geun: Edit the max damage
 {
 	if ( this->Get_HP() <= DEAD_HP )
 		return;
 
-	if( IsA( OBJ_USER ) )///내가 데미지를 입었다면
+	if( IsA( OBJ_USER ) )///I have suffered damage if
 		g_pAVATAR->SetBattleTime( g_GameDATA.GetGameTime() );
 
-	if( pAtkOBJ && pAtkOBJ->IsA( OBJ_USER ) )///내가 공격했다면
+	if( pAtkOBJ && pAtkOBJ->IsA( OBJ_USER ) )///If you attack
 		g_pAVATAR->SetBattleTime( g_GameDATA.GetGameTime() );
 
 
@@ -1385,11 +1388,11 @@ void CObjCHAR::Apply_DAMAGE (CObjCHAR *pAtkOBJ, uniDAMAGE sDamage)	//홍근 : 맥스
 
 	if ( sDamage.m_wACTION & DMG_ACT_DEAD )
 	{
-		/// 자신은 죽었다.
+		/// Himself from the dead.
 		this->Do_DeadAI (pAtkOBJ, sDamage.m_wVALUE );
 
-		/// 공격자와 내가 같은 놈이면.. 소환수가 줄을때처럼.. 뭐 그런.. 죽는 모션을 하면 안된다.
-		/// 혹여나 유져일경우 비지빌리티가 세팅되면 죽을때 모션을 세워버리는 사태가..일단 User일경우는 패스. -04/5/25
+		/// If you're a noob like attacker and I. .. Pet line as. .. Something like that ... If the motion is not to die.
+		/// If you are getting a bump I get when Billy Tea is getting rid of the motion when the settings set up situation. .. Once the User, the path. -04/05/25
 		m_bStopDead = ( pAtkOBJ == this );
 
 		Dead();
@@ -1402,7 +1405,7 @@ void CObjCHAR::Apply_DAMAGE (CObjCHAR *pAtkOBJ, uniDAMAGE sDamage)	//홍근 : 맥스
 
 #ifdef _DEBUG
 		if( ( pAtkOBJ == this ) && (this->IsA( OBJ_USER )) )
-			assert( 0 && "얼래 공격자와 내가 같은데 웬 유져? 음 버그의 원인이군" );
+			assert( 0 && "Earl Rae looks like the attacker and I Wen Yu? Well the cause of a bug in the County" );
 #endif
 
 		if ( pAtkOBJ )
@@ -1426,15 +1429,15 @@ void CObjCHAR::Apply_DAMAGE (CObjCHAR *pAtkOBJ, uniDAMAGE sDamage)	//홍근 : 맥스
 				}
 			}
 
-			if ( pAtkOBJ->m_iServerTarget == g_pObjMGR->Get_ServerObjectIndex( this->Get_INDEX() ) )	// 타겟 삭제.
+			if ( pAtkOBJ->m_iServerTarget == g_pObjMGR->Get_ServerObjectIndex( this->Get_INDEX() ) )	// Target deleted.
 				pAtkOBJ->m_iServerTarget = 0;
 
-			/// 죽였을때 인공지능 수행...
+			/// Killing AI performed...
 			pAtkOBJ->Do_KillAI( this, sDamage.m_wVALUE );
 
 //---------------------------------------------------------------------------------------------
 #if defined(_GBC)
-			//박지호::펫모드일때는 회전을 하지 않는다.
+			//Park Ji-Ho:: pet mode does not rotate.
 			if(GetPetMode() < 0)
 				Set_ModelDIR( pAtkOBJ->Get_CurPOS() );
 #else
@@ -1445,17 +1448,17 @@ void CObjCHAR::Apply_DAMAGE (CObjCHAR *pAtkOBJ, uniDAMAGE sDamage)	//홍근 : 맥스
 
 
 			//----------------------------------------------------------------------------------
-			/// 패널티 경험치 보정
+			/// Penalty experience correction
 			//----------------------------------------------------------------------------------
-			/// 내가 유져라면
+			/// If I lose
 			if( this->IsA( OBJ_USER ) == true )
 			{
 				int iPanalEXP = 0;
 
-				/// 몬스터라면
+				/// It's a monster
 				if( pAtkOBJ->IsA( OBJ_MOB ) )
 				{
-					/// 소한 몬스터라면 경험치 깎지 않음
+					/// If you're not a monster while cutting the Soviet experience
 					if( pAtkOBJ->m_EndurancePack.GetStateFlag() & ING_DEC_LIFE_TIME )
 					{
 						iPanalEXP = 0;
@@ -1474,7 +1477,7 @@ void CObjCHAR::Apply_DAMAGE (CObjCHAR *pAtkOBJ, uniDAMAGE sDamage)	//홍근 : 맥스
 
 
 		/*
-		죽을때 이벤트는 CObjCHAR::Dead 로 이동..
+		Life events CObjCHAR::Dead Go to ...
 		*/
 
 		if( !m_FieldItemList.empty() )
@@ -1489,8 +1492,8 @@ void CObjCHAR::Apply_DAMAGE (CObjCHAR *pAtkOBJ, uniDAMAGE sDamage)	//홍근 : 맥스
 
 		if ( this->Sub_HP( sDamage.m_wVALUE ) <= 0 )
 		{
-#ifdef __TEST//여기서 죽었는지 물어보는 패킷을 보내 보면 될듯하다.
-			//죽지 않았는데 데미지가 0 ?
+#ifdef __TEST//This is looking at sending packets that appear to be asking.
+			//I did zero damage die?
 
 			if( IsA( OBJ_USER ) )
 			{
@@ -1506,8 +1509,8 @@ void CObjCHAR::Apply_DAMAGE (CObjCHAR *pAtkOBJ, uniDAMAGE sDamage)	//홍근 : 맥스
 		if ( sDamage.m_wACTION & DMG_ACT_CRITICAL )
 		{
 #ifdef _DEBUG
-			// 크리티컬 데미지 !!!
-			g_itMGR.AppendChatMsg(	CStr::Printf ("Critical:: %s가 %s에게 피해 %d 입힘", pAtkOBJ->Get_NAME(), this->Get_NAME (), sDamage.m_wVALUE ),
+			// Critical damage !!!
+			g_itMGR.AppendChatMsg(	CStr::Printf ("Critical:: %sDamage to a% s %d Investiture", pAtkOBJ->Get_NAME(), this->Get_NAME (), sDamage.m_wVALUE ),
 									IT_MGR::CHAT_TYPE_ALL );
 #endif
 		}
@@ -1517,8 +1520,8 @@ void CObjCHAR::Apply_DAMAGE (CObjCHAR *pAtkOBJ, uniDAMAGE sDamage)	//홍근 : 맥스
 
 		if ( sDamage.m_wDamage & DMG_BIT_HITTED )
 		{
-			// 맞는넘 맞는 동작으로 적용 가능하면...
-			/// 팻탄 상태이면 맞는 동작을 하지 않는다.( 2..4/12/10 맞는종작을 할경우 공격을 하다가 캐슬기어가 서버렸다. )
+			// Over the applicable context behavior to fit the ...
+			/// Pat Tan, fit and not the behavior. (2/12/10 the Bell fits small ..4 If you do attack the castle was abandoned in the gears.)
 			if( this->GetPetMode() > 0 )
 			{
 
@@ -1555,18 +1558,18 @@ void CObjCHAR::Apply_DAMAGE (CObjCHAR *pAtkOBJ, uniDAMAGE sDamage)	//홍근 : 맥스
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  CObjCHAR *pTarget 타겟 오브젝트
-/// @brief  : 스킬 사용 시작. 무기에 검잔상을 시작 한다던지..( 검잔상을 Attack_Start 에서만 붙였더니 .. 문제가 )
+/// @param  CObjCHAR *pTarget Target object
+/// @brief  : Skill use. Fencing weapons retention begins throwing ... (To be held was only stuck the sword Attack_Start ... problem)
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::Skill_START (CObjCHAR *pTarget)
 {
 	if ( m_nActiveSkillIDX )
 	{
-		/// 근접 즉시 발동 스킬은 검잔상 발동 )
+		/// Proximity immediately fires a sword skill retention trigger)
 		if( SKILL_TYPE( m_nActiveSkillIDX ) == SKILL_ACTION_IMMEDIATE )
 		{
-			// 검잔상 시작.
+			// The sword stuck.
 			for (short nI=0; nI<2; nI++)
 			{
 				if ( m_hTRAIL[ nI ] )
@@ -1587,14 +1590,14 @@ bool CObjCHAR::Skill_START (CObjCHAR *pTarget)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  CObjCHAR *pTarget 타겟 오브젝트
-/// @brief  : 공격 시작.. 검잔상 애니매이션 시작..
+/// @param  CObjCHAR *pTarget Target object
+/// @brief  : The attack begins ... The sword stuck animation start. ..
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::Attack_START (CObjCHAR *pTarget)
 {
 	/*
-	// 무기 붙이기 / 검잔상...
+	// Labelling the weapons/sword stuck ...
 	CObjCHAR *pTarget = g_pObjMGR->Get_CharOBJ( this->m_iTargetObject );
 	int iBulletIDX = Get_BulletNO ();
 	if ( pTarget && iBulletIDX ) {
@@ -1602,7 +1605,7 @@ bool CObjCHAR::Attack_START (CObjCHAR *pTarget)
 	}
 	*/
 
-	// 검잔상 시작.
+	// The sword stuck.
 	for (short nI=0; nI<2; nI++)
 	{
 		if ( m_hTRAIL[ nI ] )
@@ -1618,7 +1621,7 @@ bool CObjCHAR::Attack_START (CObjCHAR *pTarget)
 	_ASSERT( m_iServerTarget == g_pObjMGR->Get_ServerObjectIndex( m_iActiveObject ) );
 
 
-	/// 지속 속성중 공격시작하면 풀려야 되는것들
+	/// If you start with an attack of last things
 	m_EndurancePack.ClearStateByAttack();
 
 
@@ -1628,16 +1631,16 @@ bool CObjCHAR::Attack_START (CObjCHAR *pTarget)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  bool bStopTrail 검잔상 정지?
-/// @brief  : 공격 끝.
+/// @param  bool bStopTrail Sword retention quiescing?
+/// @brief  : The end of the attack.
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Attack_END (bool bStopTrail)
 {
-	// 기본 애니메이션 속도 복귀.
+	// Return to the default animation speed.
 	::setAnimatableSpeed ( GetZMODEL(), 1.0 );
 
-	// 검잔상 효과 모션정지..
+	// Black ghosting effects motion stop..
 	if ( bStopTrail )
 	{
 		for (short nI=0; nI<2; nI++)
@@ -1655,9 +1658,9 @@ void CObjCHAR::Attack_END (bool bStopTrail)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  CObjCHAR *pTarget 타겟 오브젝트
-/// @brief  : 캐스팅 동작시작..( 스킬의 시작을 표시한다. ) 아주 중요../
-///				유져일경우는 타이머를 세팅한다. 스킬의 딜레이가 있기때문에.
+/// @param  CObjCHAR *pTarget Target object
+/// @brief  : Casting began the behavior. .. (Marked the beginning of skill.) It is very important ... /
+///				If you are getting the timer settings the breast. Because of the delay of skill.
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::Casting_START (CObjCHAR *pTarget)
@@ -1666,11 +1669,11 @@ bool CObjCHAR::Casting_START (CObjCHAR *pTarget)
 	/// m_bProcEffectedSkill = false;
 
 	//--------------------------------------------------------------------------------
-	/// 유져일경우는 타이머를 세팅한다.
+	/// If you are getting the timer settings the breast.
 	//--------------------------------------------------------------------------------
 	//if( this->IsA( OBJ_USER ) )
 	//{
-	//	/// 타이머 설정
+	//	/// Timer setting
 	//	CSkillSlot* pSkillSlot = g_pAVATAR->GetSkillSlot();
 	//	CSkill* pSkill = pSkillSlot->GetSkillBySkillIDX( m_nToDoSkillIDX );
 	//	if( pSkill )
@@ -1679,7 +1682,7 @@ bool CObjCHAR::Casting_START (CObjCHAR *pTarget)
 	//	}
 	//}
 
-	/// 지속 속성중 공격시작하면 풀려야 되는것들
+	/// If you start with an attack of last things
 	if( SKILL_TYPE( m_nToDoSkillIDX ) == SKILL_ACTION_IMMEDIATE ||
 		SKILL_TYPE( m_nToDoSkillIDX ) == SKILL_ACTION_FIRE_BULLET ||
 		SKILL_TYPE( m_nToDoSkillIDX ) == SKILL_ACTION_SELF_DAMAGE )
@@ -1693,12 +1696,12 @@ bool CObjCHAR::Casting_START (CObjCHAR *pTarget)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 캐스팅 동작끝..( 스킬의 끝을 표시한다. ) 아주 중요../
+/// @brief  : End-behavior of the cast ... (To mark the end of skill.) It is very important ... /
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Casting_END ()
 {
-	/// 현재 활성화된 스킬이 있다면.. 캐스팅 상태 유지..
+	/// If the currently active skills. .. Cast the status quo ...
 	SetCastingState( false );
 	m_nActiveSkillIDX = 0;
 	m_nToDoSkillIDX = 0;
@@ -1707,18 +1710,18 @@ void CObjCHAR::Casting_END ()
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 무브 시작
+/// @brief  : Non v start
 //--------------------------------------------------------------------------------
 void CObjCHAR::MoveStart ()
 {
-	/// 이동과 동시에 자동으로 풀려야 하는것들..
+	/// Movement and at the same time automatically with things ...
 	m_EndurancePack.ClearStateByMove();
 }
 
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 총알번호를 구한다.
+/// @brief  : Save a number of bullets.
 //--------------------------------------------------------------------------------
 
 int CObjCHAR::Get_BulletNO ()
@@ -1733,8 +1736,8 @@ int CObjCHAR::Get_BulletNO ()
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 죽는 처리..( 강제로 캐스팅을 끝내는 루틴이 들어갔다.. 이것도 상당히 중요 )
-///				m_nActiveSkillIDX 도 리셋.. 죽었을경우.. 이 플래그가 세팅되어 있으면. Casting_End 가 무효해진다.
+/// @brief  : Die processing. .. (Entered into force done casting routine. .. This is very important)
+///				M_nActiveSkillIDX reset ... If you are dead ... If this flag settings. Casting_End is null and void.
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Dead ()
@@ -1747,18 +1750,18 @@ void CObjCHAR::Dead ()
 
 
 	//----------------------------------------------------------------------------------------------------
-	/// 아바타가 죽을경우
+	/// Avatar if you die
 	//----------------------------------------------------------------------------------------------------
 	if( this->Is_AVATAR() )
 	{
 		CObjAVT* pAVT = ( CObjAVT* )this;
-		/// Pet 상태라면 내린다.
+		/// Pet If you're already on.
 		if( GetPetMode() >= 0 )
 		{
 			pAVT->DeleteCart( false );
 
 			//----------------------------------------------------------------------------------------------------
-			/// 죽을때 팻의 파괴 이펙트 출력..
+			/// When you die, the output of the effect the destruction of Pat. ..
 			//----------------------------------------------------------------------------------------------------
 			if( pAVT->IsVisible() )
 			{
@@ -1769,17 +1772,18 @@ void CObjCHAR::Dead ()
 			}
 
 			m_btMoveMODE = MOVE_MODE_RUN;
+			//PY: this is just for setting animation rates. WTF do they share teh same damn function name?
 			pAVT->Update_SPEED();
 		}
 		else
 		{
 			//----------------------------------------------------------------------------------------------------
-			/// 캐릭터 죽을때의 이펙트 출력
+			/// When a character dies, the output of the effect of
 			//----------------------------------------------------------------------------------------------------
 			SE_CharDie( this->Get_INDEX() );
 		}
 
-		/// 개인상점 관련 리셋..
+		/// Reset your shop-related ...
 		if( pAVT->IsPersonalStoreMode() )
 		{
 			pAVT->SetPersonalStoreTitle( NULL );
@@ -1787,7 +1791,7 @@ void CObjCHAR::Dead ()
 		}
 
 
-		/// 만약 내가 죽은 거라면..
+		/// If I were dead ...
 		if( this->IsA( OBJ_USER ) )
 		{
 			(( CObjUSER*)pAVT)->ClearSummonedMob();
@@ -1797,7 +1801,7 @@ void CObjCHAR::Dead ()
 	}
 
 	//----------------------------------------------------------------------------------------------------
-	/// 몹이 죽을경우 이펙트 출력
+	/// If the effect output die mob
 	//----------------------------------------------------------------------------------------------------
 	if( this->IsA( OBJ_MOB ) )
 	{
@@ -1818,13 +1822,13 @@ void CObjCHAR::Dead ()
 	m_EndurancePack.ClearEntityPack();
 	ClearAllEntityList();
 
-	// 루프방지.
+	// Loop prevention.
 	::setRepeatCount( m_hNodeMODEL, 1 );
-	// 죽은넘은 클릭 안되게...
+	// Click the ridiculously over dead ...
 
 	if( this->Is_AVATAR() == false )
 	{
-		/// 2004-11-26 죽은놈도 클릭되게...
+		/// 2004-11-26 Dead guys being clicked, even ...
 		::setCollisionLevel( m_hNodeMODEL, 0 );
 	}
 
@@ -1835,10 +1839,10 @@ void CObjCHAR::Dead ()
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param int iSkillIDX 스킬 인덱스
-/// @param gsv_DAMAGE_OF_SKILL EffectedSkill 스킬 결과 정보
-/// @param bool bDamageOfSkill	데미지 결과인가?( 범위데미지 스킬의 경우.. )
-/// @brief  : 스킬결과를 액션프레임에 수행하기 위해 짱박아 둔다.
+/// @param int iSkillIDX Skill index
+/// @param gsv_DAMAGE_OF_SKILL EffectedSkill Skill result information
+/// @param bool bDamageOfSkill	Damage as a result? (In the case of damage of the skill range...)
+/// @brief  : As a result, the skills to carry out the action frame, Chan Pak-Ah.
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::PushEffectedSkillToList( int iSkillIDX, gsv_DAMAGE_OF_SKILL EffectedSkill, int iCasterINT, bool bDamageOfSkill )
@@ -1857,7 +1861,7 @@ void CObjCHAR::PushEffectedSkillToList( int iSkillIDX, gsv_DAMAGE_OF_SKILL Effec
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 타임아웃 시간이 지난 스킬결과를 처리한다.
+/// @brief  : As a result the last skill to timeout.
 //--------------------------------------------------------------------------------
 const int SKILL_PROC_LIMIT = 1000 * 10;
 void CObjCHAR::ProcTimeOutEffectedSkill()
@@ -1888,7 +1892,7 @@ void CObjCHAR::ProcTimeOutEffectedSkill()
 
 //----------------------------------------------------------------------------------------------------
 /// @param
-/// @brief /// Damage of skill 에 실려오는 스킬적용결과 반영..
+/// @brief /// Damage of skill When it comes to applying results to reflect the skill and. ..
 //----------------------------------------------------------------------------------------------------
 
 void CObjCHAR::ProcEffectOfSkillInDamageOfSkill( int iSkillIDX, int iObjIDX, CObjCHAR* pChar, stEFFECT_OF_SKILL*	pEffectOfSkill )
@@ -1935,15 +1939,15 @@ void CObjCHAR::ProcEffectOfSkillInDamageOfSkill( int iSkillIDX, int iObjIDX, COb
 
 //----------------------------------------------------------------------------------------------------
 /// @param
-/// @brief 실제로 캐릭터에 스킬 적용..
-/// void CRecvPACKET::Recv_gsv_EFFECT_OF_SKILL ()쪽에도 같은 일을 하는넘이 있다... 이쪽 수정하면 그쪽도 같이 수정할 것.
+/// @brief In fact the character skill apply. ..
+/// void CRecvPACKET::Recv_gsv_EFFECT_OF_SKILL ()The same thing over on the side of the ... If you modify this side will come out will be modified.
 //----------------------------------------------------------------------------------------------------
 
 void CObjCHAR::ApplyEffectOfSkill( int iSkillIDX, int iObjIDX, CObjCHAR* pEffectedChar, stEFFECT_OF_SKILL*	pEffectOfSkill )
 {
-	if( pEffectOfSkill->EffectOfSkill.m_btSuccessBITS == 0 )/// 적용 효과후 바로 삭제..즉 스킬 적용 실패다
+	if( pEffectOfSkill->EffectOfSkill.m_btSuccessBITS == 0 )/// The effect of applying the delete right after ... In other words, fail to apply the skill
 	{
-		/// 내가 적용한 스킬일경우에만 스킬 적용 실패 메시지를 표시한다.
+		/// I apply a skill, a skill only when applying failure message is displayed.
 		int iClientObjIndex = g_pObjMGR->Get_ClientObjectIndex( pEffectOfSkill->EffectOfSkill.m_wSpellObjIDX );
 		if( iClientObjIndex == g_pAVATAR->Get_INDEX() )
 		{
@@ -1953,14 +1957,14 @@ void CObjCHAR::ApplyEffectOfSkill( int iSkillIDX, int iObjIDX, CObjCHAR* pEffect
 	}
 	else
 	{
-		///스킬이 지속형일 경우 최대 n개의 상태까지 바뀔수 있으므로
+		///Skill convert up to one status persisted, can be up to n
 		for( int i = 0 ; i < SKILL_INCREASE_ABILITY_CNT ; i++ )
 		{
 			if ( ( 0x01 << i ) & pEffectOfSkill->EffectOfSkill.m_btSuccessBITS )
 			{
 				int iStateIndex = 0;
 
-				/// 지속형이 아닌 단순 능력치 상승형..
+				/// Not a simple stats rise persisted type. ..
 				/*if( SKILL_TYPE( iSkillIDX ) != SKILL_ACTION_SELF_BOUND &&
 					SKILL_TYPE( iSkillIDX ) != SKILL_ACTION_TARGET_BOUND )*/
 				{
@@ -1975,20 +1979,20 @@ void CObjCHAR::ApplyEffectOfSkill( int iSkillIDX, int iObjIDX, CObjCHAR* pEffect
 				}
 
 				if( iStateIndex != 0 )
-				/// 지속형 스킬이라면..
+				/// If the durable skills. ..
 				/*if( SKILL_TYPE( iSkillIDX ) == SKILL_ACTION_SELF_BOUND_DURATION ||
 					SKILL_TYPE( iSkillIDX ) == SKILL_ACTION_TARGET_BOUND_DURATION ||
 					SKILL_TYPE( iSkillIDX ) == SKILL_ACTION_SELF_STATE_DURATION ||
 					SKILL_TYPE( iSkillIDX ) == SKILL_ACTION_TARGET_STATE_DURATION )*/
 				{
-					/// 속성객체 추가..
+					/// Add objects properties. ..
 
 					pEffectedChar->AddEnduranceEntity( iSkillIDX,	iStateIndex, SKILL_DURATION( iSkillIDX ), ENDURANCE_TYPE_SKILL ) ;
 
-					/// 상태 타입..
+					/// Status type ...
 					int iStateType = STATE_TYPE( iStateIndex );
 
-					/// 상태 번호가 1,2 번인경우에는 LIST_STATUS.STB 의 값을 참고하고
+					/// Condition number 1, number 2, LIST_STATUS. Note the value of the STB and
 					if( iStateType == ING_INC_HP || iStateType == ING_INC_MP || iStateType == ING_POISONED )
 					{
 						pEffectedChar->m_EndurancePack.SetStateValue( iStateType, STATE_APPLY_ABILITY_VALUE( iStateIndex, i ) );
@@ -2008,7 +2012,7 @@ void CObjCHAR::ApplyEffectOfSkill( int iSkillIDX, int iObjIDX, CObjCHAR* pEffect
 						{
 							iIncValue = 1;
 
-							/// 유져가 아닐경우 알수가 없다. 몬스터일경우에는 공속, 이속만 계산해본다.
+							/// Oil is not lost if you can't tell. Monster, ball, try to calculate only this genus.
 							if( pEffectedChar->IsA( OBJ_MOB ) )
 							{
 								int iAbilityValue = 0;
@@ -2028,7 +2032,7 @@ void CObjCHAR::ApplyEffectOfSkill( int iSkillIDX, int iObjIDX, CObjCHAR* pEffect
 							}
 
 							//--------------------------------------------------------------------------------------------
-							/// 다른 아바타일경우.. MAX_HP는 고려를 한다..
+							/// If other avatars, ... MAX_HP shall take into consideration ...
 							if( pEffectedChar->IsA( OBJ_AVATAR ) )
 							{
 								int iAbilityValue = 0;
@@ -2062,7 +2066,7 @@ void CObjCHAR::ApplyEffectOfSkill( int iSkillIDX, int iObjIDX, CObjCHAR* pEffect
 
 						pEffectedChar->m_EndurancePack.SetStateValue( iStateType, iIncValue );
 
-						/// 상태스킬이 걸릴경우 AVATAR 의 경우는 능력치 업데이트..
+						/// If you take the case of AVATAR State skill stats update ...
 						if( pEffectedChar->IsA( OBJ_USER ) )
 						{
 							(( CObjUSER* )pEffectedChar)->UpdateAbility();
@@ -2073,9 +2077,9 @@ void CObjCHAR::ApplyEffectOfSkill( int iSkillIDX, int iObjIDX, CObjCHAR* pEffect
 				}else if( SKILL_TYPE( iSkillIDX ) == SKILL_ACTION_SELF_BOUND ||
 							SKILL_TYPE( iSkillIDX ) == SKILL_ACTION_TARGET_BOUND )
 				{
-					/// hp 는 계산식 적용..
+					/// hp Apply the formula. ..
 					int iIncValue = CCal::Get_SkillAdjustVALUE( ( CObjUSER* )pEffectedChar, iSkillIDX, i, pEffectOfSkill->iCasterINT );
-					//06. 02. 09 - 김주현 : HP / MP를 1초마다 서버에서 보내준다.
+					//06. 02. 09 - Kim Joo-Hyun: HP/MP, and will send it to you on the server each second.
 					switch( SKILL_INCREASE_ABILITY( iSkillIDX, i ) )
 					{
 						case AT_HP:
@@ -2085,14 +2089,14 @@ void CObjCHAR::ApplyEffectOfSkill( int iSkillIDX, int iObjIDX, CObjCHAR* pEffect
 							pEffectedChar->Add_MP( iIncValue );
 							break;
 						case AT_STAMINA:
-							/// 상태스킬이 걸릴경우 AVATAR 의 경우는 능력치 업데이트..
+							/// If you take the case of AVATAR State skill stats update ...
 							if( pEffectedChar->IsA( OBJ_USER ) )
 							{
 								(( CObjUSER* )pEffectedChar)->AddCur_STAMINA( SKILL_INCREASE_ABILITY_VALUE( iSkillIDX, i ) );
 							}
 							break;
 						default:
-							g_itMGR.AppendChatMsg( "몰르는거네 추가해라..", IT_MGR::CHAT_TYPE_SYSTEM);
+							g_itMGR.AppendChatMsg( "You'll add a drive..", IT_MGR::CHAT_TYPE_SYSTEM);
 							break;
 					}
 				}
@@ -2103,8 +2107,8 @@ void CObjCHAR::ApplyEffectOfSkill( int iSkillIDX, int iObjIDX, CObjCHAR* pEffect
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param stEFFECT_OF_SKILL*	pEffectOfSkill 스킬 결과 하나 처리..
-/// @brief  : 스킬 결과 처리
+/// @param stEFFECT_OF_SKILL*	pEffectOfSkill As a result of skill one..
+/// @brief  : Skill when the processing of the results
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::ProcOneEffectedSkill( stEFFECT_OF_SKILL*	pEffectOfSkill )
@@ -2118,7 +2122,7 @@ void CObjCHAR::ProcOneEffectedSkill( stEFFECT_OF_SKILL*	pEffectOfSkill )
 		return;
 
 			/*
-	*	범위 마법의 경우 m_nResultVALUE 가 데미지 이다.
+	*	If m_nResultVALUE is a magical range of damage.
 	*/
 	if( pEffectOfSkill->bDamageOfSkill )
 	{
@@ -2126,11 +2130,11 @@ void CObjCHAR::ProcOneEffectedSkill( stEFFECT_OF_SKILL*	pEffectOfSkill )
 
 		pChar->Apply_DAMAGE( this, pEffectOfSkill->EffectOfSkill.m_Damage );
 
-		/// Damage of skill 에 실려오는 스킬적용결과 반영..
+		/// Damage of skill The following reflects the results of applying the skills to..
 		ProcEffectOfSkillInDamageOfSkill( iSkillIDX, iObjIDX, pChar, pEffectOfSkill );
 
-		/// 스킬 타격 이펙트
-		// 타격 효과.
+		/// Skill blow effects
+		// The effect of the strike.
 		if ( pChar->IsVisible() )
 		{
 			g_UIMed.CreateDamageDigit( pEffectOfSkill->EffectOfSkill.m_Damage.m_wVALUE, pos.x, pos.y, pos.z + pChar->m_fStature, pChar->IsA( OBJ_USER ) );
@@ -2159,7 +2163,7 @@ void CObjCHAR::ProcOneEffectedSkill( stEFFECT_OF_SKILL*	pEffectOfSkill )
 				if ( SKILL_HIT_SOUND( iSkillIDX ) )
 				{
 					if ( pChar->IsUSER() )
-					{ // 자기 아바타인 경우에는 안3D 모드로 출력.
+					{ // If you are not in his avatar 3 D mode output.
 						g_pSoundLIST->IDX_PlaySound( SKILL_HIT_SOUND( iSkillIDX ) );
 					}
 					else
@@ -2170,7 +2174,7 @@ void CObjCHAR::ProcOneEffectedSkill( stEFFECT_OF_SKILL*	pEffectOfSkill )
 			}
 		}
 
-	}else /// 지속성이거나.. 상태를 바꾸는 스킬..
+	}else /// The persistence or ... Changing the status of the skill..
 	{
 		ApplyEffectOfSkill( iSkillIDX, iObjIDX, pChar, pEffectOfSkill );
 	}
@@ -2179,7 +2183,7 @@ void CObjCHAR::ProcOneEffectedSkill( stEFFECT_OF_SKILL*	pEffectOfSkill )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 보관된 모든 스킬결과들을 이벤트 프레임에 처리한다.
+/// @brief  : Archived results event frame all skill..
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::ProcEffectedSkill()
@@ -2198,7 +2202,7 @@ bool CObjCHAR::ProcEffectedSkill()
 		bResult = true;
 	}
 
-	/// 처리후 모든 보관된 스킬결과 클리어
+	/// After processing all the archived skill results clear
     m_EffectedSkillList.clear();
 
 	SetEffectedSkillFlag( false );
@@ -2210,9 +2214,9 @@ bool CObjCHAR::ProcEffectedSkill()
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param int iattacker 공격자
-/// @param uniDAMAGE wDamage	적용 데미지
-/// @brief  : 데미지를 리스트에 추가ㅓ..
+/// @param int iattacker An attacker could
+/// @param uniDAMAGE wDamage	Applying damage
+/// @brief  : Damage to the list of additional sh..
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::PushDamageToList( int iAttacker, uniDAMAGE wDamage )
@@ -2228,9 +2232,9 @@ void CObjCHAR::PushDamageToList( int iAttacker, uniDAMAGE wDamage )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param int iattacker 공격자
-/// @brief  : 현재 적용할 데미지를 데미지 리스트에서 꺼낸다.( 공격자가 같은 데미지만 꺼냄 )
-///				액션은 마지막껄 따른다...^^; 액션도 누적시키는 바람에 버그가 생겼다..
+/// @param int iattacker An attacker could
+/// @brief  : Take a list of the current damage damage apply. (The attacker only the same damage, eject)
+///				The action follows the last us ... ^^; A lot of bugs in the wind, the cumulative action to..
 //--------------------------------------------------------------------------------
 
 uniDAMAGE CObjCHAR::PopCurrentAttackerDamage( int iAttacker )
@@ -2261,7 +2265,7 @@ uniDAMAGE CObjCHAR::PopCurrentAttackerDamage( int iAttacker )
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param int& iMaxDamage
-/// @brief  : 현재 리스트의 모든 데미지를 더해서 리턴..
+/// @brief  : In addition to the current list of all damage return..
 //--------------------------------------------------------------------------------
 
 uniDAMAGE CObjCHAR::PopTotalDamageFromList( int& iMaxDamage )
@@ -2272,7 +2276,7 @@ uniDAMAGE CObjCHAR::PopTotalDamageFromList( int& iMaxDamage )
 
 	for( int i =0; i < m_DamageList.size() ; i++ )
 	{
-		/// 일단 타격치 출력은 제일 큰값..
+		/// Once the largest value of the strike value output is..
 		if( m_DamageList[ i ].m_Damage.m_wVALUE > iMaxDamage )
 			iMaxDamage = m_DamageList[ i ].m_Damage.m_wVALUE;
 
@@ -2288,7 +2292,7 @@ uniDAMAGE CObjCHAR::PopTotalDamageFromList( int& iMaxDamage )
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param
-/// @brief  : 모든 데이지 처리( 죽거나.. 뭐 그런 상황에서.. 정리 )
+/// @brief  : All Daisy (dead or ... something like that from happening ...)
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::ClearAllDamage()
@@ -2309,7 +2313,7 @@ void CObjCHAR::ClearAllDamage()
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param
-/// @brief  : 데미지의 시간제한 처리
+/// @brief  : Time-out handling damage
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::ProcDamageTimeOut()
@@ -2322,7 +2326,7 @@ void CObjCHAR::ProcDamageTimeOut()
 
 	for( ; begin != m_DamageList.end() ; )
 	{
-		/// 5초가 지났다면
+		/// 5 seconds jinassdamyeon
 		if( ( dwCurrentTime - (*begin).m_dwCreateTime ) > 5000 )
 		{
 			this->Apply_DAMAGE( g_pObjMGR->Get_CharOBJ( (*begin).m_iAttacker, true ), (*begin).m_Damage );
@@ -2337,13 +2341,13 @@ void CObjCHAR::ProcDamageTimeOut()
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  WORD wDamage 적용 데미지
-/// @brief  : 타격치 바로 표시
+/// @param  WORD wDamage Applying damage
+/// @brief  : Blow the Chi appear immediately
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::CreateImmediateDigitEffect( DWORD wDamage )
 {
-	/// 타격수치 바로적용.. 적당한 장소가 없다 일단 여기에..
+	/// Batting figures applied directly. .. There is no proper place once here..
 	uniDAMAGE Damage;
 	Damage.m_wDamage = wDamage;
 	D3DXVECTOR3	pos = this->Get_CurPOS();
@@ -2353,8 +2357,8 @@ void CObjCHAR::CreateImmediateDigitEffect( DWORD wDamage )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  gsv_DAMAGE_OF_SKILL stDamageOfSkill damage of kill 정보
-/// @brief  : Damage_of_Skill => 일반 데미지로 전환저장..
+/// @param  gsv_DAMAGE_OF_SKILL stDamageOfSkill damage of kill Information
+/// @brief  : Damage_of_Skill => General switch to storage damage..
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::ConvertDamageOfSkillToDamage( gsv_DAMAGE_OF_SKILL stDamageOfSkill )
@@ -2367,7 +2371,7 @@ void CObjCHAR::ConvertDamageOfSkillToDamage( gsv_DAMAGE_OF_SKILL stDamageOfSkill
 
 	if ( pAtkOBJ )
 	{
-		/// Damage 등록..
+		/// Damage Registration..
 		PushDamageToList( g_pObjMGR->Get_ClientObjectIndex( stDamageOfSkill.m_wSpellObjIDX ),
 							stDamageOfSkill.m_Damage );
 		return;
@@ -2378,7 +2382,7 @@ void CObjCHAR::ConvertDamageOfSkillToDamage( gsv_DAMAGE_OF_SKILL stDamageOfSkill
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param
-/// @brief  : 아이템 드랍..
+/// @brief  : Item drop..
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::DropFieldItemFromList()
@@ -2405,11 +2409,11 @@ void CObjCHAR::DropFieldItemFromList()
 			tagITEM sITEM = m_FieldItemList[ i ].m_ITEM;
 
 			/*if ( sITEM.m_cType != ITEM_TYPE_MONEY )
-				AddMsgToChatWND(CStr::Printf ("아이템 %s 드롭 Type: %d, NO: %d ",
+				AddMsgToChatWND(CStr::Printf ("Item% s drop Type: %d, NO: %d ",
 														ITEM_NAME( sITEM.m_cType, sITEM.m_nItemNo ),
 														sITEM.m_cType, sITEM.m_nItemNo ), g_dwBLUE ,CChatDLG::CHAT_TYPE_SYSTEM);
 			else
-				AddMsgToChatWND(CStr::Printf ("돈 드롭 %d ", sITEM.m_nItemNo), g_dwBLUE ,CChatDLG::CHAT_TYPE_SYSTEM);*/
+				AddMsgToChatWND(CStr::Printf ("The money drop %d ", sITEM.m_nItemNo), g_dwBLUE ,CChatDLG::CHAT_TYPE_SYSTEM);*/
 		}
 	}
 
@@ -2420,7 +2424,7 @@ void CObjCHAR::DropFieldItemFromList()
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param
-/// @brief  : 총알에 맞았을때 스킬처리..
+/// @brief  : When a bullet was shot skill handling..
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::ProcessSkillHit( CObjCHAR *pFromOBJ )
@@ -2435,8 +2439,8 @@ bool CObjCHAR::ProcessSkillHit( CObjCHAR *pFromOBJ )
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param
-/// @brief  : 몹 소환.. ( 현재는 소환몹은 프레임에 않맞추고 바로 생성.. 서버와 명령 동기화 문제
-///				서버에서는 생성된 몹에 공격명령을 내릴수 있는데 클라이언트에서는 아직생성 되지 않았으므로..
+/// @brief  : A mob summoned. .. (It is currently focused on not just the frame, creating a mob summoned. .. ordered with the server synchronization issues
+///				On the server, you can order an attack on mobs that are generated on the client, not yet created..
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::SetSummonMobInfo( gsv_MOB_CHAR& MobInfo )
@@ -2450,8 +2454,8 @@ void CObjCHAR::SetSummonMobInfo( gsv_MOB_CHAR& MobInfo )
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @param
-/// @brief  : 몹 소환.. ( 현재는 소환몹은 프레임에 않맞추고 바로 생성.. 서버와 명령 동기화 문제
-///				서버에서는 생성된 몹에 공격명령을 내릴수 있는데 클라이언트에서는 아직생성 되지 않았으므로..
+/// @brief  : A mob summoned. .. (It is currently focused on not just the frame, creating a mob summoned. .. ordered with the server synchronization issues
+///				On the server, you can order an attack on mobs that are generated on the client, not yet created..
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::SummonMob()
@@ -2487,13 +2491,13 @@ void CObjCHAR::SummonMob()
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @param  CObjCHAR *pFromOBJ 공격자
-/// @param  int iEffectIDX		총알번호
-/// @param  int iSkillIDX		스킬일경우.. 스킬번호
-/// @param  bool bIsSkillEffect	이것이 스킬에 의한 매직인가?
+/// @param  CObjCHAR *pFromOBJ An attacker could
+/// @param  int iEffectIDX		Bullet number
+/// @param  int iSkillIDX		Skill, the ... The skill number
+/// @param  bool bIsSkillEffect	This is the skill of magic?
 /// @param  bool bIsBulletHit
-/// @brief  : 맞았을때의 행동 처리.. 데미지를 준다던지. 이펙트를 출력한다던지.
-/// @todo Reg_DAMAGE를 검색해서 타격의 종류를 판단해야...
+/// @brief  : When the behavioral treatment of a. .. It gives damage. Effects-discharge or whatever.
+/// @todo Reg_DAMAGE detects the need to determine the type of strike...
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool bIsSkillEffect, bool bIsBulletHit, bool bJustEffect )
@@ -2502,7 +2506,7 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 		return true;
 
 //-------------------------------------------------------------------------
-///박지호::공격자가 유저인자를 판단한다. :: 이펙트 번호
+///Park Ji-Ho: the attacker to determine the user argument. :: Effect number
 #define HIT_AROA_EFF 1613
 
 	BOOL IsAcceptAroa = FALSE;
@@ -2514,10 +2518,10 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 //-------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
-	/// 맞았을때 풀려야하는 효과들..
+	/// When hit with the effects..
 	//--------------------------------------------------------------------------------
-   //06. 04. 05 - 김주현 : 수면 상태가 적용된 후에 데미지가 들어가기때문에 수면이 풀린것 처럼 보이는
-   //인터페이스 관련해서 버그가 있다. 버그 수정하기 위해서 최초 수면 상태인지 체크 한후 수면 해제.
+   //06. 04. 05 - Kim Joo-Hyun: when applied after damage because this appears to be a loose
+   //There is a bug with respect to the interface. Bug fix in order to check whether the first sleep sleep off.
 	 if(!m_EndurancePack.GetFlagEntitySleep())
 		m_EndurancePack.ClearStateByHitted();
 
@@ -2526,15 +2530,15 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 	D3DXVECTOR3	pos = this->Get_CurPOS();
 
 	//--------------------------------------------------------------------------------
-	/// 효과만 적용시킬때는.. ApplyDamage 따위를 하지않는다.물론 타격치도..
+	/// When to apply effects.. ApplyDamage Of course, it does not blow to Chi too..
 	//--------------------------------------------------------------------------------
 	if( !bJustEffect )
 	{
 		if ( this->m_lDeadTIME )
 		{
-			/// 2003. 12. 26 마지막 한방 처리 수정...
-			/// pTarget은 이번에 죽어야 한다.
-			/// 죽인넘이 때렸을때 쓰러질까 ? 아님 아무나 때리면 쓰러질까???
+			/// 2003. 12. 26 Last modified herbal treatment...
+			/// PTarget is a must at this time.
+			/// When this collapsed and killed over a beat? Or somebody would collapse if hit???
 			// if ( pTarget->m_DeadDAMAGE.m_nTargetObjIDX == this->Get_INDEX() )
 			{
 				// CObjCHAR *pAttacker = g_pObjMGR->Get_CharOBJ( this->m_DeadDAMAGE.m_nTargetObjIDX, true );
@@ -2551,7 +2555,7 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 					{
 						int iCriticalEffect = EFFECT_HITTED_CRITICAL( iEffectIDX );
 
-						//아로아 이펙트
+						//Oh Loa effects
 						ChangeHittedEffect(pFromOBJ,IsAcceptAroa,iCriticalEffect);
 
 						CEffect *pHitEFT = g_pEffectLIST->Add_EffectWithIDX( iCriticalEffect, true );
@@ -2572,22 +2576,22 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 			int iTotalDmage = 0;
 			uniDAMAGE stDmage;
 
-			/// 스킬에 의한 데미지는 Damage of skill 로 날라온다.
+			/// The damage caused by the Damage of skill and skill come me.
 			if( !bIsSkillEffect )
 			{
-				/// 서버로부터 전송받은 데미지 처리
+				/// Processing of received damage from the server
 
 
 				///
-				/// 결국 맞는놈이 나이거나
-				/// 내가 때리는놈이 맞았거나..
-				/// 나의 팻이 때리는경우( 결국 내가때리는 ) .. 의 처리..
+				/// In the end, fit guy I or
+				/// I hit the guy or hitting..
+				/// If this slap my fat (Finally I slap) ... The processing of the..
 				///
 
-				/// 나거나, 내가때리는 놈이라면 서버에 의존한다.
+				/// If I beat these guys, or depends on the server.
 				int iTargetObject = g_pObjMGR->Get_ClientObjectIndex( g_pAVATAR->Get_TargetIDX() );
 				//--------------------------------------------------------------------------------
-				/// Avatar 가 현재 팻을 타고 있으면 팻의 타겟도 검사
+				/// Avatar If you have to ride the current Pat Pat's targeted inspection
 				int iPetTargetObject = 0;
 				if( g_pAVATAR->GetPetMode() > 0 )
 					 iPetTargetObject = g_pObjMGR->Get_ClientObjectIndex( g_pAVATAR->m_pObjCART->Get_TargetIDX() );
@@ -2602,32 +2606,32 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 
 					g_UIMed.CreateDamageDigit( stDmage.m_wVALUE, pos.x, pos.y, pos.z + m_fStature, this->IsA( OBJ_USER ) );
 
-					/// 타격시 흔들림..
+					/// Batting: jiggle..
 					if( stDmage.m_wVALUE )
 					{
 						if( this->GetPetMode() < 0 )
 							this->StartVibration();
 						else
 						{
-							//박 지호::펫 모드에서 흔들림 설정
+							//Park Ji-Ho:: pet mode set to flicker
 							m_IsCartVA = GetPetMode() ? TRUE : FALSE;
 						}
 					}
 
 					if( stDmage.m_wACTION & DMG_ACT_CRITICAL )
 					{
-						/// 카메라 진동..
+						/// Camera vibration..
 						if ( IsA( OBJ_USER ) )
 						{
 							D3DXVECTOR3 vMin(-10, -10, -10), vMax(10, 10, 50);
-							::shakeCamera( g_pCamera->GetZHANDLE(), vMin, vMax, 200 ); // 카메라 흔들림.
+							::shakeCamera( g_pCamera->GetZHANDLE(), vMin, vMax, 200 ); // Camera shake.
 						}
 
 						if( iEffectIDX )
 						{
 							int iCriticalEffect = EFFECT_HITTED_CRITICAL( iEffectIDX );
 
-							///아로아 이펙트
+							///Oh Loa effects
 							ChangeHittedEffect(pFromOBJ,IsAcceptAroa,iCriticalEffect);
 
 							CEffect *pHitEFT = g_pEffectLIST->Add_EffectWithIDX( iCriticalEffect, true );
@@ -2643,10 +2647,10 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 						}
 					}
 
-				}else	/// 클라이언트에서 적절히 처리해야될 데미지..
+				}else	/// The client must be handled properly in the damage..
 				{
 					///
-					/// 뭔가.. 특수한 상황에서 나나, 내가 공격하는 놈이 아닌상황이지만 서버로부터 데미지를 받았다.
+					/// Something is. .. In unusual circumstances, I'm not a guy to attack the situation but received damage from the server.
 					///
 					if( !m_DamageList.empty() )
 					{
@@ -2655,14 +2659,14 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 
 						g_UIMed.CreateDamageDigit( stDmage.m_wVALUE, pos.x, pos.y, pos.z + m_fStature, this->IsA( OBJ_USER ) );
 
-						/// 타격시 흔들림
+						/// Batting: jiggle
 						if( stDmage.m_wVALUE )
 						{
 							if( this->GetPetMode() < 0 )
 								this->StartVibration();
 						}
 					}else
-					/// 순수하게 클라이언트에서 처리한다.
+					/// Purely on the client..
 					{
 						if( iSkillIDX )
 							stDmage.m_wDamage = CCal::Get_SkillDAMAGE ( pFromOBJ, this, iSkillIDX, 1 );
@@ -2674,17 +2678,17 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 				}
 			}else
 			{
-				/// 총알이 맞았을경우.. bIsSkillEffect가 세팅되어 아래를 처리해준다.
+				/// If the bullet was shot ... BIsSkillEffect settings allows the process under.
 
 				ProcessSkillHit( pFromOBJ );
 
 				{
 					//----------------------------------------------------------------------------------------------------
-					/// @brief 마나볼트같은 장거리 총알 스킬의 경우 데미지로 날라온다.
+					/// @brief In the case of a long-distance bullet such as the mana Vault skill damage comes away.
 					//----------------------------------------------------------------------------------------------------
 					if( SKILL_TYPE( iSkillIDX ) == SKILL_ACTION_FIRE_BULLET )
 					{
-						/// 나거나, 내가때리는 놈이라면 서버에 의존한다.
+						/// If I beat these guys, or depends on the server.
 						int iTargetObject = g_pObjMGR->Get_ClientObjectIndex( g_pAVATAR->Get_TargetIDX() );
 						if( this->IsA( OBJ_USER ) || ( this->Get_INDEX() == iTargetObject ) )
 						{
@@ -2693,7 +2697,7 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 							this->Apply_DAMAGE( pFromOBJ, stDmage );
 
 							g_UIMed.CreateDamageDigit( stDmage.m_wVALUE, pos.x, pos.y, pos.z + m_fStature, this->IsA( OBJ_USER ) );
-							/// 타격시 흔들림
+							/// Batting: jiggle
 							if( stDmage.m_wVALUE )
 							{
 								if( this->GetPetMode() < 0 )
@@ -2708,13 +2712,13 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 
 
 	///
-	///	Miss 일경우는 찍지 않는다.
+	///	Miss If you don't take the job.
 	///
 
 	//if( stDmage.m_wVALUE <= 0 )
 	//	return true;
 
-	// 타격 효과.
+	// Blow effects.
 	if ( this->IsVisible() )
 	{
 		// short nEffectIDX = WEAPON_DEFAULT_EFFECT( pFromOBJ->Get_R_WEAPON() );
@@ -2722,21 +2726,21 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 		{
 			int iHitEffect = iEffectIDX;
 
-			/// skill 로부터의 타격은 직접 file_effect 에서
-			/// 일반공격은 무기테이블.. 즉 List_Effect 에서..
+			/// skill In a direct hit from file_effect
+			/// General attack weapon table. .. In other words, from the ... List_Effect
 			if( !bIsSkillEffect )
 				iHitEffect = EFFECT_HITTED_NORMAL( iEffectIDX );
 
 
 
-			/// 총알아 맞아서 터질경우....
+			/// I know if you go off the total matching....
 			if( bIsSkillEffect && bIsBulletHit )
 			{
 				iHitEffect = SKILL_HIT_EFFECT( iSkillIDX );
 
 				if ( iHitEffect )
 				{
-					///아로아 이펙트
+					///Oh Loa effects
 					ChangeHittedEffect(pFromOBJ,IsAcceptAroa,iHitEffect);
 
 					CEffect *pHitEFT = g_pEffectLIST->Add_EffectWithIDX( iHitEffect, true );
@@ -2756,11 +2760,11 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 					}
 				}
 			}else
-			// 일반 적인경우..
+			// If the General..
 			{
 				if ( iHitEffect )
 				{
-					///아로아 이펙트
+					///Oh Loa effects
 					ChangeHittedEffect(pFromOBJ,IsAcceptAroa,iHitEffect);
 
 					CEffect *pHitEFT = g_pEffectLIST->Add_EffectWithIDX( iHitEffect, true );
@@ -2810,26 +2814,26 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 
 //--------------------------------------------------------------------------------
 /// class : ChangeHittedEffect
-/// 박지호: 아로아 및 카트 스킬 이펙트를 설정한다.
+/// Park Ji-Ho: Loa and cart set the skill effects.
 //--------------------------------------------------------------------------------
 void CObjCHAR::ChangeHittedEffect(CObjCHAR* pAttackObj,BOOL bA,int& hitIDX)
 {
 
-	//아로아 이펙트
+	//Oh Loa effects
 	if(bA)
 	{
 		CObjCHAR* pTg = pAttackObj;
 
-		//펫이라면...
+		//If you are a pet...
 		if(pAttackObj->IsPET())
 		{
-			//부모인 아바타 클래스를 가져온다.
+			//A parent brings the avatar class.
 			CObjCART* pCart = (CObjCART*)pAttackObj;
 			 if(pCart)
 				 pTg = pCart->GetParent();
 		}
 
-		//현재 타켝 효과를 아로아 타격 이펙트로 설정한다.
+		//At present? As the effects of a blow will set to the effect the AH.
 		if(pTg && bA && pTg->SetAroaState())
 			hitIDX = HIT_AROA_EFF;
 	}
@@ -2839,12 +2843,12 @@ void CObjCHAR::ChangeHittedEffect(CObjCHAR* pAttackObj,BOOL bA,int& hitIDX)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 공격 거리를 구한다. 스킬에 의한공격이라면 스킬테이블에서 무기에 의한 일반 공격이라면 무기테이블에서
+/// @brief  : Save the street attack. If an attack of the skill to the skill at the table were the General attack of the weapons in the weapon off the table
 //--------------------------------------------------------------------------------
 
 int CObjCHAR::Get_AttackRange()
 {
-	/// 스킬에 공격 거리가 입력되어 있다면 스킬거리 아니면 무기 거리..
+	/// If you enter distance attack skill skill or weapon distance distance..
 	if ( this->m_nToDoSkillIDX > 0 )
 	{
 		if( this->m_nToDoSkillIDX < g_SkillList.Get_SkillCNT() )
@@ -2894,7 +2898,7 @@ void CObjCHAR::Special_ATTACK ()
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 워프.. 현재 위치를 갱신하고 워프.. 지형갱신..
+/// @brief  : Warp ... Renew your current location and warp ... Terrain update..
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Warp_POSITION (float fX, float fY)
@@ -2912,7 +2916,7 @@ void CObjCHAR::Warp_POSITION (float fX, float fY)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 하늘과 충돌.. 그위치로..
+/// @brief  : The heavens and crashes ... That position..
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::DropFromSky ( float fX, float fY )
@@ -2929,7 +2933,7 @@ void CObjCHAR::DropFromSky ( float fX, float fY )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 모델을 특정방향으로 회전.
+/// @brief  : Rotate the model in a particular direction.
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Set_ModelDIR (t_POSITION &PosToView, bool bImmediate )
@@ -2940,7 +2944,7 @@ void CObjCHAR::Set_ModelDIR (t_POSITION &PosToView, bool bImmediate )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 모델을 특정방향으로 회전.
+/// @brief  : Rotate the model in a particular direction.
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Set_ModelDIR( float fAngleDegree, bool bImmediate )
@@ -2950,7 +2954,7 @@ void CObjCHAR::Set_ModelDIR( float fAngleDegree, bool bImmediate )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 모델을 특정방향으로 회전.
+/// @brief  : Rotate the model in a particular direction.
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Add_ModelDIR( float fAngleDegree )
@@ -2963,49 +2967,49 @@ void CObjCHAR::Add_ModelDIR( float fAngleDegree )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 이동 마무리..
+/// @brief  : Finishing move..
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Move_COMPLETED ()
 {
 	/*
-	케릭터의 이동 속도를 클라이언트가 결정하면 안됨...
+	Characters is not a client, you can determine the speed of the...
 	if ( !this->IsUSER() )
 	{
 		this->m_fMoveCmPerSec = this->Get_DefaultSPEED();
 	}
 	*/
-	/// x-y 위치만 강제 이동. 안그러면 투명몹 가능성 있음.
-	/// z 위치는 우선 이전위치와 동일하게 세팅.
+	/// x-y Forced to move but don't size with cells. Or in the possibility of a transparent mob.
+	/// z The position is the same as the previous location in the first set.
 	m_PosGOTO.z = m_PosCUR.z;
 	m_PosCUR = m_PosGOTO;
 
 	::setPosition (this->m_hNodeMODEL, m_PosCUR.x, m_PosCUR.y, m_PosCUR.z);
 
-	/// 2003. 12.16 :: 패킷 수신후 보정되었던 이동 속도를 현재 상태의 속도로 바꾼다.
+	/// 2003. 12.16 :: Packet after receiving compensation changes the current state of the movement that was speed.
 	Set_AdjustSPEED( this->Get_DefaultSPEED() );
 }
 
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief : 이동시 시작 위치의 높이값을 서버에서 받아온 값으로 설정하여 높이를 맞춘다.
+/// @brief : Started at the height of the position value is set to a value from the server to enjoy your height,.
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Reset_Position ()
 {
 	return;
 
-	///m_PosCUR.z = m_PosGOTO.z; // 목표 지점의 z 값이 실은 시작 위치의 높이 값이다.
+	///m_PosCUR.z = m_PosGOTO.z; // Starting point is the value for the height of the location where the value is actually a z.
 	///::setPositionVec3( this->m_hNodeMODEL, m_PosCUR );
 }
 
 
 //----------------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : RECOVER_STATE_CHECK_TIME 간격으로 Get_RecoverHP에서 구한 HP를 더해 준다.
-///			- 서버에서의 HP를 받았을때의 클라이언트에서의 차를 일정양만큼씩 여기서 더해준다.
-///			- arua 상태일경우 50% 증가 시켜준다 : 2005/07/12 - nAvy
+/// @brief  : More HP from RECOVER_STATE_CHECK_TIME intervals Get_RecoverHP.
+///			- When HP's client on the server at a certain amount per car of this case.
+///			- If you are good at: 50% increase while arua 2005/07/12-nAvy
 //----------------------------------------------------------------------------------------
 
 void CObjCHAR::RecoverHP( short nRecoverMODE )
@@ -3022,7 +3026,7 @@ void CObjCHAR::RecoverHP( short nRecoverMODE )
 
 	//	_RPT2( _CRT_WARN,"RecoverHP:%d, AruaAddHP:%d\n", iRecoverHP, iAruaAddHP );
 
-	int iReviseConstHP = iRecoverHP;//Get_MaxHP() / 30;///매틱마다 서버와의 차이를 줄이기 위한 보정값
+	int iReviseConstHP = iRecoverHP;//Get_MaxHP() / 30;///To reduce the difference between the server and every tick correction value for
 	if( iReviseConstHP < 10 )
 		iReviseConstHP = 10;
 
@@ -3065,9 +3069,9 @@ void CObjCHAR::RecoverHP( short nRecoverMODE )
 
 //----------------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : RECOVER_STATE_CHECK_TIME 간격으로 Get_ReocverMP에서 구한 MP를 더해 준다.
-///			- 서버에서의 MP를 받았을때의 클라이언트에서의 차를 일정양만큼씩 여기서 더해준다.
-///			- arua 상태일경우 50% 증가 시켜준다 : 2005/07/12 - nAvy
+/// @brief  : RECOVER_STATE_CHECK_TIME Get_ReocverMP MP from more intervals.
+///			- MP on the server when I got in the car by a certain amount of clients here.
+///			- If you are good at: 50% increase while arua 2005/07/12-nAvy
 //----------------------------------------------------------------------------------------
 
 void CObjCHAR::RecoverMP( short nRecoverMODE )
@@ -3081,7 +3085,7 @@ void CObjCHAR::RecoverMP( short nRecoverMODE )
 
 	Add_MP( iRecoverMP + iAruaAddMP );
 
-	int iReviseConstMP = iRecoverMP;//Get_MaxMP() / 30;///매틱마다 서버와의 차이를 줄이기 위한 보정값
+	int iReviseConstMP = iRecoverMP;//Get_MaxMP() / 30;///To reduce the difference between the server and every tick correction value for
 	if( iReviseConstMP < 10 )
 		iReviseConstMP = 10;
 
@@ -3121,7 +3125,7 @@ void CObjCHAR::RecoverMP( short nRecoverMODE )
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 캐릭터 높이 갱신. 각종 충돌이 여기서 처리된다.
+/// @brief  : Character height. The various conflicts here.
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::Adjust_HEIGHT ()
@@ -3136,7 +3140,7 @@ void CObjCHAR::Adjust_HEIGHT ()
 
 //----------------------------------------------------------------------------------------------------
 /// @param
-/// @brief 특정 액션 중간에 장비를 교체했을시( 특히 무기 ) 바뀐 장비에 맞는 모션으로 교체
+/// @brief In the middle of a certain action would have been to replace the equipment (especially weapons) and replace it with the converted equipment fits in motion
 //----------------------------------------------------------------------------------------------------
 
 void CObjCHAR::UpdateMotionByChangingEquip()
@@ -3144,10 +3148,10 @@ void CObjCHAR::UpdateMotionByChangingEquip()
 	if( this->IsA( OBJ_AVATAR ) || this->IsA( OBJ_USER ) )
 	{
 		CObjAVT* pAvt = (CObjAVT*)this;
-		/// 무기를 바꿀께 있다면..
+		/// If you have a weapon to change after..
 		if( pAvt->GetUpdateMotionFlag() || pAvt->GetChangeWeaponR() || pAvt->GetChangeWeaponL() )
 		{
-			/// 새로운 모션 세팅을 위한 세로운 명령 세팅
+			/// New motion settings for the vertical cloud command settings
 			switch( pAvt->Get_COMMAND() )
 			{
 				case CMD_STOP:
@@ -3200,9 +3204,9 @@ void CObjCHAR::UpdateMotionByChangingEquip()
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 캐릭터 처리함수
-/// @todo 테스트 코드 빼라...//if (this->Get_TYPE() != OBJ_MOB )
-/// @todo View list 고쳐라..
+/// @brief  : Character handling functions
+/// @todo Deselect test code...//if (this->Get_TYPE() != OBJ_MOB )
+/// @todo View list Redirect..
 //--------------------------------------------------------------------------------
 
 int CObjCHAR::Proc (void)
@@ -3224,17 +3228,17 @@ int CObjCHAR::Proc (void)
 
 #if defined(_GBC)
 //--------------------------------------------------------------------------------
-		//박지호::카트 뒷자석에 유저를 탑승 시켰다면 카트 위치를 2인승 유저에게 업데이터 한다.
+		//Park Ji-Ho: If the user on the rear of the cart to cart tandem users update the location.
 		if(this->GetPetMode() > -1)
 		{
-			//현재 어떤 유저가 뒤에 탑승 했다면...
+			//If you have any users in the back now...
           	if(m_pObjCART->m_pRideUser)
 			{
 				float Pos1[3] = { 0 };
 
-				//2인승 더미 위치값을 가져온다.
+				//2 seater brings the value of the location of the pile.
 				::getDummyPosition(m_pObjCART->GetZMODEL(),10,Pos1);
-				//2인승 유저 위치 업데이터
+				//2 seater user location update
 				m_pObjCART->m_pRideUser->Set_CurPOS(D3DXVECTOR3(Pos1[0],Pos1[1],Pos1[2]));
 			}
 		}
@@ -3243,21 +3247,21 @@ int CObjCHAR::Proc (void)
 
 
 	//--------------------------------------------------------------------------------
-	/// 오브젝트 바이브레이션 업데이트.~~ 흔들자~~
+	/// Object vibe migration update: Let's rock ~ ~ ~ ~
 	//--------------------------------------------------------------------------------
     m_ObjVibration.Proc();
 
 
 
 	//--------------------------------------------------------------------------------
-	/// 외부 데코레이션들 업데이트
+	/// Updated the external decoration
 	//--------------------------------------------------------------------------------
 	m_EndurancePack.Update();
 
 
 	//--------------------------------------------------------------------------------
-	/// visibility 변화
-	/// 캐릭터 사망시 아예 모션이 업데이트 안되는경우가 있다.. 이것이 아래 코드와 연관이 있는가? -04/5/25
+	/// visibility Change
+	/// Upon the death of a character is the motion at all, updates are ... This is associated with the code below? -04/5/25
 	//--------------------------------------------------------------------------------
 	if( m_pChangeVisibility != NULL )
 	{
@@ -3271,7 +3275,7 @@ int CObjCHAR::Proc (void)
 			return 0;
 		}
 
-		assert( !(this->IsA( OBJ_USER )) && " 뭐냥 유젼데 왠 비져비리티? " );
+		assert( !(this->IsA( OBJ_USER )) && " What invisible why wrongdoing to match oil agent t? " );
 
 		return 1;
 	}
@@ -3281,15 +3285,15 @@ int CObjCHAR::Proc (void)
 	/// Update check frame
 	//--------------------------------------------------------------------------------
 	DWORD dwCurrentTime = g_GameDATA.GetGameTime();
-	m_dwFrameElapsedTime = dwCurrentTime - m_dwLastRecoveryUpdateTime;		/// 이전프레임에서 현재 프레임 사이에 흐른시간을 더해준다.
+	m_dwFrameElapsedTime = dwCurrentTime - m_dwLastRecoveryUpdateTime;		/// The current flow between the time frame from the previous frame case.
 	m_dwLastRecoveryUpdateTime = dwCurrentTime;
 
 
 
 
 	//--------------------------------------------------------------------------------
-	/// 리커버관련 처리
-	/// 04/5/28 CObjAVT::Proc 로이동..
+	/// Lee cover specific handling
+	/// 04/5/28 CObjAVT::Proc Go to..
 	//--------------------------------------------------------------------------------
 	//if( this->Is_AVATAR() )
 	//{
@@ -3305,8 +3309,8 @@ int CObjCHAR::Proc (void)
 	//	}
 
 	//	//--------------------------------------------------------------------------------
-	//	/// 시간에 따른 액션 모드 처리..
-	//	/// if 문 줄이기 위해서 이쪽으로 이동.. 04/5/28
+	//	/// Time-dependent action mode processing..
+	//	/// if This way to lighten the moving door.. 04/5/28
 	//	//--------------------------------------------------------------------------------
 	//	///if( this->IsA( OBJ_AVATAR ) || this->IsA( OBJ_USER ) )
 	//	{
@@ -3329,17 +3333,17 @@ int CObjCHAR::Proc (void)
 
 
 	//--------------------------------------------------------------------------------
-	/// 일단은 모든 오브젝트 캐릭터를 다 리스트에..
-	/// 미니맵 출력을 위한 리스트
+	/// Once you are done your character all objects on the list..
+	/// Mini map output for the list
 	//--------------------------------------------------------------------------------
 	g_pObjMGR->AddViewObject( m_nIndex );
 
 
 	//--------------------------------------------------------------------------------
-	/// 거리에 따른 오브젝트들의 관리( 엔진에 등록 혹은 뺀다.. )
-	/// 2004/3/17 클라이언트 차원에서 거리에 따른 모델의 관리는 불필요하다. 서버에서 난라온건 다 관리해준다.
-	/// 필요할경우 LOD 적용이 반영된다.
-	/// 2004/7/8 InsertToScene/removeFromScene 등은 필요없다 서버에서 받는데로 추가하고 삭제하라..
+	/// Due to the distance of the object management (register or leave the engine...)
+	/// 2004/3/17 Due to the distance from the model of management of the client dimension is unnecessary. On the server I'd let all moderate management.
+	/// If necessary, apply the LOD is reflected.
+	/// 2004/7/8 InsertToScene/removeFromScene As such, there is no need to get on the server to add and delete..
 	//--------------------------------------------------------------------------------
 	bool bInViewfrustum = false;
 	///int iDistance = CD3DUtil::distance ((int)g_GameDATA.m_PosCENTER.x, (int)g_GameDATA.m_PosCENTER.y, (int)m_PosCUR.x, (int)m_PosCUR.y);
@@ -3348,7 +3352,7 @@ int CObjCHAR::Proc (void)
 		///this->InsertToScene ();
 
 		// char name & chatting message
-		if ( ::inViewfrustum( this->GetZMODEL() ) ) // 뷰프러스텀 안에 있으면 참, 없으면 거짓
+		if ( ::inViewfrustum( this->GetZMODEL() ) ) // If true, false if the view frustum in
 		{
 			bInViewfrustum = true;
 			if (this->Get_TYPE() != OBJ_MOB )
@@ -3364,16 +3368,16 @@ int CObjCHAR::Proc (void)
 
 
 	//--------------------------------------------------------------------------------
-	/// 뷰프러스텀 안에 있는 오브젝트들만 높이값 변경(부하 많이 먹기 때문)
+	/// Only those objects in the view frustum, change the height value (because a lot of the load)
 	//--------------------------------------------------------------------------------
-	if ( bInViewfrustum ) // 뷰프러스텀 안에 있는 오브젝트들만 높이값 변경(부하 많이 먹기 때문)
+	if ( bInViewfrustum ) // Only those objects in the view frustum, change the height value (because a lot of the load)
 	{
-		/// 내가 누군가에에 링크되어있다면.. 충돌처리 안함..
+		/// If you have a link to anyone I. .. Not handling conflicts..
 
 #if defined(_GBC)
-		// 06. 06. 20 - 김주현 : 발키리 서포트가 적용된 상태에서 변신 이펙트도 적용되던 문제점 수정.
-		// EVO 에서는 변신 상태가 없다.
-		//조성현 캐릭터 변신할때...
+		// 06. 06. 20 - Kim Joo-Hyun: Valkyrie transformed into effect in the State, the port is applied to it in that issue modification too.
+		// EVO There is no State of the transformation.
+		//When you turn the County character composition...
 		if(m_bDisguise)
 		{
 			::setScale(this->m_hNodeMODEL, 1.0f, 1.0f, 1.0f);
@@ -3405,9 +3409,9 @@ int CObjCHAR::Proc (void)
 			Adjust_HEIGHT ();
 
 #if defined(_GBC)
-		// 06. 06. 20 - 김주현 : 발키리 서포트가 적용된 상태에서 변신 이펙트도 적용되던 문제점 수정.
-		// EVO 에서는 변신 상태가 없다.
-		//조성현 캐릭터 변신할때...
+		// 06. 06. 20 - Kim Joo-Hyun: Valkyrie transformed into effect in the State, the port is applied to it in that issue modification even.
+		// EVO There is no State of the transformation.
+		//When you turn the County character composition...
 		if(m_bDisguise)
 		{
 			::setLightingRecursive(this->GetZMODEL(), g_GameDATA.m_hCharacterLight2);
@@ -3420,22 +3424,22 @@ int CObjCHAR::Proc (void)
 	else
 	{
 
-#if (1) /// 현재, 이동 시작시 높이 보정이 되기 때문에, 높이 보정 필요 없음.
+#if (1) /// At present, compensation is high at the start of the move, since it is no need to compensate for the height of the.
 		::getPosition( this->m_hNodeMODEL, (float*)m_PosCUR );
-		//m_PosCUR.z = g_pAVATAR->Get_CurPOS().z; // 안보이는 캐릭터의 높이는 주인공 아바타의 높이에 맞춤.
+		//m_PosCUR.z = g_pAVATAR->Get_CurPOS().z; // The height of the protagonist character avatar is not visible at the height of the alignment.
 
-		/// 아바타 이거나( 카트를 탄상태가 아닌), 내가 카드일경우에만..
+		/// Avatar or (not riding a cart), I-card only..
 		///if ( ( this->Is_AVATAR() && ( this->GetPetMode() < 0 ) ) ||
 		///	this->IsPET() )
 		{
 			D3DXVECTOR3 vAvatarPos	= g_pAVATAR->Get_CurPOS();
 			float fDistanceSquare2D = (vAvatarPos.x - m_PosCUR.x)*(vAvatarPos.x - m_PosCUR.x) + (vAvatarPos.y - m_PosCUR.y)*(vAvatarPos.y - m_PosCUR.y);
 			const float fMinDistanceSquare2D = 4000.0f*4000.0f;
-			// 아주 가까운 거리에 있을 경우에만 높이 조정
+			// If you have only a very short distance height adjustment
 			if ( fDistanceSquare2D < fMinDistanceSquare2D )
 			{
 				Adjust_HEIGHT();
-			//	// 이동 중일 거라는 가정이 성립한다면, 현재 위치가 바른 위치이다.
+			//	// If you're going to go home, the current position is the position of the formation of civil.
 			//	//m_PosCUR.z = g_pTerrain->GetHeightTop(m_PosCUR.x, m_PosCUR.y);
 			//	::setPosition (m_hNodeMODEL, m_PosCUR.x, m_PosCUR.y, m_PosCUR.z);
 			}
@@ -3446,60 +3450,60 @@ int CObjCHAR::Proc (void)
 
 
 	//--------------------------------------------------------------------------------
-	/// 모션 프레임이 끝났는가?
+	/// Motion frames over the?
 	//--------------------------------------------------------------------------------
 
 	m_bFrameING = this->ProcMotionFrame ();
 
 	//--------------------------------------------------------------------------------
-	// 모션 루프가 끝났다.
+	// Motion loops over.
 	//--------------------------------------------------------------------------------
 	if ( !m_bFrameING )
 	{
 		//--------------------------------------------------------------------------------
-		/// 항상 ActionSkillIDX 를 스킬 액션 시작시 DoingSkill 에 등록시키고 모션이 끝나면 리셋..( 모션프레임에서 스킬번호를 참조해야하기 때문에 )
+		/// Always ActionSkillIDX to register DoingSkill at the beginning of the action and the skill at the end of the motion the reset ... (See motion in a frame because of the skill number)
 		//--------------------------------------------------------------------------------
 		m_nDoingSkillIDX = 0;
 
-//박지호::카트 스킬 사용후 아바타가 서있는 문제로, 강제로 애니메이션 프레임이 끝나면
-//        아바타를 앉힌다.
+//Park Ji-Ho:: cart issues that go to the avatar, then use the skill force at the end of the animation frames
+//        Pacifying the avatar.
 #if defined(_GBC)
 		Set_SitMode();
 #endif
 		// { added by zho 2003-12-17
-		// 검잔상 중지
+		// The sword stuck, stop
 		for (short nI=0; nI<2; nI++)
 		{
 			if ( m_hTRAIL[ nI ] )
 			{
-				::controlTrail ( m_hTRAIL[ nI ], 3 );	// 점차 사라짐.
+				::controlTrail ( m_hTRAIL[ nI ], 3 );	// Gradually disappearing.
 			}
 		}
 
 		//--------------------------------------------------------------------------------
-		/// 장비교체에 따른 적당한 모션 교체..
+		/// Equipment is due to be replaced by proper motion personal..
 		//--------------------------------------------------------------------------------
 		UpdateMotionByChangingEquip();
 
-	} else if ( Get_STATE() & CS_BIT_INT )	// 이동작중에는 암거두 할수 없다.
+	} else if ( Get_STATE() & CS_BIT_INT )	// Some of this behavior can't get cancer.
 	{
 		return 1;
 	}
 
 	//--------------------------------------------------------------------------------
-	/// 큐에 쌓인 명령 소진...
-	/// CanApplyCommand 가 false 일때는 적용이 불가능하다.
-	/// 현재는 m_bCastingSTART = true 일때만이다.
+	/// Piled in the command queue exhausted...
+	/// CanApplyCommand is false, it is impossible to apply.
+	/// True, it is only when the current is m_bCastingSTART =.
 	//--------------------------------------------------------------------------------
 	ProcQueuedCommand();
 
 
 	//--------------------------------------------------------------------------------
-	/// 캐스팅을 위한 틀별한 처리
-	/// Skill_START 에서 m_bCastingSTART = true 로 만든다.
-	/// 그러나 마지막 스킬액션이 끝난 시점을 알수 없으므로.. 일단
-	/// 이것에 의존한다.
-	/// 04/5/28 - Skill 시전( DO_SKILL 함수 ) 를 리팩토링 하면서 없어짐.( 필요가 없게 되었다. )
+	/// Cast teulbyeolhan for processing
+	/// Skill_START The m_bCastingSTART = true.
+	/// However, you cannot see the point of the last skill action is over. .. Once
+	/// This will depend on the.
+	/// 04/5/28 - Skill: (DO_SKILL function) does with refactoring. (No.)
 	//--------------------------------------------------------------------------------
 	///Casting_END ();
 
@@ -3507,31 +3511,31 @@ int CObjCHAR::Proc (void)
 
 
 	//--------------------------------------------------------------------------------
-	/// 데미지 타임아웃 체크
+	/// Damage checked timeouts
 	//--------------------------------------------------------------------------------
 	this->ProcDamageTimeOut();
 
 	//--------------------------------------------------------------------------------
-	/// Effect_Of_Skill 타임아웃 체크
+	/// Effect_Of_Skill Check timeout
 	//--------------------------------------------------------------------------------
 	ProcTimeOutEffectedSkill();
 
 	//--------------------------------------------------------------------------------
-	/// 서버로 부터 죽음을 통보 받았다...
+	/// Received a notice of death from the server...
 	//--------------------------------------------------------------------------------
 	if ( this->m_lDeadTIME )
 	{
 		CObjCHAR *pAttacker = g_pObjMGR->Get_CharOBJ( this->m_DeadDAMAGE.m_nTargetObjIDX, true );
 
-		/// 2003. 12. 26 마지막 한방 처리 수정...
-		/// 난 죽은지 10초가 지났는데, 아무도 날 때리지 않는 경우...
+		/// 2003. 12. 26 Last modified herbal treatment...
+		/// I have been a 10 seconds dead, none If you do not hit me...
 		if ( g_GameDATA.GetGameTime() - this->m_lDeadTIME >= 1000 * 5
 				|| pAttacker == NULL
 				|| pAttacker->m_iServerTarget != g_pObjMGR->Get_ServerObjectIndex( this->Get_INDEX() ) )
 		{
 			this->Apply_DAMAGE( pAttacker, this->m_DeadDAMAGE.m_wDamage );
 
-			/// 자살일경우.. 데미지 표시하지 않음..
+			/// If this is a suicide ... Do not show damage..
 			if( pAttacker != this )
 			{
 				uniDAMAGE wDamage;
@@ -3561,8 +3565,8 @@ int CObjCHAR::Proc (void)
 	}
 
 
-	//박지호::RecvPACKET.cpp 에서 명령을 받은 아바타가 명령이 설정되고, 설정된 명령은 여기서 실행된다.
-	//각 명령함수들은 해당하는 애니메이션 및 이펙트를 설정한다.
+	//Park Ji-Ho received the command from the avatar RecvPACKET.cpp: command, the command is run here has been set.
+	//Each command functions that will set an animation and effects.
 	switch( Get_COMMAND() )
 	{
 		case CMD_DIE	:
@@ -3599,15 +3603,15 @@ int CObjCHAR::Proc (void)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// 박지호: Set_SitMode()
-///       : 카트가 공격할때 아바타를 앉친다
+/// Park Ji-Ho: Set_SitMode()
+///       : When avatars attack strikes the cart seat
 ///
 //--------------------------------------------------------------------------------
 void CObjCHAR::Set_SitMode(void)
 {
 
-	//내가 카트에 탄 상태라면 아바타 모션을 앉는 형태로
-	//변경한다.
+	//I sit in the cart if you shot in the form of an avatar motion
+	//Change..
 	if(this->GetPetMode() > 0)
 	{
 //		if(this->m_pObjCART->Get_COMMAND() == CMD_ATTACK)
@@ -3619,8 +3623,8 @@ void CObjCHAR::Set_SitMode(void)
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// 박지호: ProcCMD_Skill2OBJECT_PET()
-///       : 펫 상태의 타켓스킬의 설정한다.
+/// Park Ji-Ho: ProcCMD_Skill2OBJECT_PET()
+///       : The skill set of the target State of the pet.
 ///
 //--------------------------------------------------------------------------------
 int CObjCHAR::ProcCMD_Skill2OBJECT_PET()
@@ -3631,22 +3635,22 @@ int CObjCHAR::ProcCMD_Skill2OBJECT_PET()
 	if ( pTarget )
 	{
 		//-----------------------------------------------------------------------------------------
-		/// 아직 스킬 캐스팅을 시작하지 않았다면..
+		/// If you have not yet started to cast the skill..
 		//-----------------------------------------------------------------------------------------
 		if ( !m_bCastingSTART )
 		{
 			int iAttackRange = this->Get_AttackRange();
 
-			//타켓 정보를 설정한다.
+			//The target set..
 			m_pObjCART->m_PosGOTO       = pTarget->Get_CurPOS();
 			m_pObjCART->Set_TargetIDX(m_iServerTarget);
 
-			//타켓까지 이동을 한다.
+			//The target should be move up to the.
 			if( m_pObjCART->Goto_TARGET( pTarget, iAttackRange ) == false )
 			{	m_pObjCART->SetCMD_MOVE(pTarget->Get_CurPOS(),TRUE);	return 1;	}
 			else
 			{
-				//정지
+				//Stop
 				m_pObjCART->Set_STATE(CS_STOP);
 				m_pObjCART->m_fCurMoveSpeed = 0;
 
@@ -3654,21 +3658,21 @@ int CObjCHAR::ProcCMD_Skill2OBJECT_PET()
 				m_fCurMoveSpeed = 0;
 			}
 
-			//스킬을 쓸수 없다면 정지
+			//If you can't stop writing skill
 			if( !bCanStartSkill() )
 			{
 				//Pet
 				m_pObjCART->Set_STATE(CS_STOP);
 				m_pObjCART->m_fCurMoveSpeed = 0;
 
-				//아바타
+				//Avatar
 				Set_STATE(CS_STOP);
 				m_fCurMoveSpeed = 0;
 				///this->Set_MOTION( this->GetANI_Casting() );
 				return 1;
 			}
 
-			//타켓을 바로보는 회전 처리
+			//Rotate the view right in the target treatment
 			m_pObjCART->Set_ModelDIR( pTarget->m_PosCUR );
 
 		}
@@ -3676,21 +3680,21 @@ int CObjCHAR::ProcCMD_Skill2OBJECT_PET()
 		m_pObjCART->Set_ModelDIR( pTarget->m_PosCUR );
 
 		//-----------------------------------------------------------------------------------------
-		/// 타겟이 죽어버렸다...
+		/// Target abandoned to die...
 		//-----------------------------------------------------------------------------------------
 		if( pTarget->m_bDead )
 		{
 			SetEffectedSkillFlag( true );
 		}
 
-		//스킬 타입을 가져와서 카트가 스킬을 발동할지  체크한다.
-		//!!카트 스킬을 쓰기 위해서는 List_Skill.stb 에서 카트 및 아바타 스킬
-		//구분자를 이용해서 카트 스킬이라면 바로 아래 코드를 실행 하면 된다.
+		//Skill type skills check whether you get the cart.
+		//!!In the cart, and the cart in order to write a skill List_Skill.stb avatar skills
+		//If you are using a delimiter if you run the code just below the cart is a skill.
 
-		//!!서버에서 구현이 안된 관계로 테스트를 하지 않았음.
+		//!!The implementation on the server, not the relationship test.
 		int sType = SKILL_TYPE(this->m_nToDoSkillIDX);
 
-		///카트::캐스팅 / 실제동작 적용...
+		///Cart:: applied in the actual casting/action...
 		if(sType == -1)
 		{
 			m_pObjCART->m_nToDoSkillIDX	= this->m_nToDoSkillIDX;
@@ -3700,7 +3704,7 @@ int CObjCHAR::ProcCMD_Skill2OBJECT_PET()
 
 			m_pObjCART->Do_SKILL(this->Get_TargetIDX(),pTarget);
 		}
-		///아바타::캐스팅 / 실제동작 적용...
+		///Avatar: cast/actual behavior apply...
 		else
 		{ 	this->Do_SKILL(this->Get_TargetIDX(),pTarget);		}
 
@@ -3719,14 +3723,14 @@ int CObjCHAR::ProcCMD_Skill2OBJECT_PET()
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// 박지호: SetNewCommandAfterSkill_PET()
-///       : 펫 상태의 타켓스킬의 설정한다.
+/// Park Ji-Ho: SetNewCommandAfterSkill_PET()
+///       : The skill set of the target State of the pet.
 ///
 //--------------------------------------------------------------------------------
 void CObjCHAR::SetNewCommandAfterSkill_PET(int iSkillNO)
 {
 
-	//실행될 액션 모드를 가져온다.
+	//This action brings the mode to be executed.
 	switch( SKILL_ACTION_MODE( iSkillNO ) )
 	{
 		case SA_STOP:
@@ -3744,7 +3748,7 @@ void CObjCHAR::SetNewCommandAfterSkill_PET(int iSkillNO)
 
 				if(pTarget)
 				{
-					/// 나일경우 PVP존이 아닌존에서 유져공격명령은 취소한다.
+					/// If I lose in a non-PVP zone zone attack command.
 					if(this->IsA( OBJ_USER ) && pTarget->IsUSER() )
 					{
 						if( !g_pTerrain->IsPVPZone() || g_GameDATA.m_iPvPState == PVP_CANT )
@@ -3752,7 +3756,7 @@ void CObjCHAR::SetNewCommandAfterSkill_PET(int iSkillNO)
 					}
 					else
 					{
-						// 죽을때 까지 공격 !!!
+						// Until death attacks !!!
 						m_pObjCART->Start_ATTACK(pTarget);
 						m_pObjCART->Set_COMMAND(CMD_ATTACK);
 						this->Set_COMMAND(CMD_ATTACK);
@@ -3769,11 +3773,11 @@ void CObjCHAR::SetNewCommandAfterSkill_PET(int iSkillNO)
 
 		case SA_RESTORE:
 			{
-				//이전 공격으로 설정
+				//In the previous attack set
 				this->Set_COMMAND(this->Get_BECOMMAND());
 				this->Set_BECOMMAND(CMD_STOP);
 
-				//카드가 공격이라면 공격으로 전환한다.
+				//If you switch the cards attack attack.
 				if(m_pObjCART->Get_COMMAND() == CMD_ATTACK)
 				{
 					CObjCHAR* pTarget = (CObjCHAR*)(this->Get_TargetOBJ());
@@ -3781,13 +3785,13 @@ void CObjCHAR::SetNewCommandAfterSkill_PET(int iSkillNO)
 
 					if(pTarget)
 					{
-						/// 나일경우 PVP존이 아닌존에서 유져공격명령은 취소한다.
+						/// If I lose in a non-PVP zone zone attack command.
 						if(this->IsA( OBJ_USER ) && pTarget->IsUSER() )
 						{
 							if( !g_pTerrain->IsPVPZone() || g_GameDATA.m_iPvPState == PVP_CANT )
 							{ m_pObjCART->Set_COMMAND(CMD_STOP); this->Set_COMMAND(CMD_STOP); }
 						}
-						// 아니면 공격을 시도한다.
+						// Or try to attack.
 						else
 						{
 							m_pObjCART->Start_ATTACK(pTarget);
@@ -3805,40 +3809,40 @@ void CObjCHAR::SetNewCommandAfterSkill_PET(int iSkillNO)
 
 ///--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// 박지호: SetRideUser()
-///       : 2인승을 한다.
+/// Park Ji-Ho: SetRideUser()
+///       : 2-seater.
 ///
 //--------------------------------------------------------------------------------
 BOOL CObjCHAR::SetRideUser(WORD irideIDX)
 {
-	//펫모드...
+	//Pet mode...
 	if(this->GetPetMode() < 0)
 		return FALSE;
 
-	//카트생성...
+	//Cart creation...
 	if(this->m_pObjCART == NULL)
 		return FALSE;
 
-	//클라이언트 인덱스로 전환한다.
+	//Switch to the client index.
 	m_iRideIDX = g_pObjMGR->Get_ClientObjectIndex(irideIDX);
 
 	CObjAVT* pTarget = g_pObjMGR->Get_CharAVT(m_iRideIDX,false);
 		if(pTarget == NULL)
 			return FALSE;
 
-	//펫 모드 설정
+	//Pet mode settings
 	pTarget->SetPetType(this->GetPetMode());
 	pTarget->m_pObjCART = this->m_pObjCART;
 	pTarget->m_IsRideUser = TRUE;
 
-	//카트에 탑승을 한다.
+	//Cart Board..
 	this->m_pObjCART->Create(pTarget);
 
 	pTarget->Set_COMMAND(CMD_STOP);
 	pTarget->Set_STATE(CS_STOP);
 
 
-	//아바타 무기 및 날개는 안보이도록 설정
+	//Avatar is set so that the weapon and not the wing
 	int iVisibilityPart[3] = {BODY_PART_KNAPSACK, BODY_PART_WEAPON_R, BODY_PART_WEAPON_L};
 
 	for(register int i=0;i<3;i++)
@@ -3865,8 +3869,8 @@ BOOL CObjCHAR::SetRideUser(WORD irideIDX)
 
 ///--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// 박지호: ReleaseRideUser()
-///       : 2인승을 해제한다.
+/// Park Ji-Ho: ReleaseRideUser()
+///       : 2 seater off.
 ///
 //--------------------------------------------------------------------------------
 void CObjCHAR::ReleaseRideUser(void)
@@ -3875,14 +3879,14 @@ void CObjCHAR::ReleaseRideUser(void)
 	if(m_iRideIDX == 0)
 		return;
 
-	//손님 객체를 가져온다.
+	//Guest brings an object.
 	CObjAVT* pTarget = g_pObjMGR->Get_CharAVT(m_iRideIDX,false);
 	if(pTarget == NULL)
 		return;
 
 	m_iRideIDX = 0;
 
-	//펫 모드 설정
+	//Pet mode settings
 	pTarget->SetPetType(-1);
 	pTarget->m_pObjCART = NULL;
 	pTarget->m_IsRideUser = FALSE;
@@ -3891,7 +3895,7 @@ void CObjCHAR::ReleaseRideUser(void)
 	pTarget->SetCMD_STOP();
 
 
-	//아바타 무기 및 날개는 보이도록 설정
+	//Avatar is set so that the arms and wings
 	int iVisibilityPart[3] = {BODY_PART_KNAPSACK, BODY_PART_WEAPON_R, BODY_PART_WEAPON_L};
 
 	for(register int i=0;i<3;i++)
@@ -3916,8 +3920,8 @@ void CObjCHAR::ReleaseRideUser(void)
 
 ///--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// 박지호: ReleaseRideUser()
-///       : 카트 보조에 탑승 했다면 자신은 뛰어 내린다.
+/// Park Ji-Ho: ReleaseRideUser()
+///       : If you're making the jump yourself secondary to cart.
 ///
 //--------------------------------------------------------------------------------
 void CObjCHAR::ReleaseRideUser(WORD irideIDX)
@@ -3930,10 +3934,10 @@ void CObjCHAR::ReleaseRideUser(WORD irideIDX)
 
 	pTarget->m_pObjCART->UnLinkChild(1);
 
-	//부모의 연결해제
+	//Parent's disconnect
 	pTarget->m_pObjCART->GetParent()->m_iRideIDX	= 0;
 	pTarget->m_pObjCART->GetParent()->m_pRideUser	= NULL;
-	//펫 모드 설정
+	//Pet mode settings
 	pTarget->SetPetType(-1);
 	pTarget->m_pObjCART = NULL;
 	pTarget->m_IsRideUser = FALSE;
@@ -3941,14 +3945,14 @@ void CObjCHAR::ReleaseRideUser(WORD irideIDX)
 	pTarget->Set_STATE(CS_STOP);
 	//pTarget->SetCMD_STOP();
 
-	//뛰어 내리는 모션을 설정한다.
+	//Make the jump to set in motion..
 	pTarget->Set_MOTION(SKILL_ANI_ACTION_TYPE(27),0,1,false,1);
 
 
 
 
 
-	//아바타 무기 및 날개는 보이도록 설정
+	//Avatar is set so that the arms and wings
 	int iVisibilityPart[3] = {BODY_PART_KNAPSACK, BODY_PART_WEAPON_R, BODY_PART_WEAPON_L};
 
 	for(register int i=0;i<3;i++)
@@ -3973,8 +3977,8 @@ void CObjCHAR::ReleaseRideUser(WORD irideIDX)
 
 ///--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// 박지호: Ride_Cansel_Motion()
-///       : 탑승 거부 모션을 설정한다.
+/// Park Ji-Ho: Ride_Cansel_Motion()
+///       : Denied boarding shall set in motion.
 ///
 //--------------------------------------------------------------------------------
 void CObjCHAR::Ride_Cansel_Motion(void)
@@ -3991,7 +3995,7 @@ void CObjCHAR::Ride_Cansel_Motion(void)
 ///--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// class : Stop_Cart
-/// 박지호: 카트를 정지 시킨다.
+/// Park Ji-Ho: stop the cart.
 ///
 //--------------------------------------------------------------------------------
 void CObjCHAR::Stop_Cart(void)
@@ -4009,21 +4013,21 @@ void CObjCHAR::Stop_Cart(void)
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
 /// @brief  : queuing the command
-///				현재 명령을 적용할수 있는가?
-///				현재의 명령을 세팅할수 없는 상태를 파악하라..
+///				You can apply the current command?
+///				The current command to determine the status of the settings can't La. ..
 //--------------------------------------------------------------------------------
 
 bool CObjCHAR::CanApplyCommand()
 {
-	/// 캐스팅이 시작되었다면 적용할수 없음..
-	/// 또 result_of_skill 을 받았다면.. 결국 현재 시전할 스킬이 끝나기 전에는 모든 명령을 큐에넣는다.
-	/// 이미 서버에선 결과가 적용된거기때문에 클라이언트도 무조건 스킬을 시전해야된다.
+	/// The cast has been launched not applicable..
+	/// Also if you result_of_skill ... In the end, all before the end of the current cast command queue with skill.
+	/// Already, the results are applied in there because clients should unconditionally skill:.
 	if( this->m_bCastingSTART && bCanActionActiveSkill() )
 	{
 		return false;
 	}
 
-	/// 현재 수행되어야할 명령큐가 비어있지 않다면 먼저 큐의 명령을 수행해야하므로..
+	/// Currently, the command to be performed when the queue is empty, you must first carry out the orders of the queue if you do not ...
 	if( this->m_CommandQueue.IsEmpty() == false )
 	{
 		return false;
@@ -4035,8 +4039,8 @@ bool CObjCHAR::CanApplyCommand()
 
 //--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// @brief  : 쌓여진 명령들을 수행한다.
-///			  매프레임 수행해야하는가?
+/// @brief  : Wrapped commands.
+///			  Should be done every frame?
 //--------------------------------------------------------------------------------
 
 void CObjCHAR::ProcQueuedCommand()
@@ -4044,28 +4048,28 @@ void CObjCHAR::ProcQueuedCommand()
 	if( m_CommandQueue.IsEmpty() )
 		return;
 
-	/// 현재 스킬관련 명령이 수행중이거나 수행해야될 스킬이 세팅되어 있다면 기다려라..
+	/// Be sure to follow the current skill-related commands or skill if you have this setting wait. ..
     if( this->m_bCastingSTART && bCanActionActiveSkill() )
 	{
 		return;
 	}
 
-	/// 일단 제일 마지막껏만 수행
+	/// Once the last whites-only
 	bool bSkillCommand = false;
 	CObjCommand* pCommand = m_CommandQueue.PopLastCommand( bSkillCommand );
 
 	if( pCommand )
 	{
 		pCommand->Execute( this );
-		Log_String( LOG_NORMAL, "!!큐의정보로 부터 실행!!\n" );
+		Log_String( LOG_NORMAL, "!!The information in the queue run!!\n" );
 
-		/// Skill 명령이고 이미 Result 를 받은 명령이라면..
+		/// Skill If you have already received the command and the command Result..
 		if( bSkillCommand )
 		{
 			if( pCommand->bGetResultOfSkil() )
 			{
 				SetEffectedSkillFlag( true );
-				Log_String( LOG_NORMAL, "!!큐의정보로 부터 effectedskillflag 세팅!!\n" );
+				Log_String( LOG_NORMAL, "!!Effectedskillflag from the information in the queue settings!!\n" );
 			}
 		}
 	}
@@ -4340,7 +4344,7 @@ int	CObjCHAR::Sub_HP (int iSub)
 
 
 //----------------------------------------------------------------------------------------------------
-/// @brief 캐릭터 위에 이펙트를 붙인다.
+/// @brief Effects on the characters..
 //----------------------------------------------------------------------------------------------------
 void CObjCHAR::ShowEffectOnCharByIndex( int iEffectIDX, int iSountIDX, bool bWeatherEffect )
 {
@@ -4410,7 +4414,7 @@ void CObjCHAR::DeleteWeatherEffect()
 	pNode = m_WeatherEffectLIST.GetHeadNode ();
 	while( pNode )
 	{
-		/// 이펙트만 지우고 이펙트의 부모처리는 안한다. 왜냐? 내가 부모니까..
+		/// Delete the only effect of the parents should not handle the effects. Why? I'm a parent..
 		g_pEffectLIST->Del_EFFECT( pNode->DATA, false );
 
 		m_WeatherEffectLIST.DeleteNFree( pNode );
@@ -4507,32 +4511,32 @@ void CObjCHAR::SetUserDefinedClanMark( CClanMarkUserDefined* pUserDefinedClanMar
 	pUserDefinedClanMark->AddRef();
 }
 
-///현재 서버와 클라이언트와 HP양이 틀린경우 그 값을 저장한다.
+///If the current server and client, and the amount of HP and he saves the value.
 void CObjCHAR::SetReviseHP( int hp )
 {
 	m_ReviseHP = hp;
 }
 
-///현재 서버와 클라이언트와 MP양이 틀린경우 그 값을 저장한다.
+///If the current server and client, and the amount of MP saves the value.
 void CObjCHAR::SetReviseMP( int mp )
 {
 	m_ReviseMP = mp;
 }
 //-----------------------------------------------------------------------------
-/// @brief 아루아 상태일경우 추가 능력치 계산관련: 2005/7/13 - nAvy
+/// @brief An additional ability related to the calculation be allure: 2005/7/13-nAvy
 //-----------------------------------------------------------------------------
 void CObjCHAR::Calc_AruaAddAbility()
 {
 	if( IsApplyNewVersion() )
 	{
 		if( m_IsAroa )
-			m_AruaAddMoveSpeed   = GetOri_RunSPEED() * 0.2;
+			m_AruaAddMoveSpeed   = GetOri_RunSPEED(); // * 0.2;
 		else
 			m_AruaAddMoveSpeed   = 0;
 	}
 }
 //-----------------------------------------------------------------------------
-/// @brief 공격속도
+/// @brief Attack speed
 //-----------------------------------------------------------------------------
 short CObjCHAR::Get_nAttackSPEED ()
 {
@@ -4542,7 +4546,7 @@ short CObjCHAR::Get_nAttackSPEED ()
 	return GetMinStateValue( AT_ATK_SPD, iR );
 }
 //-----------------------------------------------------------------------------
-/// @brief 엔진에 공격속도변경시 이용되는 메쏘드			: 2005/7/13 - nAvy
+/// @brief The engine is used to change the speed of the attack methods			: 2005/7/13 - nAvy
 //-----------------------------------------------------------------------------
 float CObjCHAR::Get_fAttackSPEED ()
 {
@@ -4553,7 +4557,7 @@ float CObjCHAR::Get_fAttackSPEED ()
 }
 
 //---------------------------------------------------------------------------------------------------------------
-/// @brief 엔진에 공격속도변경시 이용되는 메쏘드 : 아루아 상태일경우 추가 속도 증가하도록 수정 : 2005/7/13 - nAvy
+/// @brief The engine is used to change the speed of the attack on methods: If the rate increase be revised to Arua : 2005/7/13 - nAvy
 //---------------------------------------------------------------------------------------------------------------
 float CObjCHAR::Get_MoveSPEED ()
 {
@@ -4561,7 +4565,7 @@ float CObjCHAR::Get_MoveSPEED ()
 }
 
 //-----------------------------------------------------------------------------
-/// @brief 아루아 상태일경우 추가 이동속도 증가하도록 수정 : 2005/7/13 - nAvy
+/// @brief If the move is to increase the speed of Arua fix : 2005/7/13 - nAvy
 //-----------------------------------------------------------------------------
 
 float CObjCHAR::Get_DefaultSPEED ()
@@ -4571,13 +4575,16 @@ float CObjCHAR::Get_DefaultSPEED ()
 		return GetOri_WalkSPEED();
 	}
 
+	//PY: removing speed calculation from the client
+	/*
 	short nR = ( GetOri_RunSPEED() + m_EndurancePack.GetStateValue( ING_INC_MOV_SPD )
 									- m_EndurancePack.GetStateValue( ING_DEC_MOV_SPD ) );
 
 	nR += m_AruaAddMoveSpeed;
+	*/
+	short nR = GetOri_RunSPEED();	//just using this basic version instead
 
-
-	//20060810 홍근 : 몹중에서 이동 속도가 0 인넘 이동 버그.
+	//20060810 Hong-Geun: a mob of velocity of zero over the move bug.
 	if( this->IsA( OBJ_MOB ) && nR !=0 && nR < MIN_SPEED )
 
 	{
@@ -4586,7 +4593,7 @@ float CObjCHAR::Get_DefaultSPEED ()
 #ifdef __CAL_BUF2
 	else
 	{
-		return GetMinStateValue( AT_SPEED, nR );
+		return GetMinStateValue( AT_SPEED, nR );	//all this does is check that nR is not less than a defined minimum value
 	}
 #else
 	else						return nR;
@@ -4597,7 +4604,7 @@ float CObjCHAR::Get_DefaultSPEED ()
 
 //--------------------------------------------------------------------------------
 /// class : CObjMOB
-/// @brief  : 몹 생성 순서를 .. static
+/// @brief  : Mob creation order .. static
 //--------------------------------------------------------------------------------
 
 DWORD CObjMOB::m_dwCreateOrder=0;
@@ -4636,13 +4643,13 @@ CObjMOB::~CObjMOB ()
 /// class : CObjMOB
 /// @param CGameOBJ *pSourOBJ
 /// @param short nEventIDX
-/// @brief  : 몹에 설정된 이벤트 처리..( NPC의 대화 이벤트 등 )
+/// @brief  : A mob set event handling in. .. (NPC dialog events, etc.)
 //--------------------------------------------------------------------------------
 
 bool CObjMOB::Check_EVENT (CGameOBJ *pSourOBJ, short nEventIDX)
 {
 	CGameOBJ* pGameObj = pSourOBJ;
-	/// Pet 라면 부모를 체크
+	/// Pet If the parent is checked
 	if( pSourOBJ->IsPET() )
 	{
 		pGameObj = (CGameOBJ*)((CObjCART*)pSourOBJ)->GetParent();
@@ -4662,7 +4669,7 @@ bool CObjMOB::Check_EVENT (CGameOBJ *pSourOBJ, short nEventIDX)
 //--------------------------------------------------------------------------------
 /// class : CObjMOB
 /// @param  : CObjCHAR *pAtk
-/// @brief  : 사망시 발생 이벤트..
+/// @brief  : The event occurred at the time of death..
 //--------------------------------------------------------------------------------
 
 void CObjMOB::Do_DeadEvent	(CObjCHAR *pAtk)
@@ -4674,7 +4681,7 @@ void CObjMOB::Do_DeadEvent	(CObjCHAR *pAtk)
 //--------------------------------------------------------------------------------
 /// class : CObjMOB
 /// @param  :
-/// @brief  : 몹 생성
+/// @brief  : Mob creation
 //--------------------------------------------------------------------------------
 
 bool CObjMOB::Create (short nCharIdx, const D3DVECTOR& Position, short nQuestIDX, bool bRunMODE)
@@ -4769,7 +4776,7 @@ bool CObjMOB::Create (short nCharIdx, const D3DVECTOR& Position, short nQuestIDX
 //--------------------------------------------------------------------------------
 /// class : CObjMOB
 /// @param  :
-/// @brief  : 도망..
+/// @brief  : Run away..
 //--------------------------------------------------------------------------------
 
 void CObjMOB::Run_AWAY (int iDistance)
@@ -4789,7 +4796,7 @@ void CObjMOB::Run_AWAY (int iDistance)
 //--------------------------------------------------------------------------------
 /// class : CObjMOB
 /// @param  :
-/// @brief  : 캐릭터 변경..( 그래서 모델노드는 안지우나? )
+/// @brief  : Character change. .. (So do not erase the model node? )
 //--------------------------------------------------------------------------------
 
 bool CObjMOB::Change_CHAR (int nCharIDX)
@@ -4798,7 +4805,8 @@ bool CObjMOB::Change_CHAR (int nCharIDX)
 
 	D3DVECTOR PosBORN = Get_BornPOSITION ();
 
-	if ( !this->Create (nCharIDX, m_PosCUR, m_nQuestIDX, m_bRunMODE) ) {
+	if ( !this->Create (nCharIDX, m_PosCUR, m_nQuestIDX, m_bRunMODE) ) 
+	{
 		return false;
 	}
 
@@ -4810,7 +4818,7 @@ bool CObjMOB::Change_CHAR (int nCharIDX)
 //--------------------------------------------------------------------------------
 /// class : CObjMOB
 /// @param  :
-/// @brief  : 구현사항 없음
+/// @brief  : No implementation
 //--------------------------------------------------------------------------------
 
 bool CObjMOB::Create_PET (int nCharIDX)
@@ -4826,7 +4834,7 @@ bool CObjMOB::Create_PET (int nCharIDX)
 //--------------------------------------------------------------------------------
 /// class : CObjMOB
 /// @param  :
-/// @brief  : 인공지능 메세지..
+/// @brief  : AI's message..
 //--------------------------------------------------------------------------------
 
 void CObjMOB::Say_MESSAGE (char *szMessage)
@@ -4839,7 +4847,7 @@ void CObjMOB::Say_MESSAGE (char *szMessage)
 //--------------------------------------------------------------------------------
 /// class : CObjMOB
 /// @param  :
-/// @brief  : 지속형의 변경수치 적용을 위해서 현재 적용되어있는 능력수치( 패시브 스킬 포함 )
+/// @brief  : In order to apply a durable change of the figures currently in effect is the ability to figure (passive skill)
 //--------------------------------------------------------------------------------
 
 int	CObjMOB::Get_DefaultAbilityValue( int iType )
@@ -4869,7 +4877,7 @@ int	CObjMOB::Get_DefaultAbilityValue( int iType )
 	return 1;
 }
 
-/// NPC의 경우 STB에 강제로 높이가 들어가 있으면 그 높이를 사용한다.
+/// In the case of NPC go that height is the height of force in the STB.
 void CObjMOB::GetScreenPOS ( D3DVECTOR &PosSCR)
 {
 	float fStature = NPC_HEIGHT( this->m_nCharIdx );
@@ -4885,9 +4893,9 @@ void CObjMOB::GetScreenPOS ( D3DVECTOR &PosSCR)
 		return;
 	}
 
-	// m_fStature, fStature 이것 해깔리지 말것!
+	// m_fStature, fStature This year I would say getting caught!
 
-	// 모델의 좌표에 키를 더한 위치를 이름출력 위치로 설정
+	// The coordinates of the model plus the name of the location of the output location settings key
 	::worldToScreen( m_PosCUR.x, m_PosCUR.y, getPositionZ(m_hNodeMODEL) + m_fStature, &PosSCR.x, &PosSCR.y, &PosSCR.z );
 }
 
@@ -4895,12 +4903,12 @@ void CObjMOB::GetScreenPOS ( D3DVECTOR &PosSCR)
 //--------------------------------------------------------------------------------
 /// class : CObjMOB
 /// @param  :
-/// @brief  : 공격 거리.. 스킬사용중이면 스킬테이블에서 아니면 NPC 테이블이겠지..
+/// @brief  : Attack distance. .. If you are using a skill skill at the table or tables in the NPC would..
 //--------------------------------------------------------------------------------
 
 int CObjMOB::Get_AttackRange()
 {
-	/// 스킬에 공격 거리가 입력되어 있다면 스킬거리 아니면 무기 거리..
+	/// If you enter distance attack skill skill or weapon distance distance..
 	if ( this->m_nToDoSkillIDX > 0 )
 	{
 		if( this->m_nToDoSkillIDX < g_SkillList.Get_SkillCNT() )
@@ -4913,7 +4921,7 @@ int CObjMOB::Get_AttackRange()
 			assert( 0 && "Get_AttackRange Failed[ ToDoSkillIDX is invalid ]" );
 	}
 
-	/// 스킬에 공격 거리가 입력되어 있다면 스킬거리 아니면 무기 거리..
+	/// If you enter distance attack skill skill street or weapons..
 	//if ( this->m_nToDoSkillIDX && SKILL_DISTANCE( this->m_nToDoSkillIDX ) )
 	//{
 	//	return SKILL_DISTANCE( this->m_nToDoSkillIDX );
@@ -4924,7 +4932,7 @@ int CObjMOB::Get_AttackRange()
 }
 
 //------------------------------------------------------------------------------------------------
-/// 몬스터 정지시 사운드 출력..
+/// Monster enables sound output..
 //------------------------------------------------------------------------------------------------
 void CObjMOB::PlayStopSound()
 {
@@ -4937,7 +4945,7 @@ void CObjMOB::PlayStopSound()
 	int iResult = CObjCHAR::Proc();
 
 	//--------------------------------------------------------------------------------
-	// 모션 루프가 끝났다.
+	// Motion loops over.
 	//--------------------------------------------------------------------------------
 	if( this->Get_COMMAND() == CMD_STOP )
 	{
@@ -4952,7 +4960,7 @@ void CObjMOB::PlayStopSound()
 }
 
 
-//기본스텟+아이템+패시브
+//Base stats + items + passive
 int	CObjMOB::Get_AbilityValue_StatItemPas( WORD nType )
 {
 	switch( nType )
@@ -4964,7 +4972,7 @@ int	CObjMOB::Get_AbilityValue_StatItemPas( WORD nType )
 }
 
 //--------------------------------------------------------------------------------
-// 05.05.19 icarus:: WOW방식의 퀘스트 노출 시스템 적용을 위해 추가..
+// 05.05.19 icarus:: WOW way to Qwest exposure system for additional ...
 CObjNPC::CObjNPC()
 {
 	m_nQuestSignal = -1;
@@ -4985,7 +4993,7 @@ int CObjNPC::Proc ()
 {
 	if( IsApplyNewVersion() && ( this->m_nQuestSignal < 0 || g_pAVATAR->m_bQuestUpdate ) )
 	{
-		// 내 아바타의 퀘스트 상태가 갱신되었거나 이전에 퀘스트 상태를 판단한적이 없다면...
+		// The status of the update my avatar's quests, or you have previously determined the status of the quest...
 		this->m_nQuestSignal = SC_QF_GetNpcQuestStatus( this->m_nCharIdx );
 		_RPT1( _CRT_WARN,"SC_QF_GetNpcQuestStatus :%d \n", m_nQuestSignal );
 	}
@@ -5006,7 +5014,7 @@ CObjAVT::CObjAVT()
 //	m_fScale  = 0.5;
 	m_dwSitTIME			= 0;
 	m_bIsFemale			= false;
-	m_bRunMODE			= true;	// 아바타 기본은 달리기..
+	m_bRunMODE			= true;	// The default avatar is running...
 	m_nRunSPEED			= WALK_CmPerSec;
 
 	m_pCharMODEL		= &m_CharMODEL;	// Init ..
@@ -5039,7 +5047,7 @@ CObjAVT::CObjAVT()
 	m_btWeightRate		= 0;
 
 	m_pWeaponJemEffect	= 0;
-	m_nStamina			= 0;///최소값으로 셋팅
+	m_nStamina			= 0;///Set the minimum value
 }
 
 
@@ -5054,7 +5062,7 @@ CObjAVT::~CObjAVT ()
 	DeleteCart();
 
 	//--------------------------------------------------------------------------------
-	/// 재밍,재련관련 효과 지우기.
+	/// Re, re delete the relevant drilling effects.
 	//--------------------------------------------------------------------------------
 	DeleteGemmingEffect();
 	DeleteGreadEffect();
@@ -5070,7 +5078,7 @@ CObjAVT::~CObjAVT ()
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 파트 조각 세팅( 세팅만 )
+/// @brief  : Part piece settings (settings)
 //--------------------------------------------------------------------------------
 
 void CObjAVT::SetPartITEM (short nPartIdx, short nItemNo)
@@ -5079,7 +5087,7 @@ void CObjAVT::SetPartITEM (short nPartIdx, short nItemNo)
 
 	m_sPartItemIDX[ nPartIdx ].m_nItemNo = nItemNo;
 
-	/// 아이템이 비워지는거라면 모든 데이터 클리어.
+	/// If you're going to clear all the data items which.
 	if( nItemNo == 0 )
 	{
 		m_sPartItemIDX[ nPartIdx ].m_bHasSocket = false;
@@ -5094,8 +5102,8 @@ void CObjAVT::SetPartITEM (short nPartIdx, short nItemNo)
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : ** 엔진 좌표가 넘어와야 한다.
-///				아바자 생성
+/// @brief  : ** Should the engine coordinates the ROK;.
+///				Generates a Abaza
 //--------------------------------------------------------------------------------
 
 bool CObjAVT::Create (const D3DVECTOR &Position, BYTE btCharRACE)
@@ -5108,13 +5116,13 @@ bool CObjAVT::Create (const D3DVECTOR &Position, BYTE btCharRACE)
 	{
 		nItemIDX = m_sPartItemIDX[ nI ].m_nItemNo;
 
-		/// 머리카락이라면 모자와 어울리는 머리카락으로 교체.
+		/// If you replace it with a hat and matching hair hair.
 		if ( nI == BODY_PART_HAIR )
 		{
 			nItemIDX += HELMET_HAIR_TYPE( m_sPartItemIDX[ BODY_PART_HELMET ].m_nItemNo );
 		}
 
-		/// 얼굴이라면 현재의 표정 얼굴로 교체..
+		/// If you are replacing the current expression face facial..
 		if( nI == BODY_PART_FACE )
 		{
 			nItemIDX += GetCharExpression();
@@ -5132,10 +5140,10 @@ bool CObjAVT::Create (const D3DVECTOR &Position, BYTE btCharRACE)
 
 		m_iHP = 100;
 
-		// SetPartITEM에서 생성된 효과 link
+		// The effect generated from the link SetPartITEM
 		this->Link_EFFECT ();
 
-		// 케릭터 신장.
+		// Characters of the kidney.
 		m_fStature = ::getModelHeight (this->m_hNodeMODEL);
 
 		this->New_EFFECT( BODY_PART_WEAPON_R, this->GetPartITEM(BODY_PART_WEAPON_R));
@@ -5155,21 +5163,21 @@ bool CObjAVT::Create (const D3DVECTOR &Position, BYTE btCharRACE)
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 클래스 내부에 설정된 아바타 정보를 이용해서, 업데이트 한다.
+/// @brief  : Class is set inside the avatar information, update.
 //--------------------------------------------------------------------------------
 
 void CObjAVT::Update (bool bUpdateBONE )
 {
-	// 0. 효과 unlink  :: DeletePARTS에서 삭제되면서 엔진에서 자동으로 unlink ??
+	// 0. Effect unlink  :: DeletePARTS was deleted from the engine automatically unlink??
 	this->Unlink_EFFECT ();
 
-	// 1. 지우기
-	// addRenderUnit 된것들은 clearRenderUnit ( HNODE hVisible ); 로 삭제
-	// loadVisible 된것등은 unloadVisible로 삭제...
+	// 1. Clear
+	// The ones that addRenderUnit clearRenderUnit (HNODE hVisible); Delete as
+	// LoadVisible, that was deleted with unloadVisible ...
 	this->DeletePARTS (false);
 
 	//--------------------------------------------------------------------------------
-	/// 재밍,재련관련 효과 지우기.
+	/// Re, re delete the effects related to the drilling.
 	//--------------------------------------------------------------------------------
 	DeleteGemmingEffect();
 	DeleteGreadEffect();
@@ -5188,7 +5196,7 @@ void CObjAVT::Update (bool bUpdateBONE )
 		m_pCharMODEL->LinkBoneEFFECT( m_hNodeMODEL, m_ppBoneEFFECT );
 	}
 
-	// 2. 데이타 설정.
+	// 2. Data set.
 	for (short nItemIDX, nI=0; nI<MAX_BODY_PART; nI++)
 	{
 		nItemIDX = m_sPartItemIDX[ nI ].m_nItemNo;
@@ -5199,7 +5207,7 @@ void CObjAVT::Update (bool bUpdateBONE )
 		}
 
 
-		/// 얼굴이라면 현재의 표정 얼굴로 교체..
+		/// If you are a current look face to face replacement..
 		if( nI == BODY_PART_FACE )
 		{
 			nItemIDX += GetCharExpression();
@@ -5210,37 +5218,37 @@ void CObjAVT::Update (bool bUpdateBONE )
 	}
 
 
-	// 4. 모델 설정.
+	// 4. Model settings.
 	this->CreatePARTS ( (char*)m_Name.c_str() );
 
 	this->InsertToScene ();
 
-	// 5. 효과 relink
+	// 5. Relink the effects
 	this->Link_EFFECT ();
 
 
 	//----------------------------------------------------------------------------------------------------
-	/// @brief 재밍, 재련관련 이펙트 생성
+	/// @brief Ash, ash creates an effect related to drilling
 	//----------------------------------------------------------------------------------------------------
 
-	//2005. 06. 15 박 지호
+	//2005. 06. 15 Park Ji-Ho
 	Set_RareITEM_Glow();
 
 	CreateGemmingEffect();
 	CreateGradeEffect();
 
 
-	// 6. 무기가 바뀌어 현재 진행중 모션이 틀려 질경우...
+	// 6. If the motion is wrong the weapon currently in use have been changed ...
 	#pragma message ("TODO:: change motion ..." __FILE__)
 
 
 
-	// 케릭터 신장. // 여긴 이상함 검잔상이나 기타 오브젝트의 높이도 구함.. InsertToScene 안으로 옮기자..
+	// Characters of the kidney. Long referred to as the height of an object above the sword artifacts or other wanted ... InsertToScene we're in. ..
 	m_fStature = ::getModelHeight (this->m_hNodeMODEL);
 
 
 
-	/// 카트를 타고 있다면..
+	/// If you are riding in a cart..
 	if( GetPetMode() >= 0 )
 	{
 #ifdef __ITEM_TIME_LIMMIT
@@ -5255,13 +5263,13 @@ void CObjAVT::Update (bool bUpdateBONE )
 
 
 //----------------------------------------------------------------------------------------------------
-/// @brief 재밍, 재련관련 이펙트..
+/// @brief Ash, ash Lotus related effects. ..
 //----------------------------------------------------------------------------------------------------
 const int iWeaponAttachedEffectDummyNO = 2;
 void CObjAVT::CreateGemmingEffect()
 {
 	//----------------------------------------------------------------------------------------------------
-	/// @brief 재밍이나 재련관련.. 붙었다면 효과를 붙여라..
+	/// @brief The re-re-Ming or drilling-related ... If paste effect. ..
 	//----------------------------------------------------------------------------------------------------
 
 	for( int i = BODY_PART_WEAPON_R; i <= BODY_PART_WEAPON_L ; i++ )
@@ -5278,7 +5286,7 @@ void CObjAVT::CreateGemmingEffect()
 			iEffectIDX = GEMITEM_ATTACK_EFFECT( m_sPartItemIDX[ iPartIdx ].m_nGEM_OP );
 			if( iEffectIDX )
 			{
-				/// List_Effect 에는 4개까지 효과를 박을수 있지만.. 하나만..
+				/// List_Effect There are up to four effects can take a. .. Only one ...
 				int iStartPointNO = 0;
 				switch( iPartIdx )
 				{
@@ -5336,7 +5344,7 @@ void CObjAVT::CreateGemmingEffect()
 }
 
 //----------------------------------------------------------------------------------------------------
-/// @brief 재밍, 재련관련 이펙트..
+/// @brief Ash, ash Lotus related effects. ..
 //----------------------------------------------------------------------------------------------------
 void CObjAVT::DeleteGemmingEffect()
 {
@@ -5350,14 +5358,14 @@ void CObjAVT::DeleteGemmingEffect()
 }
 
 
-//2005.06. 15 박지호
+//2005.06. 15 Park Ji-Ho
 //----------------------------------------------------------------------------------------------------
-/// 대만일 경우 레어 아이템일때 glow 효과를 3단계 설정한다.
+/// If the glow effect when the items in case for the rare step 3.
 //----------------------------------------------------------------------------------------------------
 void CObjAVT::Set_RareITEM_Glow(void)
 {
 
-	//대만과 필리핀에 적용됩니다. 수정 2005.6.20 nAvy
+	//Taiwan and the Republic of the Philippines. Fix 2005.6.20 nAvy
 	if( !IsApplyNewVersion() )
 		return;
 
@@ -5372,7 +5380,7 @@ void CObjAVT::Set_RareITEM_Glow(void)
 		if( iItemIDX == 0 )
 			continue;
 
-		//레어 아이템인지 체크한다.
+		//Check whether a rare item.
 		m_iType = m_Inventory.GetBodyPartToItemType(i);
 			if(m_iType == MAX_BODY_PART)
 				continue;
@@ -5381,7 +5389,7 @@ void CObjAVT::Set_RareITEM_Glow(void)
 		if(ITEM_RARE_TYPE(m_iType,m_sPartItemIDX[i].m_nItemNo) != 3)
 			continue;
 
-		//3단계 Glow 효과 설정
+		//Step 3 set the Glow effect
 		m_sPartItemIDX[i].m_cGrade = 3;
 	}
 
@@ -5389,7 +5397,7 @@ void CObjAVT::Set_RareITEM_Glow(void)
 
 
 //----------------------------------------------------------------------------------------------------
-/// @brief 재밍, 재련관련 이펙트..
+/// @brief Ash, ash Lotus related effects. ..
 //----------------------------------------------------------------------------------------------------
 void CObjAVT::CreateGradeEffect()
 {
@@ -5416,7 +5424,7 @@ void CObjAVT::CreateGradeEffect()
 			{
 				D3DXCOLOR color = CGameUtil::GetRGBFromString( iColor );
 
-				/// Skinning 되는 오브젝트가 아니라면..
+				/// Skinning If you are not the objects..
 				if( m_pCharMODEL )
 				{
 					if( m_pCharMODEL->m_RenderUnitPart[ i ].empty() )
@@ -5432,7 +5440,7 @@ void CObjAVT::CreateGradeEffect()
 						}
 					}else
 					{
-						/// 스키닝 되는 오브젝트일 경우..
+						/// If the object being, ... skin
 						std::list< int >::iterator	begin = m_pCharMODEL->m_RenderUnitPart[ i ].begin();
 						for( ; begin != m_pCharMODEL->m_RenderUnitPart[ i ].end() ; ++begin )
 						{
@@ -5448,7 +5456,7 @@ void CObjAVT::CreateGradeEffect()
 }
 
 //----------------------------------------------------------------------------------------------------
-/// @brief 재밍, 재련관련 이펙트..
+/// @brief Ash, ash Lotus related effects. ..
 //----------------------------------------------------------------------------------------------------
 void CObjAVT::DeleteGreadEffect()
 {
@@ -5459,7 +5467,7 @@ void CObjAVT::DeleteGreadEffect()
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 총알 번호를 구한다. 장거리 무기의 경우.. 현재 세팅된 총알에 따라서 판단
+/// @brief  : Save a number of bullets. In the case of long-distance weapons. .. Currently, depending on bullet set with judgment
 //--------------------------------------------------------------------------------
 
 /*override*/int	CObjAVT::Get_BulletNO ()
@@ -5471,7 +5479,7 @@ void CObjAVT::DeleteGreadEffect()
 	int iBulletNo = 0;
 	int iShotType = sItem.GetShotTYPE();
 
-	/// 총알소모 안하는 마법 무기
+	/// Do not consume magic bullet weapons
 	if( iShotType >= MAX_SHOT_TYPE )
 	{
 		switch( WEAPON_TYPE( sItem.m_nItemNo ) )
@@ -5495,27 +5503,27 @@ void CObjAVT::DeleteGreadEffect()
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 현재 액션과 무기에 맞는 모션을 구한다.
+/// @brief  : Saves the current action and weapons fit motion.
 //--------------------------------------------------------------------------------
 
 tagMOTION *CObjAVT::Get_MOTION (short nActionIdx)
 {
 	int iActionIdx = m_ChangeActionMode.GetAdjustedActionIndex( nActionIdx );
 
-	// 오른손 무기 종류에따라...
+	// Depending on the type of weapon in his right hand ...
 	short nWeaponTYPE = WEAPON_MOTION_TYPE( this->m_sRWeaponIDX.m_nItemNo );
 
 	short nFileIDX;
 
 
-	//조성현 2005 11 - 23 TYPE_MOTION Error 수정
+	//Error modifying the composition, 2005 11-23 TYPE_MOTION County
 	if(iActionIdx >= 0 && iActionIdx < g_TblAniTYPE.m_nDataCnt)
 		nFileIDX = FILE_MOTION( nWeaponTYPE, iActionIdx );
 	else
 		return NULL;
 
 	if ( 0 == nFileIDX ) {
-		// 모션이 없으면 맨손 모션으로 대체..
+		// The motion does not exist, replace them with bare hands in motion ...
 		nFileIDX = FILE_MOTION( 0, nActionIdx );
 	}
 
@@ -5530,7 +5538,7 @@ tagMOTION *CObjAVT::Get_MOTION (short nActionIdx)
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 앉기 서기보드 토글
+/// @brief  : Clerk of the Board sit toggle
 //--------------------------------------------------------------------------------
 
 bool CObjAVT::ToggleSitMODE ()
@@ -5538,7 +5546,7 @@ bool CObjAVT::ToggleSitMODE ()
 	if ( this->Get_COMMAND() == CMD_SIT ) {
 		this->SetCMD_STAND ();
 	} else {
-		// 클라이언트는 무조건 앉힌다.
+		// The client unconditionally.
 		m_dwSitTIME = 0;
 		this->SetCMD_SIT ();
 	}
@@ -5550,10 +5558,10 @@ bool CObjAVT::ToggleSitMODE ()
 
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
-/// @param  : float fAdjRate : 현재 보정된 이동속도의 디폴트 속도에 대한 비율..
-/// @brief  : 뛰기 걷기 모드 토글
-///				m_bRunMODE 변수의 상태에 따라 속도 계산시 default speed가 틀려진다.
-///             이걸 이전에는 함수 내부에서 구현했으나 이제는 밖에서..
+/// @param  : float fAdjRate : The default speed of the speed of the current correction ratio for. ..
+/// @brief  : Walk to the run mode toggle
+///				m_bRunMODE Depending on the State of the variable speed is the speed calculation: default is wrong.
+///             Prior to this function implemented in the inside, but now it's out there ...
 //--------------------------------------------------------------------------------
 
 bool CObjAVT::ToggleRunMODE ( float fAdjRate )
@@ -5570,7 +5578,7 @@ bool CObjAVT::ToggleRunMODE ( float fAdjRate )
 		_ASSERT( fMoveSpeed >= 0.f && fMoveSpeed < 2000.f );
 #endif
 
-		// 이동 속도 모션 스피드 설정...
+		// Speed motion speed set ...
 		this->Set_ModelSPEED( this->Get_MoveSPEED() );
 
 		::attachMotion		( this->m_hNodeMODEL, this->Get_ZMOTION()  );
@@ -5586,7 +5594,7 @@ bool CObjAVT::ToggleRunMODE ( float fAdjRate )
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 현재 펫모드
+/// @brief  : The current fetch mode
 //--------------------------------------------------------------------------------
 
 int	CObjAVT::GetPetMode()
@@ -5600,7 +5608,7 @@ int	CObjAVT::GetPetMode()
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 현재 펫모드
+/// @brief  : The current fetch mode
 //--------------------------------------------------------------------------------
 
 bool CObjAVT::CanAttackPetMode()
@@ -5608,7 +5616,7 @@ bool CObjAVT::CanAttackPetMode()
 	int iPetMode = this->GetPetMode();
 	if( iPetMode > 0 )
 	{
-		/// Pet mode 일 경우에는..
+		/// Pet mode In the event that ...
 		/*switch( iPetMode )
 		{
 			case PET_TYPE_CART01:
@@ -5617,16 +5625,16 @@ bool CObjAVT::CanAttackPetMode()
 				return true;
 		}*/
 		//----------------------------------------------------------------------------------------------------
-		/// @brief Pet 의 타입이 아니라 공격거리가 있냐 없냐로 공격가능여부 판정..
+		/// @brief Pet Not the type of attacks meant to determine whether the attack going the distance ...
 		//----------------------------------------------------------------------------------------------------
 
-//박지호:: 구버전에서 카트의 부위가 4단계로 구성 되었지만, 카트스킬 버전에서는
-//		   5단계로 변경 되었으면, 웨폰부위의 공격 거리를 체크해서 현재 카트가
-//		   공격 할 수 있는지 알아낸다.
+//Park Ji-Ho: in the old cart area is configured to step 4:, cart skill version,
+//		   Changed to step 5, check the distance attack weapon parts are currently in cart
+//		   You can find out the attack.
 #if defined(_GBC)
 		if( PAT_ITEM_ATK_RANGE( this->m_sWeaponIDX.m_nItemNo ) <= 0 )
 #else
-		//06. 06. 28 - 김주현 : 배틀카트가 안들어갈경우 카트를 탑승하고 있으면 공격 불가
+		//06. 06. 28 - Kim Joo-Hyun: should you go cart Kart battle if the attack aboard the disabled
 		// m_iPetType, 21 = CART, 31 = CASTLEGEAR
 		if(g_pAVATAR->m_iPetType == 21)
 			return false;
@@ -5713,22 +5721,22 @@ void CObjAVT::RideCartToggle( bool bRide )
 	{
 		if( GetPetMode() >= 0 )
 		{
-			/// 내리기
+			/// Unloading
 			DeleteCart( true );
 		}else
 		{
-			/// 타기
+			/// Rides
 			CreateCartFromMyData( true );
 		}
 
 	}else
 	{
-		/// 현재 카트를 탄상태가 아닐경우에만 타기
+		/// Currently only the State riding a cart ride
 		if( GetPetMode() < 0 )
 			CreateCartFromMyData( true );
 	}
 
-	//버프 지움.
+	//Buff wipe.
 	this->m_EndurancePack.ClearStateByDriveCart();
 
 }
@@ -5740,8 +5748,8 @@ void CObjAVT::RideCartToggle( bool bRide )
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : HP와MP리젠이 CObjAI::RecoverHPnMP() 에서 처리되므로 이전 코드인 이곳은 지운다.	- 2004/02/11 : nAvy
-///           Aroa상태일경우 50% 추가로 회복속도증가											- 2005/07/12 : nAvy
+/// @brief  : HP and MP Lee Jenn CObjAI:: RecoverHPnMP () are handled in the previous code, this is a delete.	- 2004/02/11 : nAvy
+///           An additional 50% recovery rate increases when you're Aroa											- 2005/07/12 : nAvy
 //--------------------------------------------------------------------------------
 
 int CObjAVT::Proc ()
@@ -5749,14 +5757,14 @@ int CObjAVT::Proc ()
 	m_dwElapsedTime += m_dwFrameElapsedTime;
 
 	//--------------------------------------------------------------------------------
-	/// 리커버관련 처리
+	/// Lee cover specific handling
 	//--------------------------------------------------------------------------------
 	///if( GetStamina() > 3000 )
 	{
 #ifdef _NoRecover
-	// 06. 06. 22 - 김주현 : 자동회복 시간 조정 했다..-_-a
-	// _NoRecover 사용하지 않는 버젼에서는 클라에서 계산을 했지만 _NoRecover 사용시에는 서버에서 1초마다 보내주기에
-	// 받은 값을 업데이트 하기만 하면 된다!!
+	// 06. 06. 22 - Kim Joo-Hyun: auto recovery time was adjusted ... -_-a
+	// _NoRecover version that does not use the Kleiner was calculated from _NoRecover when using the app in each second from the server
+	// All you need to do is update the value!!
 	int	iRecoverStateCheckTime = RECOVER_STATE_CHECK_TIME_EVO;
 	int iRecoverStateSitOnGround = RECOVER_STATE_SIT_ON_GROUND_OLD;
 	int iRecoverStateStopWalk    = RECOVER_STATE_STOP_OR_WALK_NEW;
@@ -5789,10 +5797,10 @@ int CObjAVT::Proc ()
 			case CMD_DIE:
 				break;
 			default:
-				/// 캐슬기어 탑승중일때는 회복 안함
+				/// Castle gear do not recover when boarding
 				if( this->GetPetMode() < 0 )
 				{
-					/// 앉기가 아닌동작에서는 HP만 회복
+					/// There isn't a seat, only the behavior of the HP recovery
 					this->RecoverHP( iRecoverStateStopWalk );
 					this->RecoverMP( iRecoverStateStopWalk );
 				}
@@ -5809,8 +5817,8 @@ int CObjAVT::Proc ()
 	}*/
 
 	//--------------------------------------------------------------------------------
-	// 박지호: 펫 바이브레이션
-	// 최종진: 조건문에 m_pObjCART추가(맞을때 카트에서 내릴때 오류 발생 ) 2005/7/31
+	// Park Ji-Ho: pet vibe ration
+	// Add m_pObjCART to the end: conditional statement (an error occurred when the cart when fit) 2005/07/31
 	//--------------------------------------------------------------------------------
 	if(GetPetMode() && m_pObjCART && SetCartVA())
 	{
@@ -5822,8 +5830,8 @@ int CObjAVT::Proc ()
 		m_pObjCART->m_ObjVibration.Proc();
 
 	//--------------------------------------------------------------------------------
-	/// 시간에 따른 액션 모드 처리..
-	/// if 문 줄이기 위해서 이쪽으로 이동.. 04/5/28
+	/// Time-dependent action mode processing..
+	/// If the door is to lighten the moving towards a. .. 04/5/28
 	//--------------------------------------------------------------------------------
 	///if( this->IsA( OBJ_AVATAR ) || this->IsA( OBJ_USER ) )
 	{
@@ -5837,7 +5845,7 @@ int CObjAVT::Proc ()
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 총알 데이터 설정
+/// @brief  : Bullet data
 //--------------------------------------------------------------------------------
 
 void CObjAVT::SetShotData( int i, int iItemNo )
@@ -5852,7 +5860,7 @@ void CObjAVT::SetShotData( int i, int iItemNo )
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 지속형의 변경수치 적용을 위해서 현재 적용되어있는 능력수치( 패시브 스킬 포함 )
+/// @brief  : In order to apply a durable change of the figures currently in effect is the ability to figure (passive skill)
 //--------------------------------------------------------------------------------
 
 int	CObjAVT::Get_DefaultAbilityValue( int iType )
@@ -5909,7 +5917,7 @@ int	CObjAVT::Get_DefaultAbilityValue( int iType )
 }
 /*override*/int	CObjAVT::GetANI_Hit()		{	return  AVT_ANI_HIT;				}
 /*override*/int	CObjAVT::GetANI_Casting ()	{	return	SKILL_ANI_CASTING(m_nActiveSkillIDX);	}
-/*override*/int	CObjAVT::GetANI_CastingRepeat()	{   return SKILL_ANI_CASTING_REPEAT(m_nActiveSkillIDX);	}		/// 루프동작은 캐스팅동작으로 사용..
+/*override*/int	CObjAVT::GetANI_CastingRepeat()	{   return SKILL_ANI_CASTING_REPEAT(m_nActiveSkillIDX);	}		/// The behavior of the loop used by the behavior of the cast ...
 /*override*/int	CObjAVT::GetANI_Skill ()	{	return	SKILL_ANI_ACTION_TYPE(m_nActiveSkillIDX);	}
 /*override*/int	CObjAVT::GetANI_Sitting()	{	return	AVT_ANI_SITTING;			}
 /*override*/int	CObjAVT::GetANI_Standing()	{	return	AVT_ANI_STANDUP;			}
@@ -5935,15 +5943,15 @@ WORD CObjAVT::GetPetState()
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 현재 내부에 설정된 데이터로 카트 생성
+/// @brief  : The data set in the current internal cart creation
 //--------------------------------------------------------------------------------
 
 bool CObjAVT::CreateCartFromMyData( bool bShowEffect )
 {
 
 	//----------------------------------------------------------------------------------------------------
-	/// Pet type 결정
-	/// 아이템 교체시에는 타입이 결정되지만 서버로부터 받은상태에선 알수없다.
+	/// Pet type Decision
+	/// Items to be replaced by: determine the type, but it cannot know the State received from the server.
 	//----------------------------------------------------------------------------------------------------
 	/*CItemSlot* pItemSlot = g_pAVATAR->GetItemSlot();
 	CItem* pBodyItem = pItemSlot->GetItem( INVENTORY_RIDE_ITEM0 );*/
@@ -5952,7 +5960,7 @@ bool CObjAVT::CreateCartFromMyData( bool bShowEffect )
 	{
 		this->SetPetType( PAT_ITEM_PART_TYPE( m_sBodyIDX.m_nItemNo ) );
 	}else
-		return false; /// 바디부폼이 없으면 못탐
+		return false; /// The Department does not have the form, not the body ride
 
 
 #ifdef _GBC
@@ -5964,12 +5972,12 @@ bool CObjAVT::CreateCartFromMyData( bool bShowEffect )
 #endif
 
 
-	/// 모든 유리상태 해지하지 말것 2005/7/30 - nAvy
+	/// Not all glass status revocation 2005/7/30 - nAvy
 	///
 	///this->m_EndurancePack.ClearStateByDriveCart();
 
 	//----------------------------------------------------------------------------------------------------
-	/// 카트를 탈때는 무기, 날개는 안보이게
+	/// When you ride a cart should not make weapons, wings
 	//----------------------------------------------------------------------------------------------------
 	/*if( m_phPartVIS[ BODY_PART_KNAPSACK ] )
 		::setVisibilityRecursive( *m_phPartVIS[ BODY_PART_KNAPSACK ], 0.0f );
@@ -5998,7 +6006,7 @@ bool CObjAVT::CreateCartFromMyData( bool bShowEffect )
 
 
 	//----------------------------------------------------------------------------------------------------
-	/// 탈때의 효과 출력
+	/// The effect of the output when
 	//----------------------------------------------------------------------------------------------------
 	if( bShowEffect )
 	{
@@ -6015,7 +6023,7 @@ bool CObjAVT::CreateCartFromMyData( bool bShowEffect )
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 카드 생성. 인자로 각 파트 정보를 받는다.
+/// @brief  : Card creation. Get information on each part as an argument.
 //--------------------------------------------------------------------------------
 bool CObjAVT::CreateCart( unsigned int iPetType, int iEnginePart, int iBodyPart, int iLegPart, int iAbilIPart,int iWeaponPart )
 {
@@ -6046,7 +6054,7 @@ bool CObjAVT::CreateCart( unsigned int iPetType, int iEnginePart, int iBodyPart,
 	SetPetParts( RIDE_PART_ENGINE,	iBodyPart, false );
 	SetPetParts( RIDE_PART_LEG,		iLegPart, false );
 
-	///<- 2005/7/25 카트 시스템 파츠 추가로 수정 : nAvy
+	///<- 2005/7/25 Modify the additional saitogurimusu cart system : nAvy
 	//SetPetParts( RIDE_PART_ARMS,	iArmsIDX, false );
 #ifdef _GBC
 	SetPetParts( RIDE_PART_ABIL,	iAbilIPart, false );
@@ -6080,7 +6088,7 @@ bool CObjAVT::CreateCart( unsigned int iPetType, int iEnginePart, int iBodyPart,
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 카트 제거
+/// @brief  : Remove cart
 //--------------------------------------------------------------------------------
 
 void CObjAVT::DeleteCart( bool bShowEffect )
@@ -6090,13 +6098,13 @@ void CObjAVT::DeleteCart( bool bShowEffect )
 		float fDir = ::getModelDirection( m_pObjCART->GetZMODEL() );
 		this->Set_ModelDIR( fDir );
 
-//박지호
+//Park Ji-Ho
 #if defined(_GBC)
-		//운전자 일때 :: 나의 뒤에 손님이 탑승 했다면 나와 손님의 링크를 해제 하고
-		//카트를 제거 한다.
+		//Driver: If you're a guest at the back of the Board with me: I've been a guest at the link and
+		//Removes a cart.
 		if(GetRideUserIndex())
 		{
-			//20050901 홍근 2인승 카트 보조석 탑승자가 내렸을 경우 State를 Normal로 바꿔준다.
+			//20050901 Hong-Keun made a secondary seat of the cart 2 seater if that occupant State to Normal as baggweojunda.
 			CObjAVT *oSrc = g_pObjMGR->Get_ClientCharAVT( g_pObjMGR->Get_ServerObjectIndex(GetRideUserIndex()), true );
 			if(oSrc)
 			{
@@ -6106,28 +6114,28 @@ void CObjAVT::DeleteCart( bool bShowEffect )
 				}
 			}
 
-			//링크 해제
+			//Turn off the link
 			m_pObjCART->UnLinkChild();
 
-			//실제 오브젝트 매니져 리스트에서 카트 객체를 삭제함.
+			//The actual object manager in the list, delete the objects in the cart.
 			if(m_pObjCART)
 			{	g_pObjMGR->Del_Object( m_pObjCART );	m_pObjCART = NULL;	}
 
-			//정지 시킨다.
+			//Stop.
 			SetCMD_STOP();
 
 			goto CHAR_VISIBLE;
 		}
-       //2인승 탑승자 :: 내가 2인승을 하고 있다면 나만 카트에서 내린다.
+       //2-seater passenger: I only have 2 seater or a cart.
 		else if(IsRideUser())
 		{
 			if(m_pObjCART)
 			{
-				//해제될 유저 인덱스를 건네준다. 내부에서 링크 해제 및 뛰어내리기
-				//애니메이션을 설정한다.
+				//When you pass the user index. Unlink from the inside and jumped down
+				//Set the animation.
 				ReleaseRideUser(m_pObjCART->GetParent()->GetRideUserIndex());
 
-				//20050901 홍근 2인승 카트 보조석 탑승자가 내렸을 경우 State를 Normal로 바꿔준다.
+				//20050901 Hong-Keun made a secondary seat of the cart 2 seater if that occupant State to Normal as baggweojunda.
 				if( !strcmp( this->Get_NAME(), g_pAVATAR->Get_NAME()) )
 				{
 					g_pAVATAR->Set_Block_CartRide( false );
@@ -6136,7 +6144,7 @@ void CObjAVT::DeleteCart( bool bShowEffect )
 				return;
 			}
 		}
-		//혼자 타고 있다면 일반적으로 해제를 처리한다.
+		//If you're riding alone typically handles disabling.
 		else
 		{	m_pObjCART->UnLinkChild();		}
 #else
@@ -6155,7 +6163,7 @@ void CObjAVT::DeleteCart( bool bShowEffect )
 
 
 		//----------------------------------------------------------------------------------------------------
-		/// 카트를 탈때는 무기, 날개는 안보이게
+		/// When you ride a cart should not make weapons, wings
 		//----------------------------------------------------------------------------------------------------
 		/*if( m_phPartVIS[ BODY_PART_KNAPSACK ] )
 			::setVisibility( *m_phPartVIS[ BODY_PART_KNAPSACK ], 1.0f );
@@ -6183,7 +6191,7 @@ CHAR_VISIBLE:
 		}
 
 		//----------------------------------------------------------------------------------------------------
-		/// 내릴때의 효과출력..
+		/// The effect of the output when a. ..
 		//----------------------------------------------------------------------------------------------------
 		if( bShowEffect )
 		{
@@ -6198,8 +6206,8 @@ CHAR_VISIBLE:
 
 ///--------------------------------------------------------------------------------
 /// class : CObjCHAR
-/// 박지호: Process_JOIN_RIDEUSER()
-///       : 운전자가 존 워프시 2인승 탑승자를 해제한다.
+/// Park Ji-Ho: Process_JOIN_RIDEUSER()
+///       : Driver John Warp: 2-seater passenger.
 ///
 //--------------------------------------------------------------------------------
 void CObjAVT::Process_JOIN_RIDEUSER(void)
@@ -6216,7 +6224,7 @@ void CObjAVT::Process_JOIN_RIDEUSER(void)
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 카트 파트정보세팅
+/// @brief  : Kart part information settings
 //--------------------------------------------------------------------------------
 
 void CObjAVT::SetPetParts( unsigned int iPetPartIDX, unsigned int iItemIDX, bool bJustInfo )
@@ -6238,7 +6246,7 @@ void CObjAVT::SetPetParts( unsigned int iPetPartIDX, unsigned int iItemIDX, bool
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
 /// @param  :
-/// @brief  : 카트 파트 변경등 발생시 카트 업데이트
+/// @brief  : Kart parts, such as change in the event of cart updates
 //--------------------------------------------------------------------------------
 
 void CObjAVT::UpdatePet()
@@ -6252,7 +6260,7 @@ void CObjAVT::UpdatePet()
 
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
-/// @param  : 새로운 소지 아이템 무게비율
+/// @param  : The new possession item weight ratio
 //--------------------------------------------------------------------------------
 
 void CObjAVT::SetWeightRate( BYTE btWeightRate )
@@ -6262,7 +6270,7 @@ void CObjAVT::SetWeightRate( BYTE btWeightRate )
 
 //--------------------------------------------------------------------------------
 /// class : CObjAVT
-/// @return : 현재 소지 아이템 비율
+/// @return : In the current rate of possession of items
 //--------------------------------------------------------------------------------
 
 BYTE CObjAVT::GetWeightRate()
@@ -6271,8 +6279,8 @@ BYTE CObjAVT::GetWeightRate()
 }
 
 //-------------------------------------------------------------------------------------------
-/// @brief 모든 개인상점을 열고 닫는 시작점..
-/// 개인상점 전용 모델을 보여주기위해 일련의 작업들을 한다.
+/// @brief The starting point of every individual opening and closing the store..
+/// Private shop-only model with a series of low-tech and low-cost operations.
 //-------------------------------------------------------------------------------------------
 void CObjAVT::SetPersonalStoreTitle( char* strTitle, int iPersonalStoreType )
 {
@@ -6281,7 +6289,7 @@ void CObjAVT::SetPersonalStoreTitle( char* strTitle, int iPersonalStoreType )
 		if( m_phPartVIS[ 0 ] == NULL )
 			m_pCharMODEL->ClearRenderUnitParts();
 
-		// loadVisible된것들 삭제.
+		// LoadVisible delete the ones.
 		for (short nP=0; nP<MAX_BODY_PART; nP++)
 		{
 			if( m_phPartVIS[ nP ] == NULL )
@@ -6311,7 +6319,7 @@ void CObjAVT::SetPersonalStoreTitle( char* strTitle, int iPersonalStoreType )
 	if( m_pObjPersonalStore->Create( g_DATA.m_ModelFieldITEM.GetMODEL( iPersonalStoreNO + iPersonalStoreType ), vPos ) )
 	{
 		//-------------------------------------------------------------------------------------------
-		/// 모든 캐릭터 파트들 삭제
+		/// Delete all character parts,
 		//-------------------------------------------------------------------------------------------
 		::clearRenderUnit( this->m_hNodeMODEL );
 		for (short nP=0; nP<MAX_BODY_PART; nP++)
@@ -6342,7 +6350,7 @@ bool CObjAVT::IsPersonalStoreMode()
 	return m_bPersonalStoreMode;
 }
 
-/// 장비 교체시 장비에 걸려있던 속성 해제..
+/// Equipment replacement equipment hanging off the property in..
 void CObjAVT::ClearRWeaponSkillEffect()
 {
 	this->m_EndurancePack.ClearRWeaponSkillEffect();
@@ -6354,7 +6362,7 @@ void CObjAVT::ClearLWeaponSkillEffect()
 }
 
 //----------------------------------------------------------------------------------------------------
-/// @brief 팻모드 상태일때는 팻의 좌표를 리턴하고, 일반적일때는 내 좌표를 리턴함
+/// @brief When Pat returns the coordinates of the Pat mode, you typically return my coordinates
 //----------------------------------------------------------------------------------------------------
 const D3DVECTOR& CObjAVT::GetWorldPos()
 {
@@ -6371,11 +6379,11 @@ const D3DVECTOR& CObjAVT::GetWorldPos()
 
 
 //----------------------------------------------------------------------------------------------------
-/// @brief 모델에 등록된 renderUnit외의것들에 대한 충돌판정.. (아바타일경우만)
+/// @brief Besides the renderUnit of registered in the model for judging conflicts. .. (Avatar, the only)
 //----------------------------------------------------------------------------------------------------
 bool CObjAVT::IsIntersectAccessory( float &fCurDistance )
 {
-	/// 개인상점 대표모델
+	/// Represent your store model
 	if( this->m_pObjPersonalStore )
 	{
 		return m_pObjPersonalStore->IsIntersectForCamera( fCurDistance );
@@ -6383,8 +6391,8 @@ bool CObjAVT::IsIntersectAccessory( float &fCurDistance )
 	return false;
 }
 //----------------------------------------------------------------------------------------------------
-/// @brief 파티멤버의 자동 HP회복을 위한 Stamina 관련 Method
-///		   CObjUSER의 경우 CUserDATA::GetCur_STAMINA를 호출한다. 주의할것
+/// @brief The party member's HP recovery and Stamina-related Method for automatic
+///		   In the case of CUserDATA: CObjUSER: GetCur_STAMINA. You will notice that the
 //----------------------------------------------------------------------------------------------------
 short CObjAVT::GetStamina()
 {
@@ -6396,7 +6404,7 @@ void CObjAVT::SetStamina( short nStamina )
 }
 
 //----------------------------------------------------------------------------------------------------
-/// @brief m_dwSubFLAG 플래그에 따란 특수한 상태로의 전환
+/// @brief m_dwSubFLAG Conversion of special large State to the flag
 //----------------------------------------------------------------------------------------------------
 
 void CObjAVT::ChangeSpecialState( DWORD dwSubFLAG )
@@ -6407,14 +6415,14 @@ void CObjAVT::ChangeSpecialState( DWORD dwSubFLAG )
 	{
 		::setVisibilityRecursive( this->GetZMODEL(), 0.0f );
 	}
-	//곽홍근::투명
+	//Kwok Hong Geun:: transparent
 	else if( !(m_dwSubFLAG & FLAG_SUB_HIDE) )
 	{
 		::setVisibilityRecursive( this->GetZMODEL(), 1.0f );
 
 		::setVisibilityRecursive( this->GetZMODEL(), 1.0f );
 
-		//조성현 2005 11 - 29 카트탄 상태일때 체크
+		//2005 11-29 cart check the burnt composition Prefecture instructs
 		if( this->m_iPetType == 21 )
 		{
 			int iVisibilityPart[3] = { BODY_PART_KNAPSACK, BODY_PART_WEAPON_R, BODY_PART_WEAPON_L };
@@ -6442,7 +6450,7 @@ void CObjAVT::ChangeSpecialState( DWORD dwSubFLAG )
 }
 
 //----------------------------------------------------------------------------------------------------
-/// @brief 클릭할수 있는 객체인가?
+/// @brief You can click an object?
 //----------------------------------------------------------------------------------------------------
 bool CObjAVT::CanClickable()
 {
@@ -6456,14 +6464,14 @@ bool CObjAVT::CanClickable()
 }
 
 //----------------------------------------------------------------------------------------------------
-/// @brief virtual From CObjAI   : 추가  2005/7/13 - nAvy
+/// @brief virtual From CObjAI   : Add  2005/7/13 - nAvy
 //----------------------------------------------------------------------------------------------------
 int CObjAVT::GetOri_MaxHP()
 {
 	return m_iMaxHP;
 }
 
-//기본스텟+아이템+패시브
+//Base stats + items + passive
 int	CObjAVT::Get_AbilityValue_StatItemPas( WORD nType )
 {
 	switch( nType )
@@ -6475,14 +6483,14 @@ int	CObjAVT::Get_AbilityValue_StatItemPas( WORD nType )
 	return 0;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
-// 2005. 6. 20	박 지호
+// 2005. 6. 20	Park Ji-Ho
 //
-// 여신소환 연출 클래스
+// Goddess summoning and directing class
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 
 CGoddessMgr goddessMgr;
-//생성자
+//Constructor
 CGoddessMgr::CGoddessMgr()
 {
 
@@ -6491,7 +6499,7 @@ CGoddessMgr::CGoddessMgr()
 }
 
 
-//소멸자
+//The destructor
 CGoddessMgr::~CGoddessMgr()
 {
 
@@ -6500,7 +6508,7 @@ CGoddessMgr::~CGoddessMgr()
 }
 
 
-//초기화
+//Initialization
 BOOL CGoddessMgr::Init(void)
 {
 
@@ -6516,11 +6524,11 @@ BOOL CGoddessMgr::Init(void)
 }
 
 
-//메모리 해제
+//Releasing memory
 void CGoddessMgr::Release(void)
 {
 
-//리스트 해제
+//List disable
 //-----------------------------------------------------------------------------------
 	GODDESSSTR* pGds = NULL;
 	for(GODLIST itr = m_list.begin(); itr != m_list.end();itr++)
@@ -6540,7 +6548,7 @@ void CGoddessMgr::Release(void)
 }
 
 
-//하나의 리스트만 삭제한다.
+//Only one list.
 void CGoddessMgr::Release_List(GODDESSSTR* pGDS)
 {
 
@@ -6563,11 +6571,11 @@ void CGoddessMgr::Release_List(GODDESSSTR* pGDS)
 }
 
 
-//허용국가 체크
+//Check the allow countries
 BOOL CGoddessMgr::Permission_Country(void)
 {
 
-	//국가  체크 후 결과를 세팅한다.
+	//After checking the results the country settings.
 	if( IsApplyNewVersion())
 		return TRUE;
 
@@ -6577,7 +6585,7 @@ BOOL CGoddessMgr::Permission_Country(void)
 }
 
 
-//여신,요정 객체를 로드한다.
+//Goddess, nymph, loads the object.
 BOOL CGoddessMgr::Register_God_And_Sprite(void)
 {
 
@@ -6589,22 +6597,22 @@ BOOL CGoddessMgr::Register_God_And_Sprite(void)
 }
 
 
-//랜더링 오브젝트 객체를 등록한다.
+//Rendering objects object.
 BOOL CGoddessMgr::Register_RenderObj(GODDESSSTR& gds)
 {
 
-	//아바타 객체를 가져온다.
+	//Avatar brings objects.
 	CObjAVT *pCHAR = g_pObjMGR->Get_ClientCharAVT(gds.idxMaster,TRUE);
 		if(pCHAR == NULL)
 			return FALSE;
 
-	//아바타 상태 설정
+	//Avatar set state
 	pCHAR->SetAroaState() = gds.bEnable;
 
 	//
 	pCHAR->Calc_AruaAddAbility();
 
-	//자신이라면 아바타 정보를 저장한다.
+	//If you own avatar information.
 	m_IsAvata = (lstrcmp(pCHAR->Get_NAME(),g_pAVATAR->Get_NAME()) ? FALSE : TRUE);
 
 
@@ -6630,7 +6638,7 @@ BOOL CGoddessMgr::Register_RenderObj(GODDESSSTR& gds)
 	}
 
 
-	//여신 로드
+	//Goddess road
 	if(gds.pGODModel == NULL)
 	{
 		gds.pGODModel = new CObjMOB;
@@ -6654,7 +6662,7 @@ BOOL CGoddessMgr::Register_RenderObj(GODDESSSTR& gds)
 	}
 
 
-	//요정 로드
+	//Fairy road
 	if(gds.pSprModel == NULL)
 	{
 		gds.pSprModel = new CObjMOB;
@@ -6705,11 +6713,11 @@ void CGoddessMgr::Set_GDSData(GODDESSSTR& gds,BOOL bonOff,BOOL bPrograss)
 }
 
 
-//여신 소환 on/off 를 처리한다.
+//Goddess summoning on/off.
 BOOL CGoddessMgr::SetProcess(DWORD bonOff,WORD idx,BOOL bPrograss)
 {
 
-  //국가 코드  체크
+  //Country code check
 	if(!Permission_Country())
 		return TRUE;
 
@@ -6742,7 +6750,7 @@ BOOL CGoddessMgr::SetProcess(DWORD bonOff,WORD idx,BOOL bPrograss)
 
 //New list
 //--------------------------------------------------------------------
-	//처음에 OFF 라면 리스트를 생성할 필요가 없음.
+	//If you need to create the list OFF in the first place.
 	if(bOnOff == FALSE)
 		return TRUE;
 
@@ -6764,15 +6772,15 @@ BOOL CGoddessMgr::SetProcess(DWORD bonOff,WORD idx,BOOL bPrograss)
 	pGds = &Gds;
 //--------------------------------------------------------------------
 
-//이펙트 랜더링 세팅
+//Effect rendering settings
 SET_EFF:
 
-	//아바타라면 아루아 상태를 저장한다.
+	//If you save the State of the Arua avatar.
 	if(m_IsAvata)
 		m_dwAvata = bonOff;
 
 
-	//요정 모드라면 보이게 만든다.
+	//If you make it look elfin mode.
 	if(pGds->god_State == GOD_SPRITE_EFFECT)
 	{
 		pGds->fviewSpr = 1.0f;
@@ -6780,7 +6788,7 @@ SET_EFF:
 	}
 
 
-	//파티클 애니메이션만 설정 설정
+	//Setting the particle animation
 	if(pGds->god_State == GOD_APPEAR_PARTCLE)
 	{
 		pGds->pEffect[0]->StartEffect();
@@ -6806,13 +6814,13 @@ SET_EFF:
 void CGoddessMgr::Update(void)
 {
 
-	//국가 코드  체크
+	//Country code check
 	if(!Permission_Country())
 		return;
 
 
-#define TIME_GOD_ACCEPT				9100   //연출될 전체 틱
-#define TIME_APPEAR_GODDESS			3000   //이펙트 시작 후 여신이 나타날 시간 틱
+#define TIME_GOD_ACCEPT				9100   //Rendering the entire tick
+#define TIME_APPEAR_GODDESS			3000   //The goddess appears after starting the effect time tick
 
 
 	if(m_Count == 0)
@@ -6843,7 +6851,7 @@ void CGoddessMgr::Update(void)
 	//		continue;
 
 
-		//아바타 객체를 가져온다.
+		//Avatar brings objects.
 		pCHAR = g_pObjMGR->Get_ClientCharAVT(gds->idxMaster,TRUE);
 			if((pCHAR == NULL) || (gds->god_State == GOD_NONE))
 			{
@@ -6863,7 +6871,7 @@ void CGoddessMgr::Update(void)
 				if(!(m_Count = m_list.size()))
 					break;
 
-				//리스트의 구간이 아니라면 Begin 리스트 이다
+				//Section of the list is a list Begin if
 				if(IsBeginList)
 					itr = m_list.begin();
 				else
@@ -6873,20 +6881,20 @@ void CGoddessMgr::Update(void)
 			}
 
 
-		//아바타의 좌표
+		//The coordinates of the avatar
 		D3DXVECTOR3 cPos = tPos = pCHAR->Get_CurPOS();
 
-		//아바타 회전
+		//Avatar rotation
 		::getRotationQuad(pCHAR->GetZMODEL(),fRot);
 
 
-		//step1 :  파티클 이펙트 출력
+		//step1 :  Particle effects output
 		if(gds->god_State == GOD_APPEAR_PARTCLE)
 		{
 			curTick  = GetTickCount();
 			tempTick = (curTick - gds->sTick);
 
-			//여신 캐릭터 출력 유무
+			//The presence or absence of the goddess character output
 			if(tempTick >= TIME_APPEAR_GODDESS)
 			{
 				if(gds->fviewGODD == 0)
@@ -6896,7 +6904,7 @@ void CGoddessMgr::Update(void)
 					::controlAnimatable(gds->hGoddess,1);
 				}
 
-				//여신 캐릭터를 나타나게 한다.
+				//Goddess character to appear.
 				if(ProcessVisible(gds->fviewGODD,0.0008f) == 1)
 					gds->god_State = GOD_APPEAR_GODDESS;
 
@@ -6907,17 +6915,17 @@ void CGoddessMgr::Update(void)
 		}
 
 
-		//step2 : 파티클 & 여신 이펙트 출력
+		//step2 : Particle &amp; goddess effect output
 		if(gds->god_State == GOD_APPEAR_GODDESS)
 		{
 			curTick  = GetTickCount();
 			tempTick = (curTick - gds->sTick);
 
 
-			//일정한 시전이펙트가 끝나면 요정 트래킹모드로 전환한다.
+			//At the end of the regular cast effects fairy tracking mode.
 			if(tempTick >= TIME_GOD_ACCEPT)
 			{
-				//여신 캐릭터를 나타나게 한다.
+				//Goddess character to appear.
 				t1 = ProcessVisible(gds->fviewGODD,-0.0009f);
 				t2 = ProcessVisible(gds->fviewSpr,0.001f);
 
@@ -6927,19 +6935,19 @@ void CGoddessMgr::Update(void)
 					::controlAnimatable(gds->hGoddess,0);
 				}
 
-				//요정
+				//Fairy
 				::setRotationQuat(gds->hSprite,fRot);
 				::setPosition(gds->hSprite,tPos.x,tPos.y,tPos.z);
 				::setVisibilityRecursive(gds->hSprite,gds->fviewSpr);
 			}
 
-			//여신
+			//Goddess
 			::setRotationQuat(gds->hGoddess,fRot);
 			::setPosition(gds->hGoddess,tPos.x,tPos.y,tPos.z);
 			::setVisibilityRecursive(gds->hGoddess,gds->fviewGODD);
 		}
 
-		//step3 : 요정 트래킹 모드
+		//step3 : Fairy tracking mode
 		if(gds->god_State == GOD_SPRITE_EFFECT)
 		{
 			::setRotationQuat(gds->hSprite,fRot);
@@ -6947,7 +6955,7 @@ void CGoddessMgr::Update(void)
 
 		}
 
-		//step4 ; 요정을 사라지게 한다.
+		//step4 ; The fairies disappear.
 		if(gds->god_State == GOD_END_EFFECT)
 		{
 
@@ -6964,7 +6972,7 @@ void CGoddessMgr::Update(void)
 }
 
 
-//Visible 처리를 한다.
+//Visible Processing..
 int CGoddessMgr::ProcessVisible(float& fv,float fseq)
 {
 

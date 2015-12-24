@@ -150,7 +150,7 @@ int	CGameStateMain::Update( bool bLostFocus )
 	}
 	
 	CLiveCheck::GetSingleton().Check();
-	CDelayedExp::GetSingleton().Proc();
+	CDelayedExp::GetSingleton().Proc();					//PY: this just instantly returns now so it should probably be removed as soon as I am sure Exp is working properly
 	CPreventDuplicatedCommand::GetSingleton().Proc();
 
 

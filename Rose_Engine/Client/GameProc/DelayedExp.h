@@ -8,11 +8,14 @@
 struct EXP_DATA
 {
 	int iOwnerIndex;
-	int iAddExp;
-	int iExp;
-	int iGetTime;			/// 서버로 부터 받은시간. 
+	//int iAddExp;			//PY: should be a long otherwise we are passing a long into an int when we store exp values
+	long iAddExp;
+	//int iExp;				//Same for this one
+	long iExp;
+	//int iGetTime;			/// Received from the server time. This also should be long since the function returns a DWORD
+	long iGetTime;
 
-	int iStamina;			/// 스태미너도 현재 스태미너가 서버에서 날라오기때문에..
+	int iStamina;			/// Stamina is the current stamina come away from the server..
 };
 
 
@@ -33,7 +36,7 @@ public:
 	CDelayedExp(void);
 	~CDelayedExp(void);
 
-	void						PushEXPData( int iOwnerIndex, int iAddExp, int iEXP, int iStamina );
+	void						PushEXPData( int iOwnerIndex, long iAddExp, long iEXP, int iStamina );
 	void						GetExp( int iOwnerIndex );
 
 	void						Proc();

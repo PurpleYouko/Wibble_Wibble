@@ -406,7 +406,7 @@ void CNetwork::Proc_WorldPacket ()
 				Recv_srv_ERROR ();
 				break;
 
-			case SRV_JOIN_SERVER_REPLY :	// Was connected to the server on the World.
+			case SRV_JOIN_SERVER_REPLY :	// Was connected to the server on the World.	0x070c
 			{
 				DWORD dwRet = Recv_srv_JOIN_SERVER_REPLY ();
 				if ( dwRet ) {
@@ -497,7 +497,7 @@ void CNetwork::Proc_WorldPacket ()
 
 void CNetwork::Proc_ZonePacket ()
 {
-	if(m_pRecvPacket->m_HEADER.m_wType != 0x700)
+	if(m_pRecvPacket->m_HEADER.m_wType != 0x700)		//PY:  Packet logging from client side. This can all be commented once the client is working close to 100%
 	{
 		FILE *fh = fopen(  "log/InOutpackets.log", "a+" );
 
@@ -520,303 +520,303 @@ void CNetwork::Proc_ZonePacket ()
 	}
 	switch( m_pRecvPacket->m_HEADER.m_wType ) 
 	{
-			case GSV_CART_RIDE:
+			case GSV_CART_RIDE:						//0x07dd
 				Recv_gsv_CART_RIDE();
 				break;
 
-			case GSV_PATSTATE_CHANGE:
+			case GSV_PATSTATE_CHANGE:				//0x07e9
 				Recv_gsv_PATSTATE_CHANGE();
 				break;
 
-			case SRV_CHECK_AUTH :
+			case SRV_CHECK_AUTH :					//0x0705
 				break;	
-			case GSV_SET_NPC_SHOW :
+			case GSV_SET_NPC_SHOW :					//0x07db
 				Recv_gsv_SET_NPC_SHOW ();
 				break;
 		
-			case GSV_MOVE_ZULY:
+			case GSV_MOVE_ZULY:						//0x07da
 				Recv_gsv_MOVE_ZULY();
 				break;
-			case WSV_CLANMARK_REG_TIME:
+			case WSV_CLANMARK_REG_TIME:				//0x07e8
 				Recv_wsv_CLANMARK_REG_TIME();
 				break;
-			case GSV_BILLING_MESSAGE:
+			case GSV_BILLING_MESSAGE:				//0x07df
 				Recv_gsv_BILLING_MESSAGE();
 				break;
-			case GSV_BILLING_MESSAGE_EXT:
+			case GSV_BILLING_MESSAGE_EXT:			//0x07de
 				Recv_gsv_BILLING_MESSAGE_EXT();
 				break;
-			case GSV_MALL_ITEM_REPLY:
+			case GSV_MALL_ITEM_REPLY:				//0x07d9
 				Recv_gsv_MALL_ITEM_REPLY();
 				break;
-			case GSV_ITEM_RESULT_REPORT:
+			case GSV_ITEM_RESULT_REPORT:			//0x07d8
 				Recv_gsv_ITEM_RESULT_REPORT();
 				break;
-			case GSV_LOGOUT_REPLY:
+			case GSV_LOGOUT_REPLY:					//0x0707
 				Recv_gsv_LOGOUT_REPLY();
 				break;
 
 
-			case WSV_CLAN_COMMAND :
+			case WSV_CLAN_COMMAND :					//0x07e0
 				Recv_wsv_CLAN_COMMAND ();
 				break;
-			case WSV_CLAN_CHAT:
+			case WSV_CLAN_CHAT:						//0x0787
 				Recv_wsv_CLAN_CHAT();
 				break;
-			case WSV_CLANMARK_REPLY:
+			case WSV_CLANMARK_REPLY:				//0x07e7
 				Recv_wsv_CLANMARK_REPLY();
 				break;
 
 
-			case SRV_ERROR :
+			case SRV_ERROR :						//0x0700
 				Recv_srv_ERROR ();
 				break;
 
-			case GSV_RELAY_REQ :
+			case GSV_RELAY_REQ :					//0x071a
 				this->Send_PACKET( m_pRecvPacket );
 				break;
 
-			case GSV_SET_GLOBAL_VAR :
+			case GSV_SET_GLOBAL_VAR :				//0x070e
 				Recv_gsv_SET_GLOBAL_VAR ();
 				break;
 
-			case GSV_SET_GLOBAL_FLAG:
+			case GSV_SET_GLOBAL_FLAG:				//0x070f
 				Recv_gsv_SET_GLOVAL_FLAG();
 				break;
 
-			case SRV_ANNOUNCE_TEXT :
+			case SRV_ANNOUNCE_TEXT :				//0x0701
 				Recv_srv_ANNOUNCE_TEXT ();
 				break;
-			case GSV_ANNOUNCE_CHAT :
+			case GSV_ANNOUNCE_CHAT :				//0x0702
 				Recv_gsv_ANNOUNCE_CHAT ();
 				break;
 
-			case GSV_GM_COMMAND :
+			case GSV_GM_COMMAND :					//0x070d
 				Recv_gsv_GM_COMMAND ();
 				break;
 
 			// Result of the character selection by
-			case GSV_SELECT_CHAR :
+			case GSV_SELECT_CHAR :					// 0x0715	Character selection. Sends client information Str, Int, Dex etc.
 				Recv_gsv_SELECT_CHAR ();
 
-				//Send_cli_JOIN_ZONE ();		// GSV_SELECT_CHAR
+				//Send_cli_JOIN_ZONE ();			// GSV_SELECT_CHAR
 				break;
 
-			case GSV_JOIN_ZONE :
+			case GSV_JOIN_ZONE :					//0x0753
 				Recv_gsv_JOIN_ZONE ();
 				break;
 
 
-			case GSV_REVIVE_REPLY :
+			case GSV_REVIVE_REPLY :					//0x0755
 				Recv_gsv_REVIVE_REPLY ();
 				break;
 
-			case GSV_SET_VAR_REPLY :
+			case GSV_SET_VAR_REPLY :				//0x0757
 				Recv_gsv_SET_VAR_REPLY ();
 				break;
 
-			case GSV_TELEPORT_REPLY :
+			case GSV_TELEPORT_REPLY :				//0x07a8
 				this->m_bWarping = false;
 				Recv_gsv_TELEPORT_REPLY ();
 //				Send_cli_JOIN_ZONE ();		// GSV_TELEPORT_REPLY
 				break;
 
-			case GSV_INVENTORY_DATA :
+			case GSV_INVENTORY_DATA :				//0x0716
 				Recv_gsv_INVENTORY_DATA ();
 //				g_pCApp->SetStatus( AS_MAIN_GAME );
 				break;
-			case GSV_QUEST_DATA :
+			case GSV_QUEST_DATA :					//0x071b
 				Recv_gsv_QUEST_DATA();
 				break;
 
-			case GSV_QUEST_ONLY:
+			case GSV_QUEST_ONLY:					//0x0723
 				Recv_gsv_QUEST_ONLY();
 				break;
 
-			case GSV_WISH_LIST:
+			case GSV_WISH_LIST:						//0x0724
 				Recv_gsv_WISH_LIST();
 				break;
 
-			case GSV_MILEAGE_INV_DATA:                        //Mileage inventory data.
+			case GSV_MILEAGE_INV_DATA:              //0x0801	Mileage inventory data.
 				break;
 
-			case GSV_INIT_DATA :
+			case GSV_INIT_DATA :					//0x0754
 				Recv_gsv_INIT_DATA ();
 				break;
 
-			case GSV_CHEAT_CODE :
+			case GSV_CHEAT_CODE :					//0x0751
 				Recv_gsv_CHEAT_CODE ();
 				break;
 
-			case GSV_SET_MOTION :
+			case GSV_SET_MOTION :					//0x0781
 				Recv_gsv_SET_MOTION ();
 				break;
 
-			case GSV_TOGGLE :
+			case GSV_TOGGLE :						//0x0782
 				Recv_gsv_TOGGLE ();
 				break;
-			case GSV_PARTY_CHAT:
+			case GSV_PARTY_CHAT:					//0x0786
 				Recv_gsv_PARTY_CHAT();
 				break;
-			case GSV_CHAT :
+			case GSV_CHAT :							//0x0783
 				Recv_gsv_CHAT ();
 				break;
-			case GSV_WHISPER :
+			case GSV_WHISPER :						//0x0784
 				Recv_gsv_WHISPER ();
 				break;
-			case GSV_SHOUT :
+			case GSV_SHOUT :						//0x0785
 				Recv_gsv_SHOUT ();
 				break;
 
-			case GSV_NPC_CHAR :
+			case GSV_NPC_CHAR :						//0x0791
 				Recv_gsv_NPC_CHAR ();
 				break;
-			case GSV_MOB_CHAR :
+			case GSV_MOB_CHAR :						//0x0792	spawn a monster
 				Recv_gsv_MOB_CHAR ();
 				break;
-			case GSV_AVT_CHAR :
+			case GSV_AVT_CHAR :						//0x0793	Spawn an object to the screen when it comes into visibility range
 				Recv_gsv_AVT_CHAR ();
 				break;
 
-			case GSV_SUB_OBJECT :
+			case GSV_SUB_OBJECT :					//0x0794	Clear an object
 				Recv_gsv_SUB_OBJECT ();
 				break;
-			case GSV_STOP :
+			case GSV_STOP :							//0x0796	Stop attack
 				Recv_gsv_STOP ();
 				break;
 
-			case GSV_MOVE :
+			case GSV_MOVE :							//0x0797	Move to a new location
 				Recv_gsv_MOVE ();
 				break;
-			case GSV_ATTACK :
+			case GSV_ATTACK :						//0x0798	Start combat
 				Recv_gsv_ATTACK ();
 				break;
 			//case GSV_ATTACK_START :
 			//	Recv_gsv_ATTACK_START ();
 			//	break;
 
-			case GSV_CHANGE_NPC :
+			case GSV_CHANGE_NPC :					//0x0774	Change a monster into a different monster type (ghost seed for example)
 				Recv_gsv_CHANGE_NPC ();
 				break;
 
-			case GSV_DAMAGE :
+			case GSV_DAMAGE :						//0x0799	damage packet from combat
 				Recv_gsv_DAMAGE ();
 				break;
 
-			case GSV_SETEXP:
+			case GSV_SETEXP:						//0x079b
 				Recv_gsv_SETEXP();
 				break;
-			case GSV_LEVELUP :
+			case GSV_LEVELUP :						//0x079e
 				Recv_gsv_LEVELUP ();
 				break;
 	
-			case GSV_HP_REPLY:
+			case GSV_HP_REPLY:						//0x079f
 				Recv_gsv_HP_REPLY();
 				break;
 
-			case GSV_CHANGE_SKIN :
+			case GSV_CHANGE_SKIN :					//0x07ac
 				Recv_gsv_CHANGE_SKIN ();
 				break;
 
-			case GSV_EQUIP_ITEM :
+			case GSV_EQUIP_ITEM :					//0x07a5
 				Recv_gsv_EQUIP_ITEM ();
 				break;
 
-			case GSV_ADD_FIELDITEM :
+			case GSV_ADD_FIELDITEM :				//0x07a6
 				Recv_gsv_ADD_FIELDITEM ();
 				break;
 
-			case GSV_GET_FIELDITEM_REPLY :
+			case GSV_GET_FIELDITEM_REPLY :			//0x07a7
 				Recv_gsv_GET_FIELDITEM_REPLY ();
 				break;
-			case GSV_MOUSECMD :
+			case GSV_MOUSECMD :						//0x079a
 				Recv_gsv_MOUSECMD ();
 				break;
 
-			case GSV_SET_WEIGHT_RATE :
+			case GSV_SET_WEIGHT_RATE :				//0x0762
 				Recv_gsv_SET_WEIGHT_RATE ();
 				break;
 
-			case GSV_ADJUST_POS:
+			case GSV_ADJUST_POS:					//0x0770
 				Recv_gsv_ADJUST_POS();
 				break;
 
-			case GSV_SKILL_LEARN_REPLY :
+			case GSV_SKILL_LEARN_REPLY :			//0x07b0
 				Recv_gsv_SKILL_LEARN_REPLY ();
 				break;
 
-			case GSV_SKILL_LEVELUP_REPLY :
+			case GSV_SKILL_LEVELUP_REPLY :			//0x07b1
 				Recv_gsv_SKILL_LEVELUP_REPLY ();
 				break;
 
-			case GSV_SELF_SKILL :
+			case GSV_SELF_SKILL :					//0x07b2
 				Recv_gsv_SELF_SKILL ();
 				break;
-			case GSV_TARGET_SKILL :
+			case GSV_TARGET_SKILL :					//0x07b3
 				Recv_gsv_TARGET_SKILL ();
 				break;
-			case GSV_POSITION_SKILL :
+			case GSV_POSITION_SKILL :				//0x07b4
 				Recv_gsv_POSITION_SKILL ();
 				break;
 
 
-			case GSV_EFFECT_OF_SKILL :
+			case GSV_EFFECT_OF_SKILL :				//0x07b5
 				Recv_gsv_EFFECT_OF_SKILL ();
 				break;	
-			case GSV_DAMAGE_OF_SKILL:
+			case GSV_DAMAGE_OF_SKILL:				//0x07b6
 				Recv_gsv_DAMAGE_OF_SKILL ();
 				break;
-			case GSV_RESULT_OF_SKILL:
+			case GSV_RESULT_OF_SKILL:				//0x07b9
 				Recv_gsv_RESULT_OF_SKILL ();
 				break;
 
-			case GSV_SKILL_START:
+			case GSV_SKILL_START:					//0x07bb
 				Recv_gsv_SKILL_START();
 				break;
 
-			case GSV_SKILL_CANCEL:
+			case GSV_SKILL_CANCEL:					//0x07bd
 				Recv_gsv_SKILL_CANCEL();
 				break;
 
 
-			case GSV_CLEAR_STATUS:
+			case GSV_CLEAR_STATUS:					//0x07b7
 				Recv_gsv_CLEAR_STATUS();
 				break;
 
-			case GSV_SPEED_CHANGED : 
+			case GSV_SPEED_CHANGED :				//0x07b8
 				Recv_gsv_SPEED_CHANGED ();
 				break;
 
 			/// Used the item.
-			case GSV_USE_ITEM:
+			case GSV_USE_ITEM:						//0x07a3
 				Recv_gsv_USE_ITEM ();
 				break;
 
-			case GSV_P_STORE_MONEYnINV:
+			case GSV_P_STORE_MONEYnINV:				//0x07c7
 				Recv_gsv_P_STORE_MONEYnINV();
 				break;
-			case GSV_SET_MONEYnINV:
+			case GSV_SET_MONEYnINV:					//0x0717
 				Recv_gsv_SET_MONEYnINV ();
 				break;
 
-			case GSV_REWARD_ITEM  :		/// Quest reward items are changed by
+			case GSV_REWARD_ITEM  :					//0x071f	Quest reward items are changed by
 			{
 				Recv_gsv_REWARD_ITEM();
 			}
 
-			case GSV_SET_INV_ONLY :
+			case GSV_SET_INV_ONLY :					//0x0718
 				Recv_gsv_SET_INV_ONLY ();
 				break;
 
-			case GSV_SET_HOTICON :
+			case GSV_SET_HOTICON :					//0x07aa
 				Recv_gsv_SET_HOTICON ();
 				break;
 
-			case GSV_USE_BPOINT_REPLY :
+			case GSV_USE_BPOINT_REPLY :				//0x07a9
 				Recv_gsv_USE_BPOINT_REPLY ();
 				break;
 
-			case GSV_QUEST_REPLY :
+			case GSV_QUEST_REPLY :					//0x0730
 				Recv_gsv_QUEST_REPLY ();
 				break;
 			/*
@@ -824,132 +824,136 @@ void CNetwork::Proc_ZonePacket ()
 				Recv_gsv_QUEST_DATA_REPLY ();
 				break;
 			*/
-			case GSV_TRADE_P2P:
+			case GSV_TRADE_P2P:						//0x07c0
 				Recv_gsv_TRADE_P2P();
 				break;
-			case GSV_TRADE_P2P_ITEM:
+			case GSV_TRADE_P2P_ITEM:				//0x07c1
 				Recv_gsv_TRADE_P2P_ITEM();
 				break;
 
-			case GSV_PARTY_REQ:
+			case GSV_PARTY_REQ:						//0x07d0
 				Recv_gsv_PARTY_REQ();
 				break;
-			case GSV_PARTY_REPLY:
+			case GSV_PARTY_REPLY:					//0x07d1
 				Recv_gsv_PARTY_REPLY();
 				break;
-			case GSV_PARTY_MEMBER:
+			case GSV_PARTY_MEMBER:					//0x07d2
 				Recv_gsv_PARTY_MEMBER();
 				break;
-			case GSV_PARTY_LEVnEXP :
+			case GSV_PARTY_LEVnEXP :				//0x07d4
 				Recv_gsv_PARTY_LEVnEXP ();
 				break;
-			case GSV_PARTY_ITEM:
+			case GSV_PARTY_ITEM:					//0x07d3
 				Recv_gsv_PARTY_ITEM();
 				break;
-			case GSV_PARTY_RULE:
+			case GSV_PARTY_RULE:					//0x07d7
 				Recv_gsv_PARTY_RULE();
 				break;
-			case GSV_CHANGE_OBJIDX:
+			case GSV_CHANGE_OBJIDX:					//0x07d5
 				Recv_gsv_CHANGE_OBJIDX();
 				break;
-			case GSV_STORE_TRADE_REPLY:
+			case GSV_STORE_TRADE_REPLY:				//0x07a1
 				Recv_gsv_STORE_TRADE_REPLY();
 				break;
-			case GSV_CREATE_ITEM_REPLY:
+			case GSV_CREATE_ITEM_REPLY:				//0x07af
 				Recv_gsv_CREATE_ITEM_REPLY();
 				break;
-			case GSV_BANK_LIST_REPLY:
+			case GSV_BANK_LIST_REPLY:				//0x07ad
 				Recv_gsv_BANK_LIST_REPLY();
 				break;
-			case GSV_MOVE_ITEM:
+			case GSV_MOVE_ITEM:						//0x07ae
 				Recv_gsv_MOVE_ITEM();
 				break;
-			case GSV_SET_BULLET:
+			case GSV_SET_BULLET:					//0x07ab
 				Recv_gsv_SET_BULLET();
 				break;
-			case GSV_SERVER_DATA:
+			case GSV_SERVER_DATA:					//0x0719
 				Recv_gsv_SERVER_DATA();
 				break;
-			case GSV_ASSEMBLE_RIDE_ITEM:
+			case GSV_ASSEMBLE_RIDE_ITEM:			//0x07ca
 				Recv_gsv_ASSEMBLE_RIDE_ITEM();
 				break;
 
-			case GSV_SET_EVENT_STATUS:
+			case GSV_SET_EVENT_STATUS:				//0x0790
 				Recv_GSV_SET_EVENT_STATUS();
 				break;
 
-			case GSV_SET_ITEM_LIFE:
+			case GSV_SET_ITEM_LIFE:					//0x07ce
 				Recv_GSV_SET_ITEM_LIFE();
 				break;
 
-			case GSV_P_STORE_OPENED:
+			case GSV_P_STORE_OPENED:				//0x07c2
 				Recv_gsv_P_STORE_OPENED	();
 				break;
-			case GSV_P_STORE_CLOSED:
+			case GSV_P_STORE_CLOSED:				//0x07c3
 				Recv_gsv_P_STORE_CLOSED	();
 				break;
-			case GSV_P_STORE_LIST_REPLY:
+			case GSV_P_STORE_LIST_REPLY:			//0x07c4
                 Recv_gsv_P_STORE_LIST_REPLY ();
 				break;
-			case GSV_P_STORE_RESULT:
+			case GSV_P_STORE_RESULT:				//0x07c6
 				Recv_gsv_P_STORE_RESULT();
 				break;
 
-			case GSV_USED_ITEM_TO_REPAIR:
+			case GSV_USED_ITEM_TO_REPAIR:			//0x07cb
 				Recv_gsv_USED_ITEM_TO_REPAIR();
 				break;
-			case GSV_REPAIRED_FROM_NPC:
+			case GSV_REPAIRED_FROM_NPC:				//0x07cd
 				Recv_gsv_REPAIRED_FROM_NPC();
 				break;
 
-			case GSV_SET_MONEY_ONLY:
+			case GSV_SET_MONEY_ONLY:				//0x071d
 				Recv_gsv_SET_MONEY_ONLY();
 				break;
-			case GSV_REWARD_MONEY:
+			case GSV_REWARD_MONEY:					//0x071e
 				Recv_gsv_REWARD_MONEY();
 				break;
 
-			case GSV_REWARD_ADD_ABILITY :
+			case GSV_REWARD_ADD_ABILITY :			//0x0720
 			{
 				Recv_gsv_REWARD_ADD_ABILITY();
 				break;
 			}
-			case GSV_REWARD_SET_ABILITY :
+			case GSV_REWARD_SET_ABILITY :			//0x0721
 			{
 				Recv_gsv_REWARD_SET_ABILITY();
 				break;
 			}
 
-			case GSV_GODDNESS_MODE:
+			case GSV_GODDNESS_MODE:					//0x07dc
 			{
 				Recv_gsv_GODDNESS_MODE();
 				break;
 			}
 
 			//----------------------------------------------------------------------------------------------------			
-			/// @brief Jamming related items
+			/// @brief Jemming related items
 			//----------------------------------------------------------------------------------------------------
-			case GSV_CRAFT_ITEM_REPLY:
+			case GSV_CRAFT_ITEM_REPLY:				//0x07bc
 				Recv_gsv_CRAFT_ITEM_REPLY();
 				break;
 
 			//----------------------------------------------------------------------------------------------------			
 			/// @brief Object-related events
 			//----------------------------------------------------------------------------------------------------
-			case GSV_ADD_EVENTOBJ:
+			case GSV_ADD_EVENTOBJ:					//0x07d6
 				Recv_gsv_ADD_EVENTOBJ();
 				break;
 
-			case GSV_APPRAISAL_REPLY:
+			case GSV_APPRAISAL_REPLY:				//0x07ba
 				Recv_gsv_APPRAISAL_REPLY();
 				break;
 
-			case GSV_SET_HPnMP:
+			case GSV_SET_HPnMP:						//0x07a0
 				Recv_gsv_SET_HPnMP();
 				break;
 
-			case GSV_CHAR_HPMP_INFO:				// 1 packet per second from server updates HP / MP (PY: soon it will receive other stats too)
+			case GSV_CHAR_HPMP_INFO:				//0x07ec	1 packet per second from server updates HP / MP (PY: soon it will receive other stats too)
 				Recv_gsv_CHAR_HPMP_INFO();
+				break;
+
+			case GSV_CHAR_STAT_INFO:
+				Recv_gsv_CHAR_STAT_INFO();
 				break;
 
 			case GSV_CHECK_NPC_EVENT:

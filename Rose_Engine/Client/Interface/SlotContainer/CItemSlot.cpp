@@ -74,7 +74,7 @@ CItem* CItemSlot::CreateItem( int iInvenIdx, tagITEM& Item )
 			pItem->SetCommand( m_pCmdItemPatInInventory );
 			break;
 		default:
-			assert( 0 && CStr::Printf("CItemSlot::AddItem Invalid ItemType(%d)",Item.GetTYPE()));
+			//assert( 0 && CStr::Printf("CItemSlot::AddItem Invalid ItemType(%d)",Item.GetTYPE()));
 			break;
 		}
 	}

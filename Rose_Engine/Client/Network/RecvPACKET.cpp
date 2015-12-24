@@ -733,7 +733,7 @@ void CRecvPACKET::Recv_gsv_SET_VAR_REPLY ()
 //-------------------------------------------------------------------------------------------------
 void CRecvPACKET::Recv_gsv_SELECT_CHAR ()
 {
-	short nOffset=sizeof( gsv_SELECT_CHAR );
+	short nOffset = sizeof( gsv_SELECT_CHAR );	//PY this seems to be out by 4 bytes after I added two shorts to tagGrowAbility added 4 bytes for maxHP and maxMP to the packet at server side
 	char *szName;
 	szName = Packet_GetStringPtr( m_pRecvPacket, nOffset);
 
@@ -741,6 +741,7 @@ void CRecvPACKET::Recv_gsv_SELECT_CHAR ()
 		szName, 
 		m_pRecvPacket->m_gsv_SELECT_CHAR.m_nZoneNO,
 		m_pRecvPacket->m_gsv_SELECT_CHAR.m_PosSTART.x, m_pRecvPacket->m_gsv_SELECT_CHAR.m_PosSTART.y);
+	ClientLog (LOG_NORMAL, "Client logged in with character: %s with offset value %i", szName, nOffset);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Data set selected avatar.
@@ -763,8 +764,10 @@ void CRecvPACKET::Recv_gsv_SELECT_CHAR ()
 	refGame.m_SelectedAvataInfo.m_PosSTART.x		= m_pRecvPacket->m_gsv_SELECT_CHAR.m_PosSTART.x;
 	refGame.m_SelectedAvataInfo.m_PosSTART.y		= m_pRecvPacket->m_gsv_SELECT_CHAR.m_PosSTART.y;
 	refGame.m_SelectedAvataInfo.m_nReviveZoneNO	= m_pRecvPacket->m_gsv_SELECT_CHAR.m_nReviveZoneNO;
-	refGame.m_SelectedAvataInfo.m_dwUniqueTAG	= m_pRecvPacket->m_gsv_SELECT_CHAR.m_dwUniqueTAG;
-
+	refGame.m_SelectedAvataInfo.m_dwUniqueTAG	= m_pRecvPacket->m_gsv_SELECT_CHAR.m_dwUniqueTAG;		//charid from server
+	//ClientLog (LOG_NORMAL, "Character came in with race: %i map: %i", refGame.m_SelectedAvataInfo.m_btCharRACE, refGame.m_SelectedAvataInfo.m_nZoneNO);
+	//ClientLog (LOG_NORMAL, "Character came in with MaxHP: %i level: %i stamina: %i", refGame.m_SelectedAvataInfo.m_GrowAbility.m_MaxHP, refGame.m_SelectedAvataInfo.m_GrowAbility.m_nLevel,refGame.m_SelectedAvataInfo.m_GrowAbility.m_nSTAMINA);
+	//ClientLog (LOG_NORMAL, "Character came in with Clientid: %i", refGame.m_SelectedAvataInfo.m_dwUniqueTAG);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -891,7 +894,7 @@ void CRecvPACKET::Recv_gsv_TOGGLE ()
 			{
 				((CObjAVT*)pCHAR)->SetOri_RunSPEED( m_pRecvPacket->m_gsv_TOGGLE.m_nRunSPEED[0] );
 
-				//20060626 Move at the speed of honggeun recalculate cart ride.
+				//Recalculate movement and attack animation speed
 				((CObjAVT*)pCHAR)->Update_SPEED();
 			}
 		}	
@@ -1434,7 +1437,7 @@ void CRecvPACKET::Recv_gsv_AVT_CHAR ()
 	short		m_nPartItemIDX[ MAX_BODY_PART ];
 	// char		szUserID[]
 	*/
-	short nOffset=sizeof( gsv_AVT_CHAR );
+	short nOffset = sizeof( gsv_AVT_CHAR );
 	char *szName = Packet_GetStringPtr ( m_pRecvPacket, nOffset );
 
 	CObjAVT *pNewAVT = g_pObjMGR->New_AvtCHAR( m_pRecvPacket->m_gsv_AVT_CHAR.m_wObjectIDX, szName ); 
@@ -1484,7 +1487,7 @@ void CRecvPACKET::Recv_gsv_AVT_CHAR ()
 	m_pRecvPacket->m_gsv_AVT_CHAR.m_btWeightRate;
 
 
-	pNewAVT->Update_SPEED ();
+	pNewAVT->Update_SPEED ();	//PY: animation speed only
 
 	LogString (LOG_NORMAL, "ADD_USER[ %s ], MoveSpeed: %f \n", szName, pNewAVT->GetOri_RunSPEED() );
 
@@ -1667,14 +1670,14 @@ void CRecvPACKET::Recv_gsv_ATTACK ()
 
 #ifdef _DEBUG	
 
-	//Cho, Sung - Hyun 10 - 27 chatting
+	//Sending a message to the chat window
 	//--------------------------------------------------------------
-	char buffer[1024];
-	sprintf( buffer, "*******************");
-	g_itMGR.AppendChatMsg ( buffer, IT_MGR::CHAT_TYPE_WHISPER );
+	//char buffer[1024];
+	//sprintf( buffer, "*******************");
+	//g_itMGR.AppendChatMsg ( buffer, IT_MGR::CHAT_TYPE_WHISPER );
 
-	sprintf( buffer, "Receive Attack");
-	g_itMGR.AppendChatMsg ( buffer, IT_MGR::CHAT_TYPE_WHISPER );
+	//sprintf( buffer, "Receive Attack");
+	//g_itMGR.AppendChatMsg ( buffer, IT_MGR::CHAT_TYPE_WHISPER );
 	//-------------------------------------------------------------
 #endif	
 
@@ -1807,7 +1810,7 @@ void CRecvPACKET::Recv_gsv_MOVE ()
 }
 
 //-------------------------------------------------------------------------------------------------
-void CRecvPACKET::Recv_gsv_DAMAGE ()
+void CRecvPACKET::Recv_gsv_DAMAGE ()		//0x0799 Damage packet
 {
 	//------------------------------------------------------------------------------------
 	/// Damage to the sohwanmop not know. Deleted from the list if you find place. Sohwanmop list in the garage.
@@ -1818,7 +1821,9 @@ void CRecvPACKET::Recv_gsv_DAMAGE ()
 	WORD wValue = (WORD)m_pRecvPacket->m_gsv_DAMAGE.m_Damage.m_wVALUE;
 //CObjCHAR * temp;
 	char buffer[1024];
-	if(myid==m_pRecvPacket->m_gsv_DAMAGE.m_wDefObjIDX){
+	if(myid == m_pRecvPacket->m_gsv_DAMAGE.m_wDefObjIDX)
+	{
+		//PY: So this is how we print a message up to the chat window as a whisper
 		sprintf( buffer, "Receive damage:%i",dwDamage);
 		g_itMGR.AppendChatMsg ( buffer, IT_MGR::CHAT_TYPE_WHISPER );
 	}
@@ -1835,12 +1840,12 @@ void CRecvPACKET::Recv_gsv_DAMAGE ()
 
 	CObjCHAR *pAtkOBJ, *pDefOBJ;
 
-	pDefOBJ = g_pObjMGR->Get_ClientCharOBJ( m_pRecvPacket->m_gsv_DAMAGE.m_wDefObjIDX, true );
-	pAtkOBJ = g_pObjMGR->Get_ClientCharOBJ( m_pRecvPacket->m_gsv_DAMAGE.m_wAtkObjIDX, false );
+	pDefOBJ = g_pObjMGR->Get_ClientCharOBJ( m_pRecvPacket->m_gsv_DAMAGE.m_wDefObjIDX, true );	// player or monster receiving the damage
+	pAtkOBJ = g_pObjMGR->Get_ClientCharOBJ( m_pRecvPacket->m_gsv_DAMAGE.m_wAtkObjIDX, false );	// player or monster doing the damage
 
 	
 
-	if ( NULL == pDefOBJ ) 
+	if ( NULL == pDefOBJ )	//no target defined
 		return;
 
 	if ( pAtkOBJ ) 
@@ -1860,7 +1865,7 @@ void CRecvPACKET::Recv_gsv_DAMAGE ()
 				{
 					assert( ( pFieldItem->m_ITEM.GetTYPE() < 15 ) || ( pFieldItem->m_ITEM.GetTYPE() == ITEM_TYPE_MONEY ) );
 					pDefOBJ->PushFieldItemToList( *pFieldItem );
-					if(myid==pFieldItem->m_wOwnerObjIDX/*m_pRecvPacket->m_gsv_DAMAGE.m_wAtkObjIDX*/ && !g_ClientStorage.IsAutoPickup())
+					if(myid == pFieldItem->m_wOwnerObjIDX/*m_pRecvPacket->m_gsv_DAMAGE.m_wAtkObjIDX*/ && !g_ClientStorage.IsAutoPickup())
 					{
 						pickupitem = m_pRecvPacket->m_gsv_DAMAGE.m_DropITEM->m_wServerItemIDX;
 #ifdef _DEBUG
@@ -1884,7 +1889,7 @@ void CRecvPACKET::Recv_gsv_DAMAGE ()
 			// This damage must die hit..
 			// In order to prevent pre-dying the dead lay waiting over a period of time.
 			pDefOBJ->m_DeadDAMAGE.m_nTargetObjIDX = pAtkOBJ->Get_INDEX();	// Over smacking
-			pDefOBJ->m_DeadDAMAGE.m_wDamage = m_pRecvPacket->m_gsv_DAMAGE.m_Damage;	// Honggeun: Max damage fixed. (Recv one place is plenty to fix the damage.)
+			pDefOBJ->m_DeadDAMAGE.m_wDamage = m_pRecvPacket->m_gsv_DAMAGE.m_Damage;	// Max damage fixed. (Recv one place is plenty to fix the damage.)
 			pDefOBJ->m_lDeadTIME = g_GameDATA.GetGameTime();
 
 			pDefOBJ->m_bDead = true;			
@@ -1933,12 +1938,6 @@ void CRecvPACKET::Recv_gsv_DAMAGE ()
 			pDefOBJ->PushDamageToList( g_pObjMGR->Get_ClientObjectIndex( m_pRecvPacket->m_gsv_DAMAGE.m_wAtkObjIDX ), m_pRecvPacket->m_gsv_DAMAGE.m_Damage );		
 		}
 		return;
-
-
-
-
-
-
 	}
 
 	if( !pAtkOBJ )
@@ -1980,12 +1979,12 @@ void CRecvPACKET::Recv_gsv_CHANGE_NPC ()
 }
 
 //-------------------------------------------------------------------------------------------------
-void CRecvPACKET::Recv_gsv_SETEXP ()
+void CRecvPACKET::Recv_gsv_SETEXP ()// packet 0x079b. Sends Exp from server to client. received as signed (positive or negative)
 {
+	//ClientLog( LOG_NORMAL, "Exp received from server %i from monster ID: %i", m_pRecvPacket->m_gsv_SETEXP.m_lCurEXP,m_pRecvPacket->m_gsv_SETEXP.m_wFromObjIDX );
 	if( !g_pAVATAR )
 		return;
-
-	/// Experience acquired in that mob dies timing to output messages
+	/// Exp received is zero so calculate from the ID of the monster that died
 	if( m_pRecvPacket->m_gsv_SETEXP.m_wFromObjIDX == 0 )
 	{
 		/// I experience the renewed ...
@@ -1994,16 +1993,11 @@ void CRecvPACKET::Recv_gsv_SETEXP ()
 		/// It's something in the wrong order on the server will doeseo nalraon.
 		if( lDiff < 0 )
 		{
-			char buf[ 255 ];
-			sprintf( buf, "Received exp is invalid[ %d/%d ]", m_pRecvPacket->m_gsv_SETEXP.m_lCurEXP, g_GameDATA.m_iReceivedAvatarEXP );
-			assert( 0 && buf );
-
+			ClientLog( LOG_NORMAL, "Received Exp is less than zero");
 			lDiff = 1;
 
-			/// If the output kkakil not experience ...
-			/// Rijyeol collection experience and other skills to be resurrected if the penalty is because of what previous experience can be a larger
-			/// After all the negative can be lDiff ... (due to a bug - is not home.)
-		}else
+		}
+		else
 		{
 			/// The experience garnered lDiff ... message output.
 			char szMsg[256];
@@ -2014,28 +2008,35 @@ void CRecvPACKET::Recv_gsv_SETEXP ()
 			/// Timing is handled separately because STAMINA decided... 2005/1/19
 			g_pAVATAR->SetCur_STAMINA( m_pRecvPacket->m_gsv_SETEXP.m_nCurSTAMINA );
 		}
-	}else
+	}
+	else	//Actual EXP received. This is the bit that does all the work when receiving a packet from the server
 	{
 		/// Wilderness experience to put the current processing order wrong ... but - when you get the experience there.
 		long lDiff = m_pRecvPacket->m_gsv_SETEXP.m_lCurEXP - g_GameDATA.m_iReceivedAvatarEXP;
+		//ClientLog( LOG_NORMAL, "Previous Exp  %i", g_GameDATA.m_iReceivedAvatarEXP );
+		//ClientLog( LOG_NORMAL, "Exp increased by %i", lDiff );
 		/// It's something in the wrong order on the server will doeseo nalraon C. ..
 		if( lDiff < 0 )
 		{
-			char buf[ 255 ];
-			sprintf( buf, "Received exp is invalid[ %d/%d ]", m_pRecvPacket->m_gsv_SETEXP.m_lCurEXP, g_GameDATA.m_iReceivedAvatarEXP );
-			assert( 0 && buf );
-
+			ClientLog( LOG_NORMAL, "Received Exp is less than zero");
 			lDiff = 1;
-			
-			/// If the output kkakil not experience ...
-			/// Rijyeol collection experience and other skills to be resurrected if the penalty is because of what previous experience can be a larger
-			/// After all the negative can be lDiff ... (due to a bug - is not home.)
-			
-		}else
+		}
+		else
 		{
-			int iClientIndex = g_pObjMGR->Get_ClientObjectIndex( m_pRecvPacket->m_gsv_SETEXP.m_wFromObjIDX );
-			CDelayedExp::GetSingleton().PushEXPData( iClientIndex, lDiff, m_pRecvPacket->m_gsv_SETEXP.m_lCurEXP, 
-				m_pRecvPacket->m_gsv_SETEXP.m_nCurSTAMINA );
+			//ClientLog( LOG_NORMAL, "Received actual experience from client");
+			//this chat message borrowed from above
+			char szMsg[256];
+			sprintf( szMsg, STR_GET_EXP, lDiff );
+			g_itMGR.AppendChatMsg( szMsg, IT_MGR::CHAT_TYPE_SYSTEM );
+			//PY: removed delayed Exp completely. It's utterly unreliable and very poorly written and optimised in its current state.
+
+			//int iClientIndex = g_pObjMGR->Get_ClientObjectIndex( m_pRecvPacket->m_gsv_SETEXP.m_wFromObjIDX );
+			//CDelayedExp::GetSingleton().PushEXPData( iClientIndex, lDiff, m_pRecvPacket->m_gsv_SETEXP.m_lCurEXP, 
+			//	m_pRecvPacket->m_gsv_SETEXP.m_nCurSTAMINA );
+
+			//added this to adjust Exp instantly on receipt of the packet
+			g_pAVATAR->SetCur_EXP( m_pRecvPacket->m_gsv_SETEXP.m_lCurEXP );	
+			g_pAVATAR->SetCur_STAMINA( m_pRecvPacket->m_gsv_SETEXP.m_nCurSTAMINA );
 		}
 	}
 
@@ -2222,13 +2223,10 @@ void CRecvPACKET::Recv_gsv_EQUIP_ITEM ()
 			((CObjUSER*)pCHAR)->UpdateAbility();
 		}
 
-#ifndef	__VIRTUAL_SERVER
 		// Apply movement speed from the server.
 		pCHAR->SetOri_RunSPEED( m_pRecvPacket->m_gsv_EQUIP_ITEM.m_nRunSPEED[0] );
-		pCHAR->Update_SPEED();
-#endif
-
-
+		//PY: NOPE. done from the server now 
+		//pCHAR->Update_SPEED();
 	}
 }
 
@@ -2278,7 +2276,8 @@ void CRecvPACKET::Recv_gsv_SET_MONEYnINV ()
 		g_pAVATAR->SetCur_MONEY( m_pRecvPacket->m_gsv_SET_MONEYnINV.m_i64Money );
 
 		g_pAVATAR->SetWaitUpdateInventory( true );
-		for (short nI=0; nI<m_pRecvPacket->m_gsv_SET_MONEYnINV.m_btItemCNT; nI++) {
+		for (short nI=0; nI<m_pRecvPacket->m_gsv_SET_MONEYnINV.m_btItemCNT; nI++) 
+		{
 			g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_SET_MONEYnINV.m_sInvITEM[ nI ].m_btInvIDX, 
 				m_pRecvPacket->m_gsv_SET_MONEYnINV.m_sInvITEM[ nI ].m_ITEM );
 		}
@@ -2587,7 +2586,7 @@ void CRecvPACKET::Recv_gsv_GET_FIELDITEM_REPLY ()
 void CRecvPACKET::Recv_gsv_TELEPORT_REPLY ()
 {	
 	//Honggeun: John teleport error value is 0 pm 12:12 2006-12-11
-	if(m_pRecvPacket->m_gsv_TELEPORT_REPLY.m_nZoneNO==0) 
+	if(m_pRecvPacket->m_gsv_TELEPORT_REPLY.m_nZoneNO == 0) 
 	{
 		return;
 	}
@@ -3357,11 +3356,12 @@ void CRecvPACKET::Recv_gsv_CLEAR_STATUS ()
 
 /// Speed ??was changed.
 /// If one allows to recalculate their stats.			2005/07/12 - nAvy
-void CRecvPACKET::Recv_gsv_SPEED_CHANGED ()
+void CRecvPACKET::Recv_gsv_SPEED_CHANGED ()		//0x07b8	Speed change packet??
 {
 	CObjAVT *pAVTChar = g_pObjMGR->Get_ClientCharAVT( m_pRecvPacket->m_gsv_SPEED_CHANGED.m_wObjectIDX, false);
 
-	if ( pAVTChar ) {
+	if ( pAVTChar ) 
+	{
 		pAVTChar->SetOri_RunSPEED( m_pRecvPacket->m_gsv_SPEED_CHANGED.m_nRunSPEED );			// Including the passive state, except for the persistent state
 		pAVTChar->SetPsv_AtkSPEED( m_pRecvPacket->m_gsv_SPEED_CHANGED.m_nPsvAtkSPEED );			// Passive values ??...
 
@@ -3370,7 +3370,9 @@ void CRecvPACKET::Recv_gsv_SPEED_CHANGED ()
 
 		///TODO::
 		m_pRecvPacket->m_gsv_SPEED_CHANGED.m_btWeightRate;		// Current holdings amount / maximum amount of possession * 100
+		
 	}
+	//ClientLog( LOG_NORMAL, "Avatar Move Speed set to: %i Read back as: %i",m_pRecvPacket->m_gsv_SPEED_CHANGED.m_nRunSPEED, pAVTChar->GetOri_RunSPEED() );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3562,7 +3564,7 @@ void CRecvPACKET::Recv_gsv_P_STORE_RESULT()
 
 }
 //-------------------------------------------------------------------------------------------------
-void CRecvPACKET::Recv_gsv_QUEST_REPLY ()
+void CRecvPACKET::Recv_gsv_QUEST_REPLY ()		//Quest reply after client sends a 0x0730 packet to it
 {
 	if( !g_pAVATAR )
 		return;
@@ -3573,36 +3575,28 @@ void CRecvPACKET::Recv_gsv_QUEST_REPLY ()
 	{
 	case RESULT_QUEST_REPLY_ADD_SUCCESS	:
 		/// Registration Quest
-		if ( !g_pAVATAR->Quest_Append(	m_pRecvPacket->m_gsv_QUEST_REPLY.m_btQuestSLOT,
-			m_pRecvPacket->m_gsv_QUEST_REPLY.m_iQuestID ) ) {
+		if ( !g_pAVATAR->Quest_Append(	m_pRecvPacket->m_gsv_QUEST_REPLY.m_btQuestSLOT,	m_pRecvPacket->m_gsv_QUEST_REPLY.m_iQuestID ) ) 
+		{
 				/// What is it?? Registration server eseon happened???
 				break;
-			}
-
-#ifndef	__SERVER
-			//--------------------------------------------------------------------------------
-			LOGOUT( "!!!Registration Quest!!!" );
-			//--------------------------------------------------------------------------------
-#endif
-
-			break;
+		}
+		//--------------------------------------------------------------------------------
+		ClientLog( LOG_NORMAL, "!!!Registration Quest!!!" );
+		//--------------------------------------------------------------------------------
+		break;
 	case RESULT_QUEST_REPLY_ADD_FAILED	:
 		break;
 	case RESULT_QUEST_REPLY_DEL_SUCCESS	:
 		/// Remove Quest
-		if ( !g_pAVATAR->Quest_Delete(	m_pRecvPacket->m_gsv_QUEST_REPLY.m_btQuestSLOT,
-			m_pRecvPacket->m_gsv_QUEST_REPLY.m_iQuestID ) ) 
+		if ( !g_pAVATAR->Quest_Delete(	m_pRecvPacket->m_gsv_QUEST_REPLY.m_btQuestSLOT,	m_pRecvPacket->m_gsv_QUEST_REPLY.m_iQuestID ) ) 
 		{
 			/// What the hell is this?? Remove the server eseon happened ...
+			ClientLog( LOG_NORMAL, "!!!Remove Quest!!! Didn't get deleted" );
 			break;
 		}
-
-#ifndef	__SERVER
 		//--------------------------------------------------------------------------------
-		LOGOUT( "!!!Remove Quest!!!" );
+		ClientLog( LOG_NORMAL, "!!!Remove Quest!!!" );
 		//--------------------------------------------------------------------------------
-#endif
-
 		break;
 	case RESULT_QUEST_REPLY_DEL_FAILED	:
 		break;
@@ -3610,7 +3604,7 @@ void CRecvPACKET::Recv_gsv_QUEST_REPLY ()
 
 #ifndef	__SERVER
 		//--------------------------------------------------------------------------------
-		LOGOUT( "!!!Rewarded run!!!" );
+		ClientLog( LOG_NORMAL, "!!!Rewarded run!!!" );
 		//--------------------------------------------------------------------------------
 #endif
 
@@ -3620,7 +3614,7 @@ void CRecvPACKET::Recv_gsv_QUEST_REPLY ()
 	case RESULT_QUEST_REPLY_TRIGGER_FAILED	:
 #ifndef	__SERVER
 		//--------------------------------------------------------------------------------
-		LOGOUT( "!!!Trigger failure!!!" );
+		ClientLog( LOG_NORMAL, "!!!Trigger failure!!!" );
 		//--------------------------------------------------------------------------------
 #endif		
 		break;
@@ -4228,7 +4222,8 @@ void CRecvPACKET::Recv_gsv_SERVER_DATA()
 						int			m_iNextCheckTIME;
 						t_HASHKEY	m_HashNextTrigger;
 						int			m_iPassTIME;
-						union {
+						union 
+						{
 							short	m_nEventSTATUS;
 							short	m_nAI_VAR[ MAX_OBJ_VAR_CNT ];
 						} ;
@@ -4879,8 +4874,8 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 	{
 	case	CRAFT_GEMMING_SUCCESS:		//	0x01
 		{
-
-
+			//PY: Fix gemming later
+			/*
 			g_pAVATAR->SetWaitUpdateInventory( true );
 			for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT; i++ )
 			{
@@ -4902,6 +4897,7 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 
 
 			g_itMGR.AppendChatMsg( STR_GEMMING_SUCCESS, IT_MGR::CHAT_TYPE_SYSTEM );					
+			*/
 		}
 		break;
 	case	CRAFT_GEMMING_NEED_SOCKET:	//	0x02	// No sockets.
@@ -4914,6 +4910,8 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 
 	case	CRAFT_BREAKUP_SUCCESS_GEM:	//	0x04	// Jewelry separate success
 		{
+			//PY: fix later
+			/*
 			if( g_pAVATAR )
 			{
 				g_pAVATAR->SetWaitUpdateInventory( true );
@@ -4942,11 +4940,14 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 
 				SE_SuccessSeparate( g_pAVATAR->Get_INDEX() );
 			}
+			*/
 
 			break;
 		}
 	case	CRAFT_BREAKUP_DEGRADE_GEM:	//	0x05	// Jewelry separate success, jewelery rating downgrade
 		{
+			//PY: fix later
+			/*
 			if( g_pAVATAR )
 			{
 				g_pAVATAR->SetWaitUpdateInventory( true );
@@ -4974,10 +4975,13 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 				SE_SuccessSeparate( g_pAVATAR->Get_INDEX() );
 				g_itMGR.OpenMsgBox(STR_CRAFT_BREAKUP_DEGRADE_GEM);
 			}
+			*/
 			break;
 		}
 	case	CRAFT_BREAKUP_CLEARED_GEM:	//	0x06	// Jewelry separate successful, jewelry deleted
 		{
+			//PY: Fix later
+			/*
 			if( g_pAVATAR )
 			{
 				g_pAVATAR->SetWaitUpdateInventory( true );
@@ -5006,6 +5010,7 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 				g_itMGR.OpenMsgBox(STR_CRAFT_BREAKUP_CLEARED_GEM);
 				SE_SuccessSeparate( g_pAVATAR->Get_INDEX() );
 			}
+			*/
 			break;
 		}
 
@@ -5014,6 +5019,7 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 #ifdef _NEWBREAK
 			if( g_pAVATAR )
 			{
+				ClientLog (LOG_NORMAL, "Breaking the item. Giving %i items ", m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT );
 
 				CSeparate& Separate = CSeparate::GetInstance();
 
@@ -5037,9 +5043,37 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 				// Note m_sInvITEM last m_btInvIDX trying to disassembly the actual index of the item that contains a clamped.
 				//		m_sInvITEM last m_ITEM be zero filled. attention.
 				for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT; i++ )
-					Separate.AddResultItemSet( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ] );
-
+				{
+					
+					tag_SET_INVITEM tmpItem;
+					tmpItem.m_btInvIDX = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[i].py_Slot;
+					short ThisType = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].py_ItemType;
+					short ThisNo = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].py_ItemNum;
+					byte ItemCnt = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM [i ].py_ItemCnt;
+					ClientLog (LOG_NORMAL, "Item %i: type: %i: number:  %i: Slot: %i: Count: %i", i + 1, ThisType, ThisNo, tmpItem.m_btInvIDX, ItemCnt );
+					if(ThisType >= ITEM_TYPE_USE && ThisType < ITEM_TYPE_RIDE_PART)	//It's stackable Type 10, 11, 12, 13.  
+					{
+						tmpItem.m_ITEM.SetItemNo(ThisNo);
+						tmpItem.m_ITEM.SetType1(ThisType);
+						tmpItem.m_ITEM.SetQuantity1(ItemCnt);
+					}
+					else	//It's an equip
+					{
+						tmpItem.m_ITEM.SetItemNo(ThisNo);
+						tmpItem.m_ITEM.SetType(ThisType);
+						ItemCnt = 1;
+					}
+					//Maybe we need to send it this function a number of times equal to the item count
+					//for( int j=0; j< ItemCnt; j++)
+					//{
+						//ClientLog (LOG_NORMAL, "Sending item %i of %i",j,ItemCnt);
+						Separate.AddResultItemSet( tmpItem );
+					//}
+					//Separate.AddResultItemSet( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ] );
+				}
+				ClientLog (LOG_NORMAL, "Finished adding the items");
 				Separate.SetResult(m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btRESULT );
+				ClientLog (LOG_NORMAL, "Finished SetResult");
 
 			}
 			break;
@@ -5111,6 +5145,8 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 		break;
 	case	CRAFT_UPGRADE_SUCCESS:		//	0x10	// Jaeryeon success
 		{
+			//PY: fix later
+			/*
 			if( g_pAVATAR )
 			{
 				CUpgrade& Upgrade = CUpgrade::GetInstance();
@@ -5134,10 +5170,13 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 					break;
 				}
 			}
+			*/
 			break;
 		}
 	case	CRAFT_UPGRADE_FAILED:		//	0x11	// Failure jaeryeon
 		{
+			//PY: fix later
+			/*
 			if( g_pAVATAR )
 			{
 				CUpgrade& Upgrade = CUpgrade::GetInstance();
@@ -5165,8 +5204,10 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 					break;
 				}
 			}
+			*/
+			break;
 		}
-		break;
+		break;		//PY: why is this break here and not above where i added one?
 	case	CRAFT_UPGRADE_INVALID_MAT:	//	0x12	// Material items are wrong.
 		{
 			CUpgrade::GetInstance().SetResult( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btRESULT  );
@@ -5175,6 +5216,8 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 	
 	case	CRAFT_GIFTBOX_SUCCESS:		// 0x13		// Gift box disassembly
 		{
+			//PY: fix later
+			/*
 			if( g_pAVATAR )
 			{
 				tagITEM		ItemData;
@@ -5216,10 +5259,13 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 				g_itMGR.OpenMsgBox2(MsgBoxData);
 				SE_SuccessGiftBox( g_pAVATAR->Get_INDEX() );
 			}
+			*/
 			break;
 		}
 	case  CRAFT_DRILL_SOCKET_SUCCESS	:    //Socket create success
 		{
+			//fix later
+			/*
 			g_pAVATAR->SetWaitUpdateInventory( true );
 			for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT; i++ )
 			{
@@ -5230,11 +5276,13 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 			g_pAVATAR->UpdateInventory();
 			CGame::GetInstance().EndMakeSocket(); 
 			g_itMGR.OpenMsgBox( STR_MAKESOCKET_SUCCESS );
+			*/
 		}
 		SE_SuccessUpgrade( g_pAVATAR->Get_INDEX() );
 		break;
 	case  CRAFT_DRILL_CLEAR_USEITME      :    // Only items, we disappeared.
 		{
+			/*
 			g_pAVATAR->SetWaitUpdateInventory( true );
 			for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT; i++ )
 			{
@@ -5245,6 +5293,7 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 			g_pAVATAR->UpdateInventory();
 			CGame::GetInstance().EndMakeSocket();
 			g_itMGR.OpenMsgBox( STR_MAKESOCKET_FAILED );
+			*/
 		}
 		SE_FailUpgrade( g_pAVATAR->Get_INDEX() );
 		break;
@@ -5536,14 +5585,16 @@ void CRecvPACKET::Recv_gsv_CHAR_HPMP_INFO()
 #ifdef _NoRecover
 	if( g_pAVATAR )
 	{
+		int NewHP = m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_CurHP;
+		int NewMaxHP = m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_MaxHP;
 		if(m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_CurHP > 0)
 		{
 			if(m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_CurHP >= g_pAVATAR->Get_MaxHP())
 				g_pAVATAR->Set_HP(g_pAVATAR->Get_MaxHP());
 			else 
 			{
-				g_pAVATAR->SetReviseHP( m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_CurHP - g_pAVATAR->Get_HP());
-				//g_pAVATAR->Set_HP(m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_CurHP);		//PY modification
+				//g_pAVATAR->SetReviseHP( m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_CurHP - g_pAVATAR->Get_HP());
+				g_pAVATAR->Set_HP(m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_CurHP);		//PY modification
 			}
 		}
 		if(m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_CurMP > 0)
@@ -5552,22 +5603,45 @@ void CRecvPACKET::Recv_gsv_CHAR_HPMP_INFO()
 				g_pAVATAR->Set_MP(g_pAVATAR->Get_MaxMP());
 			else 
 			{
-				g_pAVATAR->SetReviseMP( m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_CurMP - g_pAVATAR->Get_MP());
-				//g_pAVATAR->Set_MP( m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_CurMP);	//PY modification. Just set the MP to the value in the packet and be done with it. leave recovery rates to the server
+				//g_pAVATAR->SetReviseMP( m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_CurMP - g_pAVATAR->Get_MP());
+				g_pAVATAR->Set_MP( m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_CurMP);	//PY modification. Just set the MP to the value in the packet and be done with it. leave recovery rates to the server
 			}
 		}
 		//PY: adding MaxHP and MaxMP to see if it reads them from the packet
 		if(m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_MaxHP > 0)
 		{
+			g_pAVATAR->m_Battle.m_nMaxHP = m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_MaxHP;				//PY: trying a new approache here. Yup that did it
 			g_pAVATAR->Set_MaxHP(m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_MaxHP);
 		}
 		if(m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_MaxMP > 0)
 		{
-			g_pAVATAR->Set_MaxMP(m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_MaxHP);
+			g_pAVATAR->m_Battle.m_nMaxMP = m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_MaxMP;
+			g_pAVATAR->Set_MaxMP(m_pRecvPacket->m_gsv_CHAR_HPMP_INFO.m_MaxMP);
 		}
+		//ClientLog(LOG_DEBUG,"RecvPACKET 0x07ec. HP: %i, MaxHP %i",NewHP, NewMaxHP);
 	}
 #endif
 }
+
+//PY: Adding a new packet structure to receive stat information beyond HP and MP	0x07ed
+void CRecvPACKET::Recv_gsv_CHAR_STAT_INFO()
+{
+	if( g_pAVATAR )
+	{
+		g_pAVATAR->m_Battle.m_nATT = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurAP;
+		g_pAVATAR->m_Battle.m_nDEF = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurDef;
+		g_pAVATAR->m_Battle.m_nHIT = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurAccuracy;
+		g_pAVATAR->m_Battle.m_nAVOID = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurDodge;
+		g_pAVATAR->m_Battle.m_nRES = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurMDef;
+		g_pAVATAR->m_Battle.m_iCritical = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurCrit;
+		g_pAVATAR->m_Battle.m_nMaxWEIGHT = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurMaxWeight;
+
+		//To Do Add move speed modification here
+		//Possibly add things such as attack speed also. not sure if it's needed yet
+	}
+}
+
+
 //----------------------------------------------------------------------------------------------------	
 ///
 /// @brief Do_DeadEvent Was called in to handle the request from the server change.
@@ -5575,7 +5649,8 @@ void CRecvPACKET::Recv_gsv_CHAR_HPMP_INFO()
 //----------------------------------------------------------------------------------------------------	
 void CRecvPACKET::Recv_gsv_CHECK_NPC_EVENT()
 {	
-	LOGOUT( " A tree standing from the server by running the command[ %s ] ", NPC_DESC( m_pRecvPacket->m_gsv_CHECK_NPC_EVENT.m_nNpcIDX ) );
+	//LOGOUT( " A tree standing from the server by running the command[ %s ] ", NPC_DESC( m_pRecvPacket->m_gsv_CHECK_NPC_EVENT.m_nNpcIDX ) );
+	ClientLog( LOG_NORMAL, "Recieved a quest trigger command %s \n", NPC_DESC( m_pRecvPacket->m_gsv_CHECK_NPC_EVENT.m_nNpcIDX ));
 	QF_doQuestTrigger( NPC_DESC( m_pRecvPacket->m_gsv_CHECK_NPC_EVENT.m_nNpcIDX ) );
 }
 

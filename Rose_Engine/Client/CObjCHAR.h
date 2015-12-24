@@ -920,72 +920,72 @@ public:
 //------------------------------------------------------------------------------------	
 	//Bakjiho
 	//Variables cart ...
-	CObjCART*			m_pObjCART;					//카트 클래서 
-	CObjCHAR*			m_pRideUser;				//2인승 플레이어 
+	CObjCART*			m_pObjCART;					//Cart keulraeseo 
+	CObjCHAR*			m_pRideUser;				//2 seater player 
 
-	int					m_iPetType;					//펫 타입 ( 21: 카트 ) 
-	short				m_skCartIDX;				//카트 스킬 이펙트 (현재 사용무)
-	WORD				m_iRideIDX;					//2인승 유저 인덱스 
+	int					m_iPetType;					//Pet type (21: cart) 
+	short				m_skCartIDX;				//Cart skill effects (currently in use)
+	WORD				m_iRideIDX;					//2 seater user index 
 	
-	float				m_saveSpeed;				//스피트 저장 변수 
+	float				m_saveSpeed;				//Spit stored variables 
 
-	BOOL				m_bUseCartSkill;			//카트 스킬 사용 유무 ( 현재 사용하지 않음)	
-	BOOL				m_IsRideUser;				//2인승 탑승유무 
+	BOOL				m_bUseCartSkill;			//Cart skill use (not currently used)	
+	BOOL				m_IsRideUser;				//2 seater Hvis boarding 
 
-	//아로아 여신상태 
-	BOOL				m_IsAroa;					//아로아 설정 유무 
-	BOOL				m_IsCartVA;					//카트 바이브레이션 (흔들기)
+	//Oh Loa goddess status 
+	BOOL				m_IsAroa;					//Oh Loa Hvis set 
+	BOOL				m_IsCartVA;					//Cart vibe ration (shake)
 
-	//아로아 및 카트 스킬 이펙트를 설정한다. 
+	//Oh Oh, and cart with skill effects. 
 	void ChangeHittedEffect(CObjCHAR* pObj,BOOL bA,int& hitIDX);
-	//카트 스킬 사용후의 행동을 설정한다. 
+	//After using the skill set the behavior of the cart. 
 	void SetNewCommandAfterSkill_PET(int iSkillNO);
-	//카트를 정지 시킨다. 
+	//The cart stops. 
 	void Stop_Cart(void);
-	//탑승 거부 모션을 설정한다. 
+	//Denied boarding, setting in motion. 
 	void Ride_Cansel_Motion(void);
 	
-	//2인승 자체를 해제한다. 
+	//2 seater itself. 
 	void ReleaseRideUser(void);
-	//손님  스스로 카트에서 하차한다. 
+	//The guests themselves off the cart. 
 	void ReleaseRideUser(WORD irideIDX);
-	//카트 스킬 이후 아바타를 항상 앉힌다. 
+	//Cart since avatar is always a skill. 
 	void Set_SitMode(void);		
 
-	//카트 스킬을 처리한다. 
+	//Cart skill. 
 	int  ProcCMD_Skill2OBJECT_PET();
 	
-	//2인승을 설정한다. 
+	//2-seater. 
 	BOOL SetRideUser(WORD irideIDX=0);
 
-	//카트 스킬 인덱스를 가져온다. 
+	//Cart skill index. 
 	short&		GetCartSKIDX(void)	
 	{	return	m_skCartIDX;							}
 	
-	//사용 하지 않음 
+	//Do not use the 
 	BOOL&		GetUseCartSkill(void)	
 	{	return	m_bUseCartSkill;						}
 
-	//내가 상대의 카트에 탑승 했는지 체크(TRUE: 탑승, FALSE: 아님)
+	//I did check your opponent's Board to cart (TRUE: boarding, FALSE:)
 	BOOL&		IsRideUser(void)
 	{	return m_IsRideUser;							}
 
-	//나의 카트에 상대방을 탑승 시켰는지 체크(0: 아님, 숫자: 탑승 시킴)
+	//I have checked upon boarding the other side of the cart (0:, number: boarding)
 	WORD		GetRideUserIndex(void)
 	{	return m_iRideIDX;								}
 
-	//아로아 여신 상태설정 함수 
+	//Oh goddess as set state function 
 	BOOL&			SetAroaState(void)
 	{	return m_IsAroa;								}
-	//카트 바이브레이션 사용유무 (현재 사용 하지 않음)
+	//Cart migration using a vibe (not currently used)
 	BOOL&			SetCartVA(void)
 	{	return m_IsCartVA;								}
-	//현재 스피드를 저장함 (현재 사용 하지 않음)  
+	//Save current speed (not currently used)  
 	float& SaveSpeed(void)
 	{	return m_saveSpeed;								}
 //------------------------------------------------------------------------------------
 
-	/// 최종진 : 아루아 여신 상태일경우의 추가 능력치 계산 함수
+	/// If the final is the addition of the goddess Arua: stats calculation function
 	virtual		void Calc_AruaAddAbility();
 } ;
 
@@ -1038,12 +1038,12 @@ public :
 	/*override*/virtual int			Get_HIT ()							{	return NPC_HIT	( m_nCharIdx );				}	
 	/*override*/virtual int			Get_CHARM ()						{	return 0;		}
 	/*override*/virtual int			Get_AVOID ()						{	return NPC_AVOID( m_nCharIdx );				}
-	/*override*/virtual int			Get_SENSE ()						{	return Get_LEVEL();							}	// LEVEL로 대체 !
+	/*override*/virtual int			Get_SENSE ()						{	return Get_LEVEL();							}	// Replaced with LEVEL!
 	/*override*/virtual int			Get_GiveEXP ()						{	return NPC_GIVE_EXP( m_nCharIdx );			}
 	/*override*/virtual void		Add_EXP (short nExp)				{	;	/* nop */	}
 	/*override*/virtual int			Get_CRITICAL()						{	return (int)(this->Get_LEVEL() * 0.8 );		}
 	
-	virtual int						Get_AbilityValue_StatItemPas( WORD nType );//기본스텟+아이템+패시브
+	virtual int						Get_AbilityValue_StatItemPas( WORD nType );//Base stats + items + passive
 	/// <
 	/// < End
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -1065,8 +1065,8 @@ public :
 		return  MOB_ANI_DIE;				
 	}
 	/*override*/int				GetANI_Hit()						{	return MOB_ANI_HIT;		}
-	/*override*/int				GetANI_Casting()					{   return m_iMobAniSkill;	}		/// 캐스팅동작
-	/*override*/int				GetANI_CastingRepeat()				{   return m_iMobAniSkill;	}		/// 루프동작은 캐스팅동작으로 사용..
+	/*override*/int				GetANI_Casting()					{   return m_iMobAniSkill;	}		/// Casting operation
+	/*override*/int				GetANI_CastingRepeat()				{   return m_iMobAniSkill;	}		/// The behavior of the loop used by the behavior of the cast ...
 	/*override*/int				GetANI_Skill()						{	return m_iMobAniSkill + 1;	}
 
 	/*override*/int				Get_MP ()							{	return 32767;			}
@@ -1123,10 +1123,10 @@ public :
 	/*override*/ short			GetOri_ATKSPEED ()					{	return NPC_ATK_SPEED( m_nCharIdx );			}
 
 
-	/// 지속형의 변경수치 적용을 위해서 현재 적용되어있는 능력수치( 패시브 스킬 포함 )
+	/// In order to apply a durable change of the figures currently in effect is the ability to figure (passive skill)
 	virtual int					Get_DefaultAbilityValue( int iType );
 
-	/// NPC의 경우 STB에 강제로 높이가 들어가 있으면 그 높이를 사용한다.
+	/// In the case of NPC go that height is the height of force in the STB.
 	virtual void				GetScreenPOS ( D3DVECTOR &PosSCR);
 
 	/// <
@@ -1141,7 +1141,7 @@ public :
 
 
 	//------------------------------------------------------------------------------------------------
-	/// 몬스터 정지시 사운드 출력..
+	/// Monster enables sound output ...
 	//------------------------------------------------------------------------------------------------
 	void	PlayStopSound();
 
@@ -1181,9 +1181,9 @@ public :
 
 
 	//-------------------------------------------------------------------------------------------------
-	// 05.05.19 icarus:: 와우 스타일의 NPC 퀘스트 노출 작업...
+	// 05.05.19 icarus:: Wow-style NPC quest exposure ...
 public :
-	// 서버에서 npc 추가 패킷을 받고 생성시 기본값 -1, 
+	// Add the packet to the default value when creating a server under the npc-1, 
 	short			m_nQuestSignal;
 //	int				Proc (void);
 
@@ -1201,7 +1201,7 @@ class CObjAVT : public CObjCHAR
 protected:
 	CCharMODEL		m_CharMODEL;
 
-	/// 캐릭터 표정
+	/// Character expression
 	int				m_iExpression;
 
 	/// 캐릭터 파츠
@@ -1209,7 +1209,7 @@ protected:
 		tagPartITEM	m_sPartItemIDX[ MAX_BODY_PART ];
 		// short	m_nPartItemIDX[ MAX_BODY_PART ];
 		struct {
-			// 순서는 t_CharPART에 따라서...
+			// Depending on the order of t_CharPART ...
 			tagPartITEM m_sFaceIDX;			//short m_nFaceIDX;
 			tagPartITEM m_sHairIDX;			//short m_nHairIDX;
 			tagPartITEM m_sHelmetIDX;		//short m_nHelmetIDX;
@@ -1239,21 +1239,21 @@ protected:
 	short					m_nAtkAniSPEED;
 
 
-	/// 교환할 무기가 세팅되면.. 모션이 끝난후에 바꾼다..
+	/// If the weapon is interchangeable settings. .. The motion is changing after ...
 	int						m_iDoChangeWeaponR;
 	int						m_iDoChangeWeaponL;
 	bool					m_bUpdateMotion;	
 
-	/// 현재 사용중인 총알 데이터..
+	/// The bullet data that is currently in use ...
 	tagShotDATA				m_ShotData[MAX_SHOT_TYPE];
 	int						m_iCon;
 	int						m_iRecoverHP;
 	int						m_iRecoverMP;
 
-	///아이템 소지 무게비율: 
+	///Possession of the item weight ratio: 
 	BYTE					m_btWeightRate;
 
-	/// 스테미나			
+	/// In Mina			
 	short					m_nStamina;
 
 	
@@ -1272,24 +1272,24 @@ public:
 
 public :
 	
-	/// 캐릭터 표정
+	/// Character expression
 	void					SetCharExpression( int iFaceNo ){ m_iExpression = iFaceNo; }
 	int						GetCharExpression(){ return m_iExpression; }
 
-	/// 교환할 무기가 세팅되면.. 모션이 끝난후에 바꾼다..
+	/// If the weapon is interchangeable settings. .. The motion is changing after ...
 	void					SetChangeWeaponR( int iWeaponNO ){ m_iDoChangeWeaponR = iWeaponNO;}
 	void					SetChangeWeaponL( int iWeaponNO ){ m_iDoChangeWeaponL = iWeaponNO;}
 	int						GetChangeWeaponR( ){ return m_iDoChangeWeaponR;}
 	int						GetChangeWeaponL( ){ return m_iDoChangeWeaponL;}
 
 
-	/// 장비 교체시 장비에 걸려있던 속성 해제..
+	/// Equipment replacement equipment hanging on the property off. ..
 	void					ClearRWeaponSkillEffect();
 	void					ClearLWeaponSkillEffect();
 
 
 	///
-	/// 루프를 돌리는 상태의 경우라도 이 플래그의 상태에따라 모션 리셋( STOP, MOVE... )
+	/// Turn the loop depending on the status of this flag, even if the State of motion reset (STOP, MOVE ...)
 	///
 	void						SetUpdateMotionFlag( bool bUpdate ){ m_bUpdateMotion = bUpdate; }
 	bool						GetUpdateMotionFlag(){ return m_bUpdateMotion; } 
@@ -1303,7 +1303,7 @@ public :
 	/// > virtual function of CObjAVT
 	/// >
 
-	virtual void				Update_SPEED ()			
+	virtual void				Update_SPEED ()			//PY: I think this is just for animation purposes
 	{	
 		m_nAtkAniSPEED = Cal_AtkAniSPEED( this->GetPartITEM(BODY_PART_WEAPON_R) );
 		m_fRunAniSPEED = Cal_RunAniSPEED( m_nRunSPEED );
@@ -1368,9 +1368,9 @@ public :
 	/// < Inherited from CObjAI virtual functions
 	/// <
 
-	/*override*/virtual int		Get_CON()				{	return m_iCon;	}	// 유저일 경우 return pAVATAR->GetCur_CON();
-	/*override*/virtual int		GetAdd_RecoverHP()		{	return m_iRecoverHP;	}	// 유저일 경우 return pAVATAR->m_btRecoverHP;
-	/*override*/virtual int		GetAdd_RecoverMP()		{	return m_iRecoverMP;	}	// 유저일 경우 return pAVATAR->m_btRecoverHP;
+	/*override*/virtual int		Get_CON()				{	return m_iCon;	}	// If you are a user, return pAVATAR->GetCur_CON();
+	/*override*/virtual int		GetAdd_RecoverHP()		{	return m_iRecoverHP;	}	// If you are a user, return pAVATAR->m_btRecoverHP;
+	/*override*/virtual int		GetAdd_RecoverMP()		{	return m_iRecoverMP;	}	// If you are a user, return pAVATAR->m_btRecoverHP;
 
 	/*override*/virtual short	GetPsv_ATKSPEED(float fCurSpeed, short nRightWeaponItemNo)		{	return m_nPsvAtkSPEED;				}
 	/*override*/int				Def_AttackRange()		{	return WEAPON_ATTACK_RANGE( 0 );							}
@@ -1398,14 +1398,16 @@ public :
 
 	/*override*/int				Get_MaxHP()
 	{
-		return m_iMaxHP + m_EndurancePack.GetStateValue( ING_INC_MAX_HP ); 
+		//return m_iMaxHP + m_EndurancePack.GetStateValue( ING_INC_MAX_HP );	//PY: let's remove the added stuff from this so that only the value sent from the server matters
+		return m_iMaxHP;
 	}		
 	/*override*/int				Get_MaxMP()				
 	{
-		return m_iMaxMP + m_EndurancePack.GetStateValue( ING_INC_MAX_MP ); 
+		//return m_iMaxMP + m_EndurancePack.GetStateValue( ING_INC_MAX_MP );	//PY: let's remove the added stuff from this so that only the value sent from the server matters
+		return m_iMaxMP;
 	}
 
-	virtual int					Get_AbilityValue_StatItemPas( WORD nType );//기본스텟+아이템+패시브
+	virtual int					Get_AbilityValue_StatItemPas( WORD nType );//Base stats + items + passive
 
 	/*override*/bool			ToggleRunMODE ( float fAdjRate );
 	/*override*/bool			ToggleSitMODE ();
@@ -1459,16 +1461,16 @@ public:
 	/*override*/ virtual int	Get_BulletNO ();
 
 	
-	/// 지속형의 변경수치 적용을 위해서 현재 적용되어있는 능력수치( 패시브 스킬 포함 )
+	/// In order to apply a durable change of the figures currently in effect is the ability to figure (passive skill)
 	/*override*/ virtual int	Get_DefaultAbilityValue( int iType );
 
 	///
-	/// 내가 누군가에게 링크가 되었는가?
+	/// I have a link to someone?
 	///
 	/*override*/ virtual bool	IsChild(){ return ( ( m_pObjCART == NULL )? false:true ); }
 
 	//----------------------------------------------------------------------------------------------------
-	/// CObjCHAR 이 하는일말고 추가적으로 좀 할일이 있다.
+	/// CObjCHAR Do some additional work to do.
 	//----------------------------------------------------------------------------------------------------
 	/*override*/int							Proc ();
 		
@@ -1486,9 +1488,10 @@ public:
 	void						SetPsv_AtkSPEED(short nPsvAtkSpeed)	{	m_nPsvAtkSPEED = nPsvAtkSpeed;	}
 	
 	
-	/// 최대 생명력	
+	/// Max vitality	
 	void						Set_MaxHP( int iMaxHP )			{ m_iMaxHP = iMaxHP; }
-
+	//added by PY
+	void						Set_MaxMP( int iMaxMP )			{ m_iMaxMP = iMaxMP; }
 	
 	
 
@@ -1516,7 +1519,7 @@ public:
 
 
 	//----------------------------------------------------------------------------------------------------		
-	/// @brief 재밍, 재련관련 이펙트..
+	/// @brief Ash, ash Lotus related effects. ..
 	//----------------------------------------------------------------------------------------------------
 	void						CreateGemmingEffect();
 	void						DeleteGemmingEffect();
@@ -1524,9 +1527,9 @@ public:
 
 //--------------------------------------------------------------------------------------------------------
 	//2005. 06.15 박 지호 
-	//레어 아이템일 경우 3단계 glow 효과를 설정한다. 
+	//In the case of rare items, step 3 glow effect. 
 	void						Set_RareITEM_Glow(void);
-	//운전가 존워프 할때 카트를 삭제한다.  
+	//When cart John warp drive.  
 	void						Process_JOIN_RIDEUSER(void);
 //--------------------------------------------------------------------------------------------------------
 
@@ -1537,9 +1540,9 @@ public:
 
 
 	//----------------------------------------------------------------------------------------------------	
-	/// 현재 좌표(m_PosCUR.x, m_PosCUR.y)의 높이를 리턴
-	/// @pReachable 도달 가능한 위치인지의 여부. 이전 프레임의 위치로부터 도달가능하지 않다면, false 값이 세팅됨.
-	/// @return 높이값. 도달 불가능한 위치라면, 가장 높은 오브젝트의 위치를 리턴.
+	/// The current coordinate (m_PosCUR.x, m_PosCUR.y) returns the height of the
+	/// @PReachable location is reached. It is possible to reach from the location of the previous frame, false if the value is set.
+	/// @Return height value. It is impossible to reach the position, the highest returns the position of the object.
 	//----------------------------------------------------------------------------------------------------
 	float						GetHeight (bool * pReachable = NULL);
 
@@ -1547,7 +1550,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////////////////////
 	///
-	/// 개인상점 관련 데이터
+	/// Private shop-related data
 	///
 	//////////////////////////////////////////////////////////////////////////////////////////
 private:
@@ -1565,21 +1568,21 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////////////////////
 	///
-	/// 팻 시스템 관련 데이터..
+	/// Pat system-related data. ..
 	///
 	//////////////////////////////////////////////////////////////////////////////////////////
 
 public:
 
 	friend CObjCART;
-	/// 팻 파츠..
-	/// 물론.. CObjPET 내부에 이 데이터들은 존재한다.. 여기서일단 편의를 위해 관리해준다.
+	/// Pat saitogurimusu. ..
+	/// Of course.. CObjPET exists for this data are inside a. .. This is a convenience for management once.
 
 
 
-//박지호::카트파츠 수정 
-//구버전에서는 4단계의 카트 파티션 설정, 카트 스킬 버전에서는 5단계로 설정 
-//m_nWeaponIDX의 거리로 공격 유,무 처리 
+//Park Ji-Ho:: saitogurimusu modify cart 
+//It's an older version, a four-step version of the partition settings, your cart cart set up to step 5 of the skill 
+//The attack in the streets of m_nWeaponIDX, non-treatment 
 #if defined(_GBC)
 	union 
 	{
@@ -1587,7 +1590,7 @@ public:
 		tagPartITEM		m_sPetPartItemIDX[ MAX_RIDING_PART ];
 		struct 
 		{
-			// 순서는 t_CharPART에 따라서...
+			// The order is t_CharPART에 따라서...
 			tagPartITEM	m_sEngineIDX;	// short			m_nEngineIDX;
 			tagPartITEM	m_sBodyIDX;		// short			m_nBodyIDX;
 			tagPartITEM	m_sLegIDX;		// short			m_nLegIDX;
@@ -1602,7 +1605,7 @@ public:
 		tagPartITEM		m_sPetPartItemIDX[ MAX_RIDING_PART ];
 		struct 
 		{
-			// 순서는 t_CharPART에 따라서...
+			// Depending on the order of t_CharPART ...
 			tagPartITEM	m_sEngineIDX;	// short			m_nEngineIDX;
 			tagPartITEM	m_sBodyIDX;		// short			m_nBodyIDX;
 			tagPartITEM	m_sLegIDX;		// short			m_nLegIDX;
@@ -1636,14 +1639,14 @@ public:
 	//////////////////////////////////////////////////////////////////////////////////////////
 
 	//----------------------------------------------------------------------------------------------------	
-	/// @brief 팻모드 상태일때는 팻의 좌표를 리턴하고, 일반적일때는 내 좌표를 리턴함
+	/// @brief When Pat returns the coordinates of the Pat mode, you typically return my coordinates
 	//----------------------------------------------------------------------------------------------------
 	const D3DVECTOR&		GetWorldPos();
 
 
 
 	//----------------------------------------------------------------------------------------------------	
-	/// @brief 모델에 등록된 renderUnit외의것들에 대한 충돌판정.. (아바타일경우만)
+	/// @brief Besides the renderUnit of registered in the model for judging conflicts. .. (Avatar, the only)
 	//----------------------------------------------------------------------------------------------------
 	bool					IsIntersectAccessory( float &fCurDistance );
 
@@ -1653,7 +1656,7 @@ public:
 
 
 	//--------------------------------------------------------------------------------------
-	/// 아바타의 스페셜한 상태
+	/// Avatar's special status
 	//--------------------------------------------------------------------------------------
 private:
 	DWORD					m_dwSubFLAG;
@@ -1663,7 +1666,7 @@ public:
 	void					ChangeSpecialState( DWORD dwSubFLAG );
 
 	//----------------------------------------------------------------------------------------------------
-	/// @brief 클릭할수 있는 객체인가?
+	/// @brief You can click an object?
 	//----------------------------------------------------------------------------------------------------
 	virtual bool			CanClickable();
 	
@@ -1676,14 +1679,14 @@ public:
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////	
-// 2005. 6. 20	박 지호 
+// 2005. 6. 20	Park Ji-Ho 
 //
-// 여신소환 연출 클래스 
+// Goddess summoning and directing class 
 ///////////////////////////////////////////////////////////////////////////////////////////	
 
 using namespace std;
 
-//아루아 단계별 비쥬얼 상수들 
+//Arua step-by-step Visual constants 
 typedef enum 
 {	
 	GOD_NONE=0,GOD_APPEAR_PARTCLE, GOD_APPEAR_GODDESS, 
@@ -1696,29 +1699,29 @@ typedef enum
 typedef struct _tagGODDESSSTR 
 {
 
-	BOOL		bEnable;		//GOD SetUp 상태 
-	GOD_STATE	god_State;	 	//GOD 행동상태
+	BOOL		bEnable;		//GOD SetUp Status 
+	GOD_STATE	god_State;	 	//GOD Action status
 								
 	HNODE		hGoddess;
 	HNODE		hSprite;
 
-	WORD		idxMaster;		//연결될 캐릭터 오브젝트 
-	DWORD		sTick,eTick;	//출력에 관한 틱
-	D3DXVECTOR3	cpos;			//출력될 위치 
+	WORD		idxMaster;		//The character that will be associated with the object 
+	DWORD		sTick,eTick;	//A tick on the output
+	D3DXVECTOR3	cpos;			//Output location 
 
-	CObjMOB		*pGODModel;		//여신 및 요정 오븝젝트
+	CObjMOB		*pGODModel;		//Goddess &amp; fairy o beub project
 	CObjMOB		*pSprModel;
 	
 	CEffect*	pEffect[2];
 	HNODE		hParticle[2];
 
-	float		frame;			//프레임
+	float		frame;			//Frame
 
-	float		fviewGODD;		//비지블	
+	float		fviewGODD;		//Business blog	
 	float		fviewSpr;		
 	
 	
-	//구조체 초기화 
+	//Struct initialization 
 	void Init(void)
 	{
 		bEnable		= FALSE;
@@ -1757,12 +1760,12 @@ typedef map<WORD,GODDESSSTR>::iterator GODLIST;
 class CGoddessMgr
 {
 
-	BOOL		m_IsUse;				//아루아 사용유무 
-	DWORD		m_Count;				//리스트 카운트 
-	map<WORD,GODDESSSTR>	m_list;		//<서버 인덱스 , 아루아 구조체>
+	BOOL		m_IsUse;				//Arua use 
+	DWORD		m_Count;				//List count 
+	map<WORD,GODDESSSTR>	m_list;		//< Server index, arua struct >
 
-	DWORD		m_dwAvata;				//아바타 자신의 On/Off
-	BOOL		m_IsAvata;				//현재 설정될 객체가 아바타 유무
+	DWORD		m_dwAvata;				//The avatar's own On/Off
+	BOOL		m_IsAvata;				//The current existence of the object is to be the avatar set
 
 public:
 	CGoddessMgr();

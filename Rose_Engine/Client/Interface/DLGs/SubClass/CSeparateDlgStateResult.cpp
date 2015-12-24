@@ -151,24 +151,29 @@ void CSeparateDlgStateResult::Update( POINT ptMouse )
 
 				if( i == CSeparate::GetInstance().GetResultCnt() - 2)///맨밑의 게이지 갱신이 끝까지 갔다
 				{
-				m_bWaitState = true;		
-				CTCmdChangeStateSeparateDlg* pCmd = new CTCmdChangeStateSeparateDlg(CSeparateDlg::STATE_NORMAL );				
-//				g_itMGR.OpenMsgBox(STR_CRAFE_BREAKUP_SUCCESS,CMsgBox::BT_OK, true, m_pParent->GetDialogType(), pCmd, NULL );
-				g_itMGR.OpenMsgBox2(CSeparate::GetInstance().GetCreateMsgBoxData());
-				m_bCheckUpdate = true;
-				this->s_Instance = this;
+					m_bWaitState = true;		
+					CTCmdChangeStateSeparateDlg* pCmd = new CTCmdChangeStateSeparateDlg(CSeparateDlg::STATE_NORMAL );				
+	//				g_itMGR.OpenMsgBox(STR_CRAFE_BREAKUP_SUCCESS,CMsgBox::BT_OK, true, m_pParent->GetDialogType(), pCmd, NULL );
+					g_itMGR.OpenMsgBox2(CSeparate::GetInstance().GetCreateMsgBoxData());
+					m_bCheckUpdate = true;
+					this->s_Instance = this;
 				
-				int itemtype;
-				int itemno;
+					int itemtype;
+					int itemno;
 
-				if( CItemFragment* pTargetItem = CSeparate::GetInstance().GetTargetItem() )
-				{
-					itemtype = pTargetItem->GetItem().GetTYPE();
-					itemno = pTargetItem->GetItem().GetItemNO();
-				}
+					if( CItemFragment* pTargetItem = CSeparate::GetInstance().GetTargetItem() )
+					{
+						itemtype = pTargetItem->GetItem().GetTYPE();
+						itemno = pTargetItem->GetItem().GetItemNO();
+					}
+					else		//this fails sometimes due to other bad code. To prevent crashes here are default values
+					{
+						itemtype = 12;
+						itemno = rand() % 100 + 1; //random 1 to 100
+					}
 
-				g_pNet->Send_cli_ITEM_RESULT_REPORT( REPORT_ITEM_CREATE_SUCCESS, itemtype, itemno );
-				break;
+					g_pNet->Send_cli_ITEM_RESULT_REPORT( REPORT_ITEM_CREATE_SUCCESS, itemtype, itemno );
+					break;
 				}
 			}	
 			continue;

@@ -42,7 +42,7 @@ public:
 //--------------------------------------------------------
 //분해한 결과를 서버에서 받은 다음에 처리에 필요한 함수들.
 	void ClearResultItemSet();
-	void AddResultItemSet( tag_SET_INVITEM& Item );
+	void AddResultItemSet( tag_SET_INVITEM Item );
 	void ApplyResultItemSet();
 	int  GetResultCnt();
 //-------------------------------------------------------

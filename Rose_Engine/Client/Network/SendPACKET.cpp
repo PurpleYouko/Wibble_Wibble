@@ -1365,24 +1365,20 @@ void CSendPACKET::Send_cli_POSITION_SKILL (D3DVECTOR &PosTO, WORD wSkillSLOT)
 //-------------------------------------------------------------------------------------------------
 void CSendPACKET::Send_cli_QUEST_REQ (BYTE btReqTYPE, BYTE btQuestSLOT, int iQuestID, char *szQuestTriggerName)
 {
-#ifdef	__VIRTUAL_SERVER
-	return;
-#else
 	m_pSendPacket->m_HEADER.m_wType = CLI_QUEST_REQ;
 	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_QUEST_REQ );
 
 	m_pSendPacket->m_cli_QUEST_REQ.m_btTYPE	= btReqTYPE;
 	m_pSendPacket->m_cli_QUEST_REQ.m_btQuestSLOT = btQuestSLOT;
 
-	if ( szQuestTriggerName ) {
+	if ( szQuestTriggerName ) 
+	{
 		m_pSendPacket->m_cli_QUEST_REQ.m_TriggerHash = StrToHashKey( szQuestTriggerName );
-	} else {
+	} 
+	else 
+	{
 		m_pSendPacket->m_cli_QUEST_REQ.m_iQuestID = iQuestID;
 	}
-
-
-	
-#endif
 
 	this->Send_PACKET( m_pSendPacket );
 }

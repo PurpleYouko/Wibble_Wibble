@@ -8,19 +8,21 @@
 #include "Network/CNetwork.h"
 #include "Util/LogWnd.h"
 
+int LOG_QUESTS_DEBUG = 0;	//set to 1 to enable debug output. 0 to disable
+
 //-------------------------------------------------------------------------------------------------
-/// 퀘스트 트리거 조건을 체크한다... AddCODE: by icarus
+/// Quest check the trigger conditions... AddCODE: by icarus
 int		QF_checkQuestCondition ( ZSTRING szQuestTriggerName )
 {
-	LogString (LOG_DEBUG, "GF_checkQuestCondition( %s ) \n", szQuestTriggerName );
-
-
-	//--------------------------------------------------------------------------------
-	LOGOUT( " " );
-	LOGOUT( "========================CONDITION BEGIN=========================" );
-	LOGOUT( "GF_checkQuestCondition( %s )", szQuestTriggerName );
-	//--------------------------------------------------------------------------------
-
+	if (LOG_QUESTS_DEBUG == 1)
+	{
+		ClientLog (LOG_NORMAL, "GF_checkQuestCondition( %s ) \n", szQuestTriggerName );
+		//--------------------------------------------------------------------------------
+		ClientLog( LOG_NORMAL, " ");
+		ClientLog( LOG_NORMAL, "========================CONDITION BEGIN=========================" );
+		ClientLog( LOG_NORMAL, "GF_checkQuestCondition( %s )", szQuestTriggerName );
+		//--------------------------------------------------------------------------------
+	}
 
 	t_HASHKEY HashKEY = ::StrToHashKey( szQuestTriggerName );
 
@@ -29,43 +31,49 @@ int		QF_checkQuestCondition ( ZSTRING szQuestTriggerName )
 
 	//--------------------------------------------------------------------------------
 	if( bResult )
-		LOGWAR( "GF_checkQuestCondition( %s ) Success", szQuestTriggerName );
+	{
+		//LOGWAR( "GF_checkQuestCondition( %s ) Success", szQuestTriggerName );
+		//ClientLog( LOG_NORMAL, "GF_checkQuestCondition( %s ) Success", szQuestTriggerName );
+	}
 	else
-		LOGWAR( "GF_checkQuestCondition( %s ) Failed", szQuestTriggerName );
+	{
+		//LOGWAR( "GF_checkQuestCondition( %s ) Failed", szQuestTriggerName );
+		//ClientLog( LOG_NORMAL, "GF_checkQuestCondition( %s ) Failed", szQuestTriggerName );
+	}
 	//--------------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------------
-	LOGOUT( "=========================CONDITION END==========================" );
-	LOGOUT( " " );
+	//ClientLog( LOG_NORMAL, "=========================CONDITION END==========================" );
+	//ClientLog( LOG_NORMAL, " " );
 	//--------------------------------------------------------------------------------
 
 	return bResult;
 }
 
 //-------------------------------------------------------------------------------------------------
-/// 퀘스트 트리거 조건이 만족할경우 서버에 퀘스트 트리거 실행을 전송... AddCODE: by icarus
+/// If the trigger condition is satisfied Server quest a quest trigger the transmission... AddCODE: by icarus
 int		QF_doQuestTrigger ( ZSTRING szQuestTriggerName )
 {
 	//--------------------------------------------------------------------------------
-	LOGOUT( " " );
-	LOGOUT( "========================TRIGGER BEGIN=========================" );
-	LOGOUT( "QF_doQuestTrigger( %s ) ", szQuestTriggerName );
+	//ClientLog( LOG_NORMAL, " " );
+	//ClientLog( LOG_NORMAL, "========================TRIGGER BEGIN=========================" );
+	//ClientLog( LOG_NORMAL, "QF_doQuestTrigger( %s ) ", szQuestTriggerName );
 	//--------------------------------------------------------------------------------
 
 	if ( QF_checkQuestCondition ( szQuestTriggerName ) <= 0 )
 	{
 		//--------------------------------------------------------------------------------
-		LOGERR( "QF_checkQuestCondition( %s ) Failed[ 클라이언트에서의 조건체크 실패 ] ", szQuestTriggerName );
+		//ClientLog( LOG_NORMAL, "QF_checkQuestCondition( %s ) Failed[ Conditions of check failure on the client ] ", szQuestTriggerName );
 		//--------------------------------------------------------------------------------
 		return 0;
 	}
 
-	LogString (LOG_DEBUG, "GF_doQuestTrigger( %d ) ", szQuestTriggerName );
+	//ClientLog( LOG_NORMAL, "GF_doQuestTrigger( %d ) ", szQuestTriggerName );
 
 	//--------------------------------------------------------------------------------
-	LOGOUT( "QF_checkQuestCondition( %s ) success[ 서버에 트리거 실행요청 ] ", szQuestTriggerName );
-	LOGOUT( "=========================TRIGGER END==========================" );
-	LOGOUT( " " );
+	//ClientLog( LOG_NORMAL, "QF_checkQuestCondition( %s ) success[ Trigger request to the server ] ", szQuestTriggerName );
+	//ClientLog( LOG_NORMAL, "=========================TRIGGER END==========================" );
+	//ClientLog( LOG_NORMAL, " " );
 	//--------------------------------------------------------------------------------
 
 	g_pNet->Send_cli_QUEST_REQ(TYPE_QUEST_REQ_DO_TRIGGER, 0, 0, (char*)szQuestTriggerName );
@@ -104,13 +112,13 @@ int		QF_findQuest ( int iQuestID )
 		if ( g_pAVATAR->m_Quests.m_QUEST[ nI ].GetID() == iQuestID )
 		{
 			//--------------------------------------------------------------------------------
-			LOGOUT( "QF_findQuest( %d ) success[ %d 퀘스트 찾을음 ]", iQuestID, nI );
+			LOGOUT( "QF_findQuest( %d ) success[ %d Find a quest well ]", iQuestID, nI );
 			//--------------------------------------------------------------------------------
 			return nI;
 		}
 
 	//--------------------------------------------------------------------------------
-	LOGERR( "QF_findQuest( %d ) Failed[ 퀘스트 찾을수 없음 ]", iQuestID );
+	LOGERR( "QF_findQuest( %d ) Failed[ Unable to find the quest ]", iQuestID );
 	//--------------------------------------------------------------------------------
 
 	return -1;
@@ -134,7 +142,7 @@ int		QF_getQuestID ( int hQUEST )
 	}
 
 	//--------------------------------------------------------------------------------
-	LOGOUT( "QF_getQuestID( %d ) success [ 퀘스트ID : %d ]", hQUEST, g_pAVATAR->m_Quests.m_QUEST[ hQUEST ].GetID() );
+	LOGOUT( "QF_getQuestID( %d ) success [ Quest ID : %d ]", hQUEST, g_pAVATAR->m_Quests.m_QUEST[ hQUEST ].GetID() );
 	//--------------------------------------------------------------------------------
 
 	return g_pAVATAR->m_Quests.m_QUEST[ hQUEST ].GetID();
@@ -156,7 +164,7 @@ int		QF_appendQuest ( int iQuestID )
 			g_pAVATAR->m_Quests.m_QUEST[ nI ].SetID( iQuestID, true );
 
 			//--------------------------------------------------------------------------------
-			LOGOUT( "QF_appendQuest( %d ) [ 서버에 요청 : %d ] ", iQuestID, nI );
+			LOGOUT( "QF_appendQuest( %d ) [ The request to the server : %d ] ", iQuestID, nI );
 			//--------------------------------------------------------------------------------
 
 			g_pNet->Send_cli_QUEST_REQ(TYPE_QUEST_REQ_ADD, (BYTE)nI, iQuestID );
@@ -184,7 +192,7 @@ void	QF_deleteQuest ( int iQuestID )
 			g_pAVATAR->m_Quests.m_QUEST[ nI ].Init ();
 
 			//--------------------------------------------------------------------------------
-			LOGOUT( "QF_deleteQuest( %d ) [ 서버에 요청 : %d ] ", iQuestID, nI );
+			LOGOUT( "QF_deleteQuest( %d ) [ The request to the server : %d ] ", iQuestID, nI );
 			//--------------------------------------------------------------------------------
 
 			g_pNet->Send_cli_QUEST_REQ(TYPE_QUEST_REQ_DEL, (BYTE)nI, iQuestID );
@@ -388,7 +396,7 @@ int		QF_getClanVAR ( int iVarNO )
 }
 
 //-------------------------------------------------------------------------------------------------
-int		QF_getQuestItemQuantity ( int iQuestID, int iItemNo/*5자리:Type+No*/ )
+int		QF_getQuestItemQuantity ( int iQuestID, int iItemNo/*A five-digit:Type+No*/ )
 {
 	//--------------------------------------------------------------------------------
 	LOGOUT( "QF_getQuestItemQuantity( %d, %d ) ", iQuestID, iItemNo );
@@ -407,7 +415,7 @@ int		QF_getQuestItemQuantity ( int iQuestID, int iItemNo/*5자리:Type+No*/ )
 					if( pQuestItem->IsEnableDupCNT() )
 					{
 						//--------------------------------------------------------------------------------
-						LOGOUT( "QF_getQuestItemQuantity( %d, %d ) [ 중복가능한 아이템의 개수 : %d ] ", iQuestID, iItemNo, pQuestItem->m_uiQuantity );
+						LOGOUT( "QF_getQuestItemQuantity( %d, %d ) [ The number of duplicate items : %d ] ", iQuestID, iItemNo, pQuestItem->m_uiQuantity );
 						//--------------------------------------------------------------------------------
 
 						return pQuestItem->m_uiQuantity;///중복가능한 아이템의 개수
@@ -415,14 +423,14 @@ int		QF_getQuestItemQuantity ( int iQuestID, int iItemNo/*5자리:Type+No*/ )
 					else
 					{
 						//--------------------------------------------------------------------------------
-						LOGOUT( "QF_getQuestItemQuantity( %d, %d ) [ 중복불가능한 아이템 : %d ] ", iQuestID, iItemNo, 1 );
+						LOGOUT( "QF_getQuestItemQuantity( %d, %d ) [ Duplicates items : %d ] ", iQuestID, iItemNo, 1 );
 						//--------------------------------------------------------------------------------
-						return 1;///중복불가능한 아이템
+						return 1;///Duplicates items
 					}
 				}
 			}
 			//--------------------------------------------------------------------------------
-			LOGERR( "QF_getQuestItemQuantity( %d, %d ) FAILED[ 해당 아이템이 없다 ] ", iQuestID, iItemNo );
+			LOGERR( "QF_getQuestItemQuantity( %d, %d ) FAILED[ There is no corresponding items ] ", iQuestID, iItemNo );
 			//--------------------------------------------------------------------------------
 
 			return 0;///해당 아이템이 없다
@@ -430,10 +438,10 @@ int		QF_getQuestItemQuantity ( int iQuestID, int iItemNo/*5자리:Type+No*/ )
 	}
 
 	//--------------------------------------------------------------------------------
-	LOGERR( "QF_getQuestItemQuantity( %d, %d ) FAILED[ 해당퀘스트 없음 ] ", iQuestID, iItemNo );
+	LOGERR( "QF_getQuestItemQuantity( %d, %d ) FAILED[ No the quest ] ", iQuestID, iItemNo );
 	//--------------------------------------------------------------------------------
 
-	return -1;///해당 퀘스트가 없다
+	return -1;///There is no corresponding quests
 }
 
 
