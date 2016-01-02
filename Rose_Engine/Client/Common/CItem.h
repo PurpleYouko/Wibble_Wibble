@@ -126,7 +126,7 @@ struct tagBaseITEM
 	} ;
 
 
-#ifdef __ITEM_TIME_LIMMIT
+//#ifdef __ITEM_TIME_LIMMIT
 
 	struct 
 	{
@@ -176,7 +176,7 @@ struct tagBaseITEM
 		return l;
 	}
 
-#endif
+//#endif
 
 
 #else

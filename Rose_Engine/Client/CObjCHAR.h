@@ -1135,7 +1135,7 @@ public :
 
 
 
-	bool	Create (short nCharIdx, const D3DVECTOR& Position, short nQuestIDX, bool bRunMODE);
+	bool	Create (short nCharIdx, const D3DVECTOR& Position, short nQuestIDX, bool bRunMODE, short nMonLevel = 0, short nMonSize = 0);
 
 	void	SetMobAniSkill( int iMobAniSkill = MOB_ANI_CASTION01 ){ m_iMobAniSkill = iMobAniSkill; }
 

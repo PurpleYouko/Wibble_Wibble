@@ -1338,7 +1338,9 @@ void CRecvPACKET::Recv_gsv_MOB_CHAR ()
 				m_pRecvPacket->m_gsv_MOB_CHAR.m_nCharIdx, 
 				PosCUR, 
 				m_pRecvPacket->m_gsv_MOB_CHAR.m_nQuestIDX, 
-				(m_pRecvPacket->m_gsv_MOB_CHAR.m_btMoveMODE) ? true:false );
+				(m_pRecvPacket->m_gsv_MOB_CHAR.m_btMoveMODE) ? true:false, 
+				m_pRecvPacket->m_gsv_MOB_CHAR.m_nMonLevel,
+				m_pRecvPacket->m_gsv_MOB_CHAR.m_nMonSize );
 			if ( this->Recv_tag_ADD_CHAR( nCObj, &(m_pRecvPacket->m_gsv_MOB_CHAR) ) ) 
 			{
 				short nOffset = sizeof( gsv_MOB_CHAR );
@@ -5016,7 +5018,7 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 
 	case	CRAFE_BREAKUP_SUCCESS:		//	0x07	// Items disassembly success
 		{
-#ifdef _NEWBREAK
+
 			if( g_pAVATAR )
 			{
 				ClientLog (LOG_NORMAL, "Breaking the item. Giving %i items ", m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT );
@@ -5077,64 +5079,7 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 
 			}
 			break;
-#else
-			if( g_pAVATAR )
-			{
-				CSeparate& Separate = CSeparate::GetInstance();
-				switch( Separate.GetType() )
-				{
-				case CSeparate::TYPE_SKILL:
-					g_pAVATAR->Sub_MP( Separate.GetRequireMp() );
-					break;
-				case CSeparate::TYPE_NPC:
-					g_pAVATAR->Set_MONEY( g_pAVATAR->Get_MONEY() - Separate.GetRequireMoney() );
-					break;
-				default:
-					break;
-				}
 
-				tagITEM		ItemData;
-				tagITEM*	pItem = NULL;
-				//CIcon*		pIcon = NULL;
-				CreateMsgBoxData MsgBoxData;
-				MsgBoxData.strMsg = STR_CRAFE_BREAKUP_SUCCESS;
-				CIconItem* pItemIcon = NULL;
-
-				g_pAVATAR->SetWaitUpdateInventory( true );
-				for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT; i++ )
-				{
-					pItem = &m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM;
-					if( !pItem->IsEmpty() )
-					{
-						if( !pItem->IsEnableDupCNT() )
-						{
-							pItemIcon = new CIconItem(pItem);		
-							MsgBoxData.m_Icons.push_back( pItemIcon );
-						}
-						else
-						{
-							ItemData = *pItem;
-							if( ItemData.m_uiQuantity > g_pAVATAR->m_Inventory.m_ItemLIST[ m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX ].m_uiQuantity )
-							{
-								ItemData.m_uiQuantity -= g_pAVATAR->m_Inventory.m_ItemLIST[ m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX ].m_uiQuantity;
-								pItemIcon = new CIconItem(&ItemData);
-								MsgBoxData.m_Icons.push_back( pItemIcon );
-							}
-						}
-					}
-
-					g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX,
-						m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM );
-				}
-				g_pAVATAR->SetWaitUpdateInventory( false );
-				g_pAVATAR->UpdateInventory();
-
-				g_itMGR.OpenMsgBox2(MsgBoxData);
-				SE_SuccessSeparate( g_pAVATAR->Get_INDEX() );
-			}
-			break;
-
-#endif
 		}
 	case	CRAFE_INVALID_ITEM:  // Something went wrong!
 		{

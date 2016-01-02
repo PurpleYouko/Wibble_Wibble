@@ -116,7 +116,7 @@ public :
 	int	    Add_CollisionBox( int iReserved, D3DVECTOR &Position, D3DXQUATERNION &Rotate, D3DVECTOR &Scale );
 
 	/// 몹 추가
-	int		Add_MobCHAR( WORD wServerObjectIndex, short nMobIdx, const D3DVECTOR& Position, short nQuestIDX, bool bRunMODE);
+	int		Add_MobCHAR( WORD wServerObjectIndex, short nMobIdx, const D3DVECTOR& Position, short nQuestIDX , bool bRunMODE, short nMonLevel = 0, short nMonSize = 0);
 	/// NPC 캐릭터 추가
 	int		Add_NpcCHAR( WORD wServerObjectIndex, short nNpcIdx, const D3DVECTOR& Position, short nQuestIDX, float fModelDIR );
 	/// 아바타 캐릭터 추가.

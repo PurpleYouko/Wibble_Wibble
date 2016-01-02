@@ -1385,6 +1385,8 @@ struct gsv_MOB_CHAR : public tag_ADD_CHAR
 {
 	short			m_nCharIdx;					
 	short			m_nQuestIDX;
+	short			m_nMonLevel;
+	short			m_nMonSize;
 	// short		m_nAdjSTATUS[];
 } ;
 

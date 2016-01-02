@@ -484,7 +484,7 @@ int CObjectMANAGER::Add_GndCNST( short nCnstIdx, D3DVECTOR &Position, D3DXQUATER
 }
 
 //-------------------------------------------------------------------------------------------------
-int CObjectMANAGER::Add_MobCHAR( WORD wServerObjectIndex, short nCharIdx, const D3DVECTOR &Position, short nQuestIDX, bool bRunMODE)
+int CObjectMANAGER::Add_MobCHAR( WORD wServerObjectIndex, short nCharIdx, const D3DVECTOR &Position, short nQuestIDX, bool bRunMODE, short nMonLevel, short nMonSize)
 {
 /*
 	if ( nCharIdx == 46 )	// Gorilla General -> Stony
@@ -494,18 +494,21 @@ int CObjectMANAGER::Add_MobCHAR( WORD wServerObjectIndex, short nCharIdx, const 
 	int iObjSlot;
 
 	iObjSlot = Get_EmptySlot ();
-	if ( !iObjSlot ) {
+	if ( !iObjSlot ) 
+	{
 		LogString (LOG_DEBUG, "Out of object slot ... in add mob char \n");
 		return 0;
 	}
 
 	CObjMOB *pCHAR = new CObjMOB;
-	if ( NULL == pCHAR ) {
+	if ( NULL == pCHAR ) 
+	{
 		LogString (LOG_DEBUG, "Out of memory ... in add mob char \n");
 		return 0;
 	}
 	
-	if ( !pCHAR->Create( nCharIdx, Position, nQuestIDX, bRunMODE) ) {
+	if ( !pCHAR->Create( nCharIdx, Position, nQuestIDX, bRunMODE, nMonLevel, nMonSize) ) 
+	{
 		LogString (LOG_DEBUG, "MOB Char[ %d ] create failed \n", nCharIdx);
 		delete pCHAR;
 		return 0;

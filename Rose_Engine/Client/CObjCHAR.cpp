@@ -2471,7 +2471,8 @@ void CObjCHAR::SummonMob()
 
 		short nCObj;
 
-		if ( NPC_TYPE( m_SummonMob.m_nCharIdx ) != 999 ) {
+		if ( NPC_TYPE( m_SummonMob.m_nCharIdx ) != 999 ) 
+		{
 			nCObj = g_pObjMGR->Add_MobCHAR( m_SummonMob.m_wObjectIDX,
 											m_SummonMob.m_nCharIdx,
 											PosCUR,
@@ -4684,7 +4685,7 @@ void CObjMOB::Do_DeadEvent	(CObjCHAR *pAtk)
 /// @brief  : Mob creation
 //--------------------------------------------------------------------------------
 
-bool CObjMOB::Create (short nCharIdx, const D3DVECTOR& Position, short nQuestIDX, bool bRunMODE)
+bool CObjMOB::Create (short nCharIdx, const D3DVECTOR& Position, short nQuestIDX, bool bRunMODE, short nMonLevel, short nMonSize)
 {
 	char *szName  = CStr::Printf (NAME_MOB_MODEL, NPC_NAME( nCharIdx ), this->m_dwCreateOrder++);
 
@@ -4692,7 +4693,15 @@ bool CObjMOB::Create (short nCharIdx, const D3DVECTOR& Position, short nQuestIDX
 
 
 	m_nCharIdx = nCharIdx;
-	m_fScale = NPC_SCALE( nCharIdx ) / 100.f;
+	//if(nMonSize == 0)
+	//{
+	//	m_fScale = NPC_SCALE( nCharIdx ) / 100.f;
+	//}
+	//else
+	//{
+	m_fScale = nMonSize / 100.f;
+		//ClientLog (LOG_NORMAL, "CObjMOB::Create set a value of %f for monster size %i", m_fScale, nMonSize );
+	//}
 	if ( CObjCHAR::CreateCHAR (szName, pMODEL, pMODEL->GetPartCNT(), Position) )
 	{
 		this->m_iHP = NPC_HP( m_nCharIdx );
