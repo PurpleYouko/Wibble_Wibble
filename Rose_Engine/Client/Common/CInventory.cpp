@@ -419,7 +419,7 @@ short CInventory::Add_CatchITEM (short nListRealNO, tagITEM &sITEM, short &nCurW
 /// Real table 에 아이템을 추가하고, Lookup table 갱신
 short CInventory::AppendITEM (short nListRealNO, tagITEM &sITEM, short &nCurWeight)
 {
-	//_ASSERT( sITEM.GetTYPE() );
+	_ASSERT( sITEM.GetTYPE() );
 
 	if ( sITEM.IsEmpty() ) {
 		return -1;
