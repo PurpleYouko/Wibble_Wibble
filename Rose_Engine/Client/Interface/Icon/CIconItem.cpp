@@ -229,19 +229,22 @@ void CIconItem::Draw()
 
 	if( Item.HasSocket() && m_hSocketTexture )
 	{
-		if( Item.GetGemNO() > 300 )
+		if( !Item.IsEnableDupCNT() )	//another double check to make sure that we don't get stackable items with sockets
 		{
-			assert( Item.GetGemNO() <= g_TblGEMITEM.m_nDataCnt );
-			if( Item.GetGemNO() <= g_TblGEMITEM.m_nDataCnt )
-				g_DrawImpl.Draw( m_ptPosition.x, m_ptPosition.y, IMAGE_RES_SOCKETJAM_ICON, GEMITEM_MARK_IMAGE( Item.GetGemNO() ) );
-		}
-		else 
-		{
-			::drawSprite( m_hSocketTexture, 
-					NULL,
-					NULL,
-					&D3DXVECTOR3( 0, 0, 0 ),								
-					D3DCOLOR_RGBA( 255, 255, 255, 255 ) );
+			if( Item.GetGemNO() > 300 )
+			{
+				assert( Item.GetGemNO() <= g_TblGEMITEM.m_nDataCnt );		//somehow we are getting apples here and crashing. WTF. added some code to prevent that
+				if( Item.GetGemNO() <= g_TblGEMITEM.m_nDataCnt )
+					g_DrawImpl.Draw( m_ptPosition.x, m_ptPosition.y, IMAGE_RES_SOCKETJAM_ICON, GEMITEM_MARK_IMAGE( Item.GetGemNO() ) );
+			}
+			else 
+			{
+				::drawSprite( m_hSocketTexture, 
+						NULL,
+						NULL,
+						&D3DXVECTOR3( 0, 0, 0 ),								
+						D3DCOLOR_RGBA( 255, 255, 255, 255 ) );
+			}
 		}
 	}
 	

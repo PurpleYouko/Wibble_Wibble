@@ -1543,7 +1543,7 @@ void CSendPACKET::Send_cli_PARTY_REPLY(BYTE btRequest, DWORD dwDestIDXorTAG )
 
 //-------------------------------------------------------------------------------------------------
 ///제조 관련
-void CSendPACKET::Send_cli_CREATE_ITEM_REQ( WORD wSkillSLOT, char cTargetItemTYPE, short nTargetItemNO, short* pnUseItemINV )
+void CSendPACKET::Send_cli_CREATE_ITEM_REQ( WORD wSkillSLOT, char cTargetItemTYPE, short nTargetItemNO, short* pnUseItemINV ) // 0x07af craft item request data
 {
 	m_pSendPacket->m_HEADER.m_wType = CLI_CREATE_ITEM_REQ;
 	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_CREATE_ITEM_REQ );
@@ -1652,7 +1652,7 @@ void CSendPACKET::Send_cli_SET_WISHITEM( int iIndex, tagITEM& Item )
 		return;
 	}
 
-	m_pSendPacket->m_HEADER.m_wType = CLI_SET_WISHITEM;
+	m_pSendPacket->m_HEADER.m_wType = CLI_SET_WISHITEM;				//0x07bf
 	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_SET_WISHITEM );
 
 	m_pSendPacket->m_cli_SET_WISHITEM.m_ITEM = Item;

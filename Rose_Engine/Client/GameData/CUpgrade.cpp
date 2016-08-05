@@ -738,6 +738,7 @@ void CUpgrade::ApplyResultItemSet()
 	std::list<tag_SET_INVITEM>::iterator iter;
 	for( iter = m_ResultItemSet.begin(); iter != m_ResultItemSet.end(); ++iter )
 	{
+		ClientLog (LOG_NORMAL, "Upgrade::ApplyResultItemSet:: item being set to inventory. Slot %i ItemType %i ItenNum %i count %i",iter->m_btInvIDX,iter->m_ITEM.m_cType, iter->m_ITEM.m_nItemNo, iter->m_ITEM.GetQuantity());
 		g_pAVATAR->Set_ITEM( iter->m_btInvIDX, iter->m_ITEM );
 	}
 	
@@ -771,6 +772,7 @@ bool CUpgrade::GetMaterialItemIsEmpty()
 	for( iter = m_ResultItemSet.begin(); iter != m_ResultItemSet.end(); ++iter )
 	{
 		item = iter->m_ITEM;
+		ClientLog (LOG_NORMAL, "Upgrade::GetMaterialItemIsEmpty:: Slot %i ItemType %i ItenNum %i count %i",iter->m_btInvIDX,iter->m_ITEM.m_cType, iter->m_ITEM.m_nItemNo, iter->m_ITEM.GetQuantity());
 		if(item.GetQuantity() <= 0)
 			return false;
 	}	
@@ -791,6 +793,7 @@ void CUpgrade::RemoveOnlyMaterialItem()
 
 	for( iter = m_ResultItemSet.begin(); iter != m_ResultItemSet.end(); ++iter )
 	{
+		ClientLog (LOG_NORMAL, "Upgrade::RemoveMaterialItem:: Slot %i ItemType %i ItenNum %i count %i",iter->m_btInvIDX,iter->m_ITEM.m_cType, iter->m_ITEM.m_nItemNo, iter->m_ITEM.GetQuantity());
 		ItemNum = iter->m_btInvIDX;
 		tagitem = iter->m_ITEM;
 		g_pAVATAR->Set_ITEM( iter->m_btInvIDX, iter->m_ITEM );

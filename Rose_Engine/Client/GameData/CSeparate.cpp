@@ -535,22 +535,22 @@ void CSeparate::ClearResultItemSet()
 
 void CSeparate::AddResultItemSet( tag_SET_INVITEM Item )
 {
-	ClientLog (LOG_NORMAL, "AddResultItemSet:: item type: %i item Number: %i", Item.m_ITEM.GetTYPE(),Item.m_ITEM.GetItemNO());
+	ClientLog (LOG_NORMAL, "AddResultItemSet:: item type: %i item Number: %i amount %i", Item.m_ITEM.GetTYPE(),Item.m_ITEM.GetItemNO(), Item.m_ITEM.GetQuantity());
 	// m_ResultItemSet starts out with a size of zero here
 
 	for(int i = 0; i <  m_ResultItemSet.size(); i++)
 	{
 		tag_SET_INVITEM TempInvItem = m_ResultItemSet[i];
-		//ClientLog (LOG_NORMAL, "AddResultItemSet:: Set tempInvItem to record %i of the record set",i);
 		
 		if( TempInvItem.m_ITEM.IsEqual(Item.m_ITEM.GetTYPE(), Item.m_ITEM.GetItemNO()) && Item.m_ITEM.IsEnableDupCNT())
 		{
 			m_ResultItemSet[i] = Item;
-			//m_ResultItemSet[i].m_ITEM.IncQuantity1();
-			ClientLog (LOG_NORMAL, "AddResultItemSet:: item added to an existing field of ResultSet. Field now contains %i",m_ResultItemSet[i].m_ITEM.GetQuantity1());
+			ClientLog (LOG_NORMAL, "AddResultItemSet:: item same as last one. type: %i Number: %i Overwriting entry. Amount = %i",m_ResultItemSet[i].m_ITEM.m_cType, m_ResultItemSet[i].m_ITEM.m_nItemNo, m_ResultItemSet[i].m_ITEM.GetQuantity1());
 			return;
 		}		
 	}
+	ClientLog (LOG_NORMAL, "AddResultItemSet:: Adding new entry. type: %i Number: %i Amount = %i",Item.m_ITEM.m_cType, Item.m_ITEM.m_nItemNo, Item.m_ITEM.GetQuantity1());
+			
 	m_ResultItemSet.push_back(Item);
 }
 
@@ -559,8 +559,11 @@ void CSeparate::ApplyResultItemSet()
 	std::vector<tag_SET_INVITEM>::iterator iter;
 	for( iter = m_ResultItemSet.begin(); iter != m_ResultItemSet.end(); ++iter )
 	{
-		ClientLog (LOG_NORMAL, "ApplyResultItemSet:: item %i being set to inventory. Slot %i ItemType %i ItenNum %i",iter,iter->m_btInvIDX,iter->m_ITEM.GetTYPE(), iter->m_ITEM.GetItemNO());
-		g_pAVATAR->Set_ITEM( iter->m_btInvIDX, iter->m_ITEM );
+		ClientLog (LOG_NORMAL, "Seperate::ApplyResultItemSet:: item being set to inventory. Slot %i ItemType %i ItenNum %i count %i",iter->m_btInvIDX,iter->m_ITEM.m_cType, iter->m_ITEM.m_nItemNo, iter->m_ITEM.GetQuantity());
+		if(iter->m_ITEM.m_cType != 0)		//PY: see if we can prevent later errors by making no attempt to set an item with type zero
+		{
+			g_pAVATAR->Set_ITEM( iter->m_btInvIDX, iter->m_ITEM );
+		}
 	}
 }
 

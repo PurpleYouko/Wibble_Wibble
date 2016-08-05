@@ -15,8 +15,8 @@ Global
 		ZZ_Release|Win32 = ZZ_Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{98F25AF9-BDDD-462D-9514-9A18FE2E2692}.ID_Debug|Win32.ActiveCfg = ID_Debug|Win32
-		{98F25AF9-BDDD-462D-9514-9A18FE2E2692}.ID_Debug|Win32.Build.0 = ID_Debug|Win32
+		{98F25AF9-BDDD-462D-9514-9A18FE2E2692}.ID_Debug|Win32.ActiveCfg = release|Win32
+		{98F25AF9-BDDD-462D-9514-9A18FE2E2692}.ID_Debug|Win32.Build.0 = release|Win32
 		{98F25AF9-BDDD-462D-9514-9A18FE2E2692}.ID_Release|Win32.ActiveCfg = ID_Release|Win32
 		{98F25AF9-BDDD-462D-9514-9A18FE2E2692}.ID_Release|Win32.Build.0 = ID_Release|Win32
 		{98F25AF9-BDDD-462D-9514-9A18FE2E2692}.MY_Debug|Win32.ActiveCfg = MY_Debug|Win32

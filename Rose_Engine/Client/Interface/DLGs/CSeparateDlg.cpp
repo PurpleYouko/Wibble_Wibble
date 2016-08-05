@@ -99,11 +99,11 @@ void CSeparateDlg::Show()
 {
 	
 #ifdef _DEBUG
-	POINT pt = { GetPosition().x, GetPosition().y };
-	Clear();
-	Create("DlgSeparate");		
-	SetInterfacePos_After();
-	MoveWindow(pt);
+	//POINT pt = { GetPosition().x, GetPosition().y };
+	//Clear();
+	//Create("DlgSeparate");		
+	//SetInterfacePos_After();
+	//MoveWindow(pt);
 #endif
 
 	CTDialog::Show();
@@ -242,11 +242,13 @@ void CSeparateDlg::Update( CObservable* pObservable, CTObject* pObj )
 	switch( pEvent->GetID() )
 	{
 	case CTEventSeparate::EID_REMOVE_MATERIAL_ITEM:
+		ClientLog (LOG_NORMAL, "CSeperateDlg::Update.  Event 2: EID_REMOVE_MATERIAL_ITEM");
 		m_MaterialItemSlot.DetachIcon();
 		break;
 	case CTEventSeparate::EID_SET_MATERIAL_ITEM:
 		{
 			CItem* pItem = pEvent->GetItem();
+			ClientLog (LOG_NORMAL, "CSeperateDlg::Update. Event 1: EID_SET_MATERIAL_ITEM Item Type %i Item ID %i", pItem->GetType(), pItem->GetItemNo());
 			assert( pItem );
 			if( pItem  )
 				m_MaterialItemSlot.AttachIcon( pItem->CreateItemIcon() );
@@ -255,22 +257,24 @@ void CSeparateDlg::Update( CObservable* pObservable, CTObject* pObj )
 		}
 	case CTEventSeparate::EID_REMOVE_OUTPUT_ITEM:
 		{
+			ClientLog (LOG_NORMAL, "CSeperateDlg::Update. Event 4: EID_REMOVE_OUTPUT_ITEM");
 			int iIndex = pEvent->GetIndex();
-			assert( iIndex >= 0 && iIndex < (int)m_OutputItemSlots.size() );
+			//assert( iIndex >= 0 && iIndex < (int)m_OutputItemSlots.size() );
 			if( iIndex  >= 0 && iIndex < (int)m_OutputItemSlots.size() )
 				m_OutputItemSlots[iIndex].DetachIcon();	
 			break;
 		}
 	case CTEventSeparate::EID_SET_OUTPUT_ITEM:
 		{
+			ClientLog (LOG_NORMAL, "CSeperateDlg::Update. Event 3: EID_SET_OUTPUT_ITEM");
 			int e = m_OutputItemSlots.size();
 			int iIndex = pEvent->GetIndex();
-			assert( iIndex >= 0 && iIndex < (int)m_OutputItemSlots.size() );
+			//assert( iIndex >= 0 && iIndex < (int)m_OutputItemSlots.size() );
 			if( iIndex  >= 0 && iIndex < (int)m_OutputItemSlots.size() )
 			{
 				CItem* pItem = pEvent->GetItem();
-
-				assert( pItem && m_OutputItemSlots[iIndex].GetIcon() == NULL );
+				ClientLog (LOG_NORMAL, "CSeperateDlg::Update. Event 3: EID_SET_OUTPUT_ITEM Item Type %i Item ID %i", pItem->GetType(), pItem->GetItemNo());
+				//assert( pItem && m_OutputItemSlots[iIndex].GetIcon() == NULL );
 
 
 				if( pItem && m_OutputItemSlots[iIndex].GetIcon() == NULL )
@@ -284,18 +288,22 @@ void CSeparateDlg::Update( CObservable* pObservable, CTObject* pObj )
 				}
 				else
 				{
-					assert(" pItem && m_OutputItemSlots[iIndex].GetIcon() == NULL ?? ");
+					assert(" pItem && m_OutputItemSlots[iIndex].GetIcon() == NULL ?? ");  //PY: Logically speaking, this can never happen unless it is simultaineously neither NULL or Not NULL. Duhh!! 
 				}
 			}
 			break;
 		}
 	case CTEventSeparate::EID_RECEIVE_RESULT:
 		{
+			ClientLog (LOG_NORMAL, "CSeperateDlg::Update. Event 5: EID_RECEIVE_RESULT");
 			ChangeState( STATE_RESULT );
 			break;
 		}
 	default:
-		assert( 0 && "Invalid Separate Event Type" );
+		{
+			ClientLog (LOG_NORMAL, "CSeperateDlg::Update. Invalid Seperate Event");
+			assert( 0 && "Invalid Separate Event Type" );
+		}
 		break;
 	}
 

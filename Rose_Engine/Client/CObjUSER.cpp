@@ -751,7 +751,7 @@ void	CObjUSER::Set_ITEM_UseSeparate(short nListRealNO, tagITEM& sITEM)
 
 void	CObjUSER::UpdateAbility()
 {  
-
+	//PY don't need these at all
 	Cal_BattleAbility(); 
 	Calc_AruaAddAbility();
 	

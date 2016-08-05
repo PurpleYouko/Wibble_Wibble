@@ -93,6 +93,7 @@ protected:
 	void AddItemDefence( tagITEM& sItem , CInfo& Info );
 	void AddItemDefaultTopText( tagITEM& sItem, CInfo& Info );
 	void AddItemDefaultTopExpItemText( tagITEM& sItem, CInfo& Info );
+	void AddItemUstat( tagITEM& sItem, CInfo& Info );
 	void AddItemOption( tagITEM& sItem, CInfo& Info );
 	void AddItemPrice( tagITEM& sItem, DWORD dwDlgType, DWORD dwType, CInfo& Info );
 	void AddItemLifeDuration( tagITEM& sItem, CInfo& Info );

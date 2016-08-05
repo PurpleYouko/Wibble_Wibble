@@ -641,7 +641,7 @@ void CItem::GetToolTip( CInfo& ToolTip,  DWORD dwDialogType, DWORD dwType )
 			{
 				AddItemSpecialJob( sItem, ToolTip );
 				AddItemSpecialUnion( sItem, ToolTip );
-
+				AddItemUstat( sItem, ToolTip );					//PY added new UStats
 				AddItemOption( sItem, ToolTip );
 
 
@@ -677,6 +677,7 @@ void CItem::GetToolTip( CInfo& ToolTip,  DWORD dwDialogType, DWORD dwType )
 			{
 				AddItemSpecialJob( sItem , ToolTip );
 				AddItemSpecialUnion( sItem, ToolTip );
+				AddItemUstat( sItem, ToolTip );					//PY added new UStats
 				AddItemOption( sItem, ToolTip );
 				AddItemEquipRequireJob( sItem, ToolTip );
 				AddItemEquipRequireUnion( sItem, ToolTip );
@@ -700,6 +701,7 @@ void CItem::GetToolTip( CInfo& ToolTip,  DWORD dwDialogType, DWORD dwType )
 				///재질
 				AddItemSpecialJob( sItem, ToolTip );
 				AddItemSpecialUnion( sItem, ToolTip );
+				AddItemUstat( sItem, ToolTip );					//PY added new UStats
 				AddItemOption( sItem, ToolTip );
 				AddItemEquipRequireJob( sItem, ToolTip );
 				AddItemEquipRequireUnion( sItem, ToolTip );
@@ -727,6 +729,7 @@ void CItem::GetToolTip( CInfo& ToolTip,  DWORD dwDialogType, DWORD dwType )
 			{
 				AddItemSpecialJob( sItem , ToolTip );
 				AddItemSpecialUnion( sItem, ToolTip );
+				AddItemUstat( sItem, ToolTip );					//PY added new UStats
 				AddItemOption( sItem, ToolTip );
 				AddItemEquipRequireJob( sItem, ToolTip );
 				AddItemEquipRequireUnion( sItem, ToolTip );
@@ -751,6 +754,7 @@ void CItem::GetToolTip( CInfo& ToolTip,  DWORD dwDialogType, DWORD dwType )
 			{
 				AddItemSpecialJob( sItem , ToolTip );
 				AddItemSpecialUnion( sItem, ToolTip );
+				AddItemUstat( sItem, ToolTip );					//PY added new UStats
 				AddItemOption( sItem, ToolTip );
 				AddItemEquipRequireJob( sItem, ToolTip );
 				AddItemEquipRequireUnion( sItem, ToolTip );
@@ -777,6 +781,7 @@ void CItem::GetToolTip( CInfo& ToolTip,  DWORD dwDialogType, DWORD dwType )
 			{
 				AddItemSpecialJob( sItem , ToolTip );
 				AddItemSpecialUnion( sItem, ToolTip );
+				AddItemUstat( sItem, ToolTip );					//PY added new UStats
 				AddItemOption( sItem, ToolTip );
 				AddItemEquipRequireJob( sItem, ToolTip );
 				AddItemEquipRequireUnion( sItem, ToolTip );
@@ -801,6 +806,7 @@ void CItem::GetToolTip( CInfo& ToolTip,  DWORD dwDialogType, DWORD dwType )
 			{
 				AddItemSpecialJob( sItem , ToolTip );
 				AddItemSpecialUnion( sItem, ToolTip );
+				AddItemUstat( sItem, ToolTip );					//PY added new UStats
 				AddItemOption( sItem, ToolTip );
 				AddItemEquipRequireJob( sItem, ToolTip );
 				AddItemEquipRequireUnion( sItem, ToolTip );
@@ -817,6 +823,7 @@ void CItem::GetToolTip( CInfo& ToolTip,  DWORD dwDialogType, DWORD dwType )
 			{
 				AddItemSpecialJob( sItem , ToolTip );
 				AddItemSpecialUnion( sItem, ToolTip );
+				AddItemUstat( sItem, ToolTip );					//PY added new UStats
 				AddItemOption( sItem, ToolTip );
 			
 				AddItemEquipRequireJob( sItem, ToolTip );
@@ -1328,7 +1335,8 @@ void CItem::AddItemDefaultBottomText( tagITEM& sItem, CInfo& Info )
 	Info.AddString( pszBuf );
 
 	//기간제 아이템
-	AddItemTimeLimite( sItem, Info );
+	//PY Disabling the display of time limits. Might need it later though
+	//AddItemTimeLimite( sItem, Info );
 	
 	///볼드라서 
 	CSplitHangul	splitHAN(  (char*)ITEM_DESC( sItem.GetTYPE(), sItem.GetItemNO() ), INFO_TEXT_WIDTH - 2, CLocalizing::GetSingleton().GetCurrentCodePageNO());
@@ -1598,6 +1606,25 @@ void CItem::AddItemMoveSpeed( tagITEM& sItem, CInfo& Info )
 	default:
 		Info.AddString( "INVALID ITEM TYPE:MOVE SPEED" );
 		break;
+	}
+}
+void CItem::AddItemUstat( tagITEM& sItem, CInfo& Info )
+{
+	char* pszBuf1 = NULL;
+	char* pszBuf2 = NULL;
+	short stat1 = sItem.GetUstat1();
+	short stat2 = sItem.GetUstat2();
+	short value1 = sItem.GetUvalue1();
+	short value2 = sItem.GetUvalue2();
+	if( stat1 != 0 )
+	{
+		pszBuf1 = CStr::Printf( "[%s %d]", CStringManager::GetSingleton().GetAbility( stat1 ), value1 );
+		Info.AddString( pszBuf1,  g_dwVIOLET );
+	}
+	if( stat2 != 0 )
+	{
+		pszBuf2 = CStr::Printf( "[%s %d]", CStringManager::GetSingleton().GetAbility( stat2 ), value2 );
+		Info.AddString( pszBuf2,  g_dwVIOLET );
 	}
 }
 void CItem::AddItemOption( tagITEM& sItem, CInfo& Info )

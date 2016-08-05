@@ -731,7 +731,7 @@ void CRecvPACKET::Recv_gsv_SET_VAR_REPLY ()
 }
 
 //-------------------------------------------------------------------------------------------------
-void CRecvPACKET::Recv_gsv_SELECT_CHAR ()
+void CRecvPACKET::Recv_gsv_SELECT_CHAR ()				//0x0715
 {
 	short nOffset = sizeof( gsv_SELECT_CHAR );	//PY this seems to be out by 4 bytes after I added two shorts to tagGrowAbility added 4 bytes for maxHP and maxMP to the packet at server side
 	char *szName;
@@ -771,25 +771,37 @@ void CRecvPACKET::Recv_gsv_SELECT_CHAR ()
 }
 
 //-------------------------------------------------------------------------------------------------
-void CRecvPACKET::Recv_gsv_INVENTORY_DATA ()
+void CRecvPACKET::Recv_gsv_INVENTORY_DATA ()			// 0x0716
 {
 	CGame& refGame = CGame::GetInstance();
+	//ClientLog(LOG_DEBUG,"Recv_gsv_INVENTORY_DATA packet received");
 	refGame.m_SelectedAvataINV.m_INV.m_i64Money = m_pRecvPacket->m_gsv_INVENTORY_DATA.m_INV.m_i64Money;
 
-	memcpy( &refGame.m_SelectedAvataINV.m_INV.m_ItemLIST, 
-			&m_pRecvPacket->m_gsv_INVENTORY_DATA.m_INV.m_ItemLIST, 
-			sizeof( m_pRecvPacket->m_gsv_INVENTORY_DATA.m_INV.m_ItemLIST ) );
+	memcpy( &refGame.m_SelectedAvataINV.m_INV.m_ItemLIST, &m_pRecvPacket->m_gsv_INVENTORY_DATA.m_INV.m_ItemLIST, sizeof( m_pRecvPacket->m_gsv_INVENTORY_DATA.m_INV.m_ItemLIST ) );
+	//PY this seems to be working perfectly with the new citem structure. Let's test it with this
+	
+	for(unsigned j=0; j<140; j++)
+    {
+		int Count;
+		if( refGame.m_SelectedAvataINV.m_INV.m_ItemLIST[j].IsEnableDupCNT() ) 
+			Count = refGame.m_SelectedAvataINV.m_INV.m_ItemLIST[j].m_uiQuantity;
+		else
+			Count = 1;
+
+		ClientLog(LOG_DEBUG,"Recv_gsv_INVENTORY_DATA slot: %i Type: %i ID: %i durability: %i Ustat1: %i Uvalue1: %i Count %i ",j, refGame.m_SelectedAvataINV.m_INV.m_ItemLIST[j].m_cType, refGame.m_SelectedAvataINV.m_INV.m_ItemLIST[j].m_nItemNo, refGame.m_SelectedAvataINV.m_INV.m_ItemLIST[j].m_cDurability, refGame.m_SelectedAvataINV.m_INV.m_ItemLIST[j].m_UStat1, refGame.m_SelectedAvataINV.m_INV.m_ItemLIST[j].m_UValue1, Count);
+		//No problems here
+	}
 }
 
 //-------------------------------------------------------------------------------------------------
-void CRecvPACKET::Recv_gsv_QUEST_DATA()
+void CRecvPACKET::Recv_gsv_QUEST_DATA()		//0x071b
 { 
-	ClientLog(LOG_DEBUG,"Receive quest data packet received");
+	ClientLog(LOG_DEBUG,"Receive quest data packet received");	//this packet also includes the wishlist
 	CGame& refGame = CGame::GetInstance();
 
-	memcpy( &refGame.m_QuestData,
-		&m_pRecvPacket->m_gsv_QUEST_DATA,
-		sizeof( m_pRecvPacket->m_gsv_QUEST_DATA ) );
+	memcpy( &refGame.m_QuestData, &m_pRecvPacket->m_gsv_QUEST_DATA,	sizeof( m_pRecvPacket->m_gsv_QUEST_DATA ) );
+
+	//ClientLog(LOG_DEBUG,"first item of wishlist. Type: %i number: %i",m_pRecvPacket->m_gsv_QUEST_DATA.m_WishLIST.m_WishITEM[0].m_cType, m_pRecvPacket->m_gsv_QUEST_DATA.m_WishLIST.m_WishITEM[0].m_nItemNo);
 
 	g_EUILobby.CloseAvataListDlg();	
 
@@ -803,7 +815,7 @@ void CRecvPACKET::Recv_gsv_QUEST_DATA()
 
 
 	refGame.SetLoadingData(  data );
-	ClientLog(LOG_DEBUG,"Running GS_MOVE_MAIN. Could this be the problem?");
+	//ClientLog(LOG_DEBUG,"Running GS_MOVE_MAIN.");
 	refGame.ChangeState( CGame::GS_MOVEMAIN );
 
 }
@@ -861,7 +873,7 @@ void CRecvPACKET::Recv_gsv_CHEAT_CODE ()
 
 //-------------------------------------------------------------------------------------------------
 /// Only works once stopped.
-void CRecvPACKET::Recv_gsv_SET_MOTION ()
+void CRecvPACKET::Recv_gsv_SET_MOTION ()		//0x0781
 {
 	CObjCHAR *pCHAR = g_pObjMGR->Get_ClientCharOBJ( m_pRecvPacket->m_gsv_SET_MOTION.m_wObjectIDX, false );
 	if ( pCHAR ) 
@@ -895,7 +907,7 @@ void CRecvPACKET::Recv_gsv_TOGGLE ()
 				((CObjAVT*)pCHAR)->SetOri_RunSPEED( m_pRecvPacket->m_gsv_TOGGLE.m_nRunSPEED[0] );
 
 				//Recalculate movement and attack animation speed
-				((CObjAVT*)pCHAR)->Update_SPEED();
+				((CObjAVT*)pCHAR)->Update_ANI_SPEED();
 			}
 		}	
 	}
@@ -1219,10 +1231,23 @@ void CRecvPACKET::Recv_gsv_NPC_CHAR ()
 	PosCUR.z = 0.0f;
 
 	short nCObj, nCharIdx = abs( m_pRecvPacket->m_gsv_NPC_CHAR.m_nCharIdx );
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Command: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_wCommand);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Target: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_wTargetOBJ);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Stance: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_btMoveMODE);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: HP: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_iHP);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: team: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_iTeamNO);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Buffs: %I64i",m_pRecvPacket->m_gsv_NPC_CHAR.m_dwStatusFALG);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: CharType: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_nCharIdx);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Dialog: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_nQuestIDX);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Level: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_nMonLevel);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Size: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_nMonSize);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Direction: %f",m_pRecvPacket->m_gsv_NPC_CHAR.m_fModelDIR);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Event: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_nEventSTATUS);
 
 	if ( NPC_TYPE( nCharIdx ) == 999 ) 
 	{
 
+		//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Adding NPC. NPC_TYPE (from STB) for NPC with id %i is %i",nCharIdx, NPC_TYPE( nCharIdx ));
 		nCObj = g_pObjMGR->Add_NpcCHAR( m_pRecvPacket->m_gsv_NPC_CHAR.m_wObjectIDX, nCharIdx, PosCUR, m_pRecvPacket->m_gsv_NPC_CHAR.m_nQuestIDX, m_pRecvPacket->m_gsv_NPC_CHAR.m_fModelDIR);
 
 
@@ -1245,20 +1270,18 @@ void CRecvPACKET::Recv_gsv_NPC_CHAR ()
 			sprintf( Buf, " By event parameters from the server %d\n", m_pRecvPacket->m_gsv_NPC_CHAR.m_nEventSTATUS );
 			MessageBox( NULL, Buf, "...", MB_OK );*/
 
-			LogString (LOG_NORMAL, "Add NPC : [%s] CObj: %d, SObj: %d \n", 
-				pSourCHAR->Get_NAME(),
-				nCObj, g_pObjMGR->Get_ServerObjectIndex( nCObj ) );
+			//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Add NPC : [%s] CObj: %d, SObj: %d \n",pSourCHAR->Get_NAME(), nCObj, g_pObjMGR->Get_ServerObjectIndex( nCObj ));
+			//LogString (LOG_NORMAL, "Add NPC : [%s] CObj: %d, SObj: %d \n", pSourCHAR->Get_NAME(), nCObj, g_pObjMGR->Get_ServerObjectIndex( nCObj ) );
 		}
 		else
 		{
-			LogString (LOG_NORMAL, "Fail Add NPC : CharIdx[%d], QuestIdx[%d]\n", 
-				m_pRecvPacket->m_gsv_NPC_CHAR.m_nCharIdx,
-				m_pRecvPacket->m_gsv_NPC_CHAR.m_nQuestIDX
-				);
-
-
+			//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Fail Add NPC : CharIdx[%d], QuestIdx[%d]\n",m_pRecvPacket->m_gsv_NPC_CHAR.m_nCharIdx, m_pRecvPacket->m_gsv_NPC_CHAR.m_nQuestIDX);
+			//LogString (LOG_NORMAL, "Fail Add NPC : CharIdx[%d], QuestIdx[%d]\n", m_pRecvPacket->m_gsv_NPC_CHAR.m_nCharIdx,	m_pRecvPacket->m_gsv_NPC_CHAR.m_nQuestIDX);
 		}
-	} else {
+	} 
+	else 
+	{
+		
 		_ASSERT( 0 );
 	}
 }
@@ -1269,6 +1292,19 @@ void CRecvPACKET::Recv_gsv_MOB_CHAR ()
 	int iSkillOwner = 0;
 	int iDoingSkillIDX = 0;
 
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Command: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_wCommand);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Target: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_wTargetOBJ);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Stance: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_btMoveMODE);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: HP: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_iHP);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: team: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_iTeamNO);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Buffs: %I64i",m_pRecvPacket->m_gsv_NPC_CHAR.m_dwStatusFALG);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: CharType: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_nCharIdx);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Dialog: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_nQuestIDX);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Level: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_nMonLevel);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Size: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_nMonSize);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Direction: %f",m_pRecvPacket->m_gsv_NPC_CHAR.m_fModelDIR);
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Event: %i",m_pRecvPacket->m_gsv_NPC_CHAR.m_nEventSTATUS);
+	
 	/// Is your pet?
 	if( m_pRecvPacket->m_gsv_MOB_CHAR.m_dwStatusFALG & FLAG_ING_DEC_LIFE_TIME )
 	{
@@ -1489,7 +1525,7 @@ void CRecvPACKET::Recv_gsv_AVT_CHAR ()
 	m_pRecvPacket->m_gsv_AVT_CHAR.m_btWeightRate;
 
 
-	pNewAVT->Update_SPEED ();	//PY: animation speed only
+	pNewAVT->Update_ANI_SPEED ();	//PY: animation speed only
 
 	LogString (LOG_NORMAL, "ADD_USER[ %s ], MoveSpeed: %f \n", szName, pNewAVT->GetOri_RunSPEED() );
 
@@ -1598,7 +1634,7 @@ void CRecvPACKET::Recv_gsv_SUB_OBJECT ()
 }
 
 //-------------------------------------------------------------------------------------------------
-void CRecvPACKET::Recv_gsv_SET_WEIGHT_RATE ()
+void CRecvPACKET::Recv_gsv_SET_WEIGHT_RATE ()		//0x0762
 {
 	// Weight ratio of the run, walking restrictions apply.
 	CObjAVT* pAVT = g_pObjMGR->Get_ClientCharAVT( m_pRecvPacket->m_gsv_SET_WEIGHT_RATE.m_wObjectIDX, false );
@@ -1700,19 +1736,19 @@ void CRecvPACKET::Recv_gsv_ATTACK ()
 			PosTO );
 
 #ifdef	_DEBUG
-		if ( g_pObjMGR->Get_ServerObjectIndex( g_pAVATAR->m_nIndex ) == m_pRecvPacket->m_gsv_ATTACK.m_wDefObjIDX ) {
-			ClientLog (LOG_NORMAL, "Attack command:: %d:%s[ %d ]  ==> %s[ %f, %f, %f ] \n", 
-				m_pRecvPacket->m_gsv_ATTACK.m_wAtkObjIDX,
-				pSourCHAR->Get_NAME(),
+		//if ( g_pObjMGR->Get_ServerObjectIndex( g_pAVATAR->m_nIndex ) == m_pRecvPacket->m_gsv_ATTACK.m_wDefObjIDX ) {
+		//	ClientLog (LOG_NORMAL, "Attack command:: %d:%s[ %d ]  ==> %s[ %f, %f, %f ] \n", 
+		//		m_pRecvPacket->m_gsv_ATTACK.m_wAtkObjIDX,
+		//		pSourCHAR->Get_NAME(),
 
-				m_pRecvPacket->m_gsv_ATTACK.m_wSrvDIST, 					
+		//		m_pRecvPacket->m_gsv_ATTACK.m_wSrvDIST, 					
 
-				g_pAVATAR->Get_NAME(),
+		//		g_pAVATAR->Get_NAME(),
 
-				m_pRecvPacket->m_gsv_ATTACK.m_PosTO.x, 
-				m_pRecvPacket->m_gsv_ATTACK.m_PosTO.y,
-				PosTO.z );
-		}
+		//		m_pRecvPacket->m_gsv_ATTACK.m_PosTO.x, 
+		//		m_pRecvPacket->m_gsv_ATTACK.m_PosTO.y,
+		//		PosTO.z );
+		//}
 #endif
 	}
 }
@@ -2145,8 +2181,7 @@ void CRecvPACKET::Recv_gsv_CHANGE_SKIN ()
 
 //-------------------------------------------------------------------------------------------------
 /// m_pRecvPacket->m_gsv_EQUIP_ITEM.m_nEquipIndex Comes with an inventory slot number is passed.
-/// @bug Check your movement speed.
-void CRecvPACKET::Recv_gsv_EQUIP_ITEM ()
+void CRecvPACKET::Recv_gsv_EQUIP_ITEM ()			//0x07a5
 {
 	CObjAVT *pCHAR = g_pObjMGR->Get_ClientCharAVT( m_pRecvPacket->m_gsv_EQUIP_ITEM.m_wObjectIDX, false );
 	if ( pCHAR ) 
@@ -2187,14 +2222,18 @@ void CRecvPACKET::Recv_gsv_EQUIP_ITEM ()
 
 				pCHAR->SetChangeWeaponR( nEquipItemNO );
 				pCHAR->ClearRWeaponSkillEffect();
-			} else
+			} 
+			else
+			{
 				if( nBodyPart == BODY_PART_WEAPON_L )
 				{
 					pCHAR->SetChangeWeaponL( nEquipItemNO );	
 					pCHAR->ClearLWeaponSkillEffect();
 				}
+			}
 
-				pCHAR->SetUpdateMotionFlag( true );
+			pCHAR->SetUpdateMotionFlag( true );
+
 		}
 
 		if( nBodyPart < MAX_BODY_PART )///2004 / 2 / 2 :Add nAvy - rings, necklaces, earrings, if it is not.
@@ -2223,12 +2262,12 @@ void CRecvPACKET::Recv_gsv_EQUIP_ITEM ()
 		if( pCHAR->IsA( OBJ_USER ) ) 
 		{
 			((CObjUSER*)pCHAR)->UpdateAbility();
+			//PY: don't really want this to run. It will calculate stuff that's already calculated in the server.
 		}
 
 		// Apply movement speed from the server.
 		pCHAR->SetOri_RunSPEED( m_pRecvPacket->m_gsv_EQUIP_ITEM.m_nRunSPEED[0] );
-		//PY: NOPE. done from the server now 
-		//pCHAR->Update_SPEED();
+		pCHAR->Update_ANI_SPEED();  //animation speed only. Had to rename the function as it was calling the wrong one
 	}
 }
 
@@ -2293,21 +2332,24 @@ void CRecvPACKET::Recv_gsv_SET_MONEYnINV ()
 
 //-------------------------------------------------------------------------------------------------
 /// 2004 / 2 / 19 : Crystal nAvy ( Add_ITEM => Set_ITEM );
-void CRecvPACKET::Recv_gsv_SET_INV_ONLY ()
+void CRecvPACKET::Recv_gsv_SET_INV_ONLY ()		//0x0718 inventory update
 {
 	_ASSERT( m_pRecvPacket->m_HEADER.m_nSize == sizeof( gsv_SET_INV_ONLY ) + sizeof( tag_SET_INVITEM ) * m_pRecvPacket->m_gsv_SET_INV_ONLY.m_btItemCNT );
 
 	if( g_pAVATAR )
 	{
 		g_pAVATAR->SetWaitUpdateInventory( true );
-		for (short nI=0; nI<m_pRecvPacket->m_gsv_SET_INV_ONLY.m_btItemCNT; nI++) 
+		for (short nI=0; nI<m_pRecvPacket->m_gsv_SET_INV_ONLY.m_btItemCNT; nI++) //1 or 2 items possible
 		{
-			g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_SET_INV_ONLY.m_sInvITEM[ nI ].m_btInvIDX,
-				m_pRecvPacket->m_gsv_SET_INV_ONLY.m_sInvITEM[ nI ].m_ITEM );
+			//quick test and repair to force stackable items NOT to have a socket. See CIconItem.cpp line 230~ish
+			if(m_pRecvPacket->m_gsv_SET_INV_ONLY.m_sInvITEM[ nI ].m_ITEM.IsEnableDupCNT())
+				m_pRecvPacket->m_gsv_SET_INV_ONLY.m_sInvITEM[ nI ].m_ITEM.m_bHasSocket = 0;
+			g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_SET_INV_ONLY.m_sInvITEM[ nI ].m_btInvIDX,	m_pRecvPacket->m_gsv_SET_INV_ONLY.m_sInvITEM[ nI ].m_ITEM );
 		}
 		g_pAVATAR->SetWaitUpdateInventory( false );
 
-		g_pAVATAR->UpdateAbility();///Recalculated in accordance with the item attached to modify stats
+		//PY: don't really want to do this any more
+		//g_pAVATAR->UpdateAbility();///Recalculated in accordance with the item attached to modify stats
 
 		if( g_pAVATAR->Get_COMMAND() & CMD_ATTACK )///If you are attacked
 		{
@@ -2329,7 +2371,7 @@ void CRecvPACKET::Recv_gsv_SET_INV_ONLY ()
 ///		2) If the item is indexed using the inventory when a packet is coming gsv_SET_INV_ONLY is not coming.
 /// 2. If another character is written (it comes only one time)
 ///     1) Effects
-void CRecvPACKET::Recv_gsv_USE_ITEM ()
+void CRecvPACKET::Recv_gsv_USE_ITEM ()		//0x07a3
 {
 
 	CObjAVT *pAVT = g_pObjMGR->Get_ClientCharAVT( m_pRecvPacket->m_gsv_USE_ITEM.m_wObjectIDX, true );
@@ -2442,7 +2484,8 @@ void CRecvPACKET::Recv_gsv_USE_ITEM ()
 					}
 				}
 			}
-		}else
+		}
+else
 		{
 			///If the status is changed to the item
 			WORD wUseItemNO = m_pRecvPacket->m_gsv_USE_ITEM.m_nUseItemNO;
@@ -3367,6 +3410,7 @@ void CRecvPACKET::Recv_gsv_SPEED_CHANGED ()		//0x07b8	Speed change packet??
 		pAVTChar->SetOri_RunSPEED( m_pRecvPacket->m_gsv_SPEED_CHANGED.m_nRunSPEED );			// Including the passive state, except for the persistent state
 		pAVTChar->SetPsv_AtkSPEED( m_pRecvPacket->m_gsv_SPEED_CHANGED.m_nPsvAtkSPEED );			// Passive values ??...
 
+
 		if( g_pAVATAR && pAVTChar->IsA( OBJ_USER ))
 			g_pAVATAR->UpdateAbility();
 
@@ -4068,7 +4112,7 @@ void CRecvPACKET::Recv_gsv_CHANGE_OBJIDX()
 
 }
 //-------------------------------------------------------------------------------------------------
-void CRecvPACKET::Recv_gsv_CREATE_ITEM_REPLY()
+void CRecvPACKET::Recv_gsv_CREATE_ITEM_REPLY()			//0x07af
 {
 	CTDialog* pDlg = g_itMGR.FindDlg( DLG_TYPE_MAKE );
 	if( pDlg && pDlg->IsVision() )
@@ -4078,7 +4122,7 @@ void CRecvPACKET::Recv_gsv_CREATE_ITEM_REPLY()
 	}
 }
 //-------------------------------------------------------------------------------------------------
-void CRecvPACKET::Recv_gsv_BANK_LIST_REPLY()
+void CRecvPACKET::Recv_gsv_BANK_LIST_REPLY()		//0x07ad
 {
 	if( !g_pAVATAR )
 		return;
@@ -4087,10 +4131,13 @@ void CRecvPACKET::Recv_gsv_BANK_LIST_REPLY()
 	{
 	case BANK_REPLY_INIT_DATA:
 		{
+			ClientLog( LOG_NORMAL, "Storage data action 0. Total slots: %i",m_pRecvPacket->m_gsv_BANK_LIST_REPLY.m_btItemCNT );
 			g_pAVATAR->InitBank();///
 			for( BYTE bt = 0; bt < m_pRecvPacket->m_gsv_BANK_LIST_REPLY.m_btItemCNT;++bt )
-				g_pAVATAR->SetBankItem(  m_pRecvPacket->m_gsv_BANK_LIST_REPLY.m_sInvITEM[bt].m_btInvIDX, 
-				m_pRecvPacket->m_gsv_BANK_LIST_REPLY.m_sInvITEM[bt].m_ITEM);
+			{
+				ClientLog( LOG_NORMAL, "Storage data action 0. type: %i number: %i count: %i slot %i",m_pRecvPacket->m_gsv_BANK_LIST_REPLY.m_sInvITEM[bt].m_ITEM.m_cType,m_pRecvPacket->m_gsv_BANK_LIST_REPLY.m_sInvITEM[bt].m_ITEM.m_nItemNo,m_pRecvPacket->m_gsv_BANK_LIST_REPLY.m_sInvITEM[bt].m_ITEM.GetQuantity(),m_pRecvPacket->m_gsv_BANK_LIST_REPLY.m_sInvITEM[bt].m_btInvIDX );
+				g_pAVATAR->SetBankItem(  m_pRecvPacket->m_gsv_BANK_LIST_REPLY.m_sInvITEM[bt].m_btInvIDX, m_pRecvPacket->m_gsv_BANK_LIST_REPLY.m_sInvITEM[bt].m_ITEM);
+			}
 
 			///Information is kept in the bank with the money when
 			short Not_IncludeMoneyPacketSize = sizeof( gsv_BANK_LIST_REPLY ) + sizeof(tag_SET_INVITEM) * m_pRecvPacket->m_gsv_BANK_LIST_REPLY.m_btItemCNT;
@@ -4129,16 +4176,22 @@ void CRecvPACKET::Recv_gsv_BANK_LIST_REPLY()
 	}
 }
 
-void CRecvPACKET::Recv_gsv_MOVE_ITEM()
+void CRecvPACKET::Recv_gsv_MOVE_ITEM()		//0x07ae
 {
 	if( !g_pAVATAR )
 		return;
 
 	if( m_pRecvPacket->m_gsv_MOVE_ITEM.m_nInvIDX >= 0 )
+	{
+		ClientLog( LOG_NORMAL, "Move item type: %i number: %i count: %i to INV slot %i",m_pRecvPacket->m_gsv_MOVE_ITEM.m_InvItem.m_cType,m_pRecvPacket->m_gsv_MOVE_ITEM.m_InvItem.m_nItemNo,m_pRecvPacket->m_gsv_MOVE_ITEM.m_InvItem.GetQuantity(),m_pRecvPacket->m_gsv_MOVE_ITEM.m_nInvIDX );
 		g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_MOVE_ITEM.m_nInvIDX, m_pRecvPacket->m_gsv_MOVE_ITEM.m_InvItem );
+	}
 
 	if( m_pRecvPacket->m_gsv_MOVE_ITEM.m_nBankIDX >= 0 )
+	{
+		ClientLog( LOG_NORMAL, "Move item type: %i number: %i count: %i to Bank slot %i",m_pRecvPacket->m_gsv_MOVE_ITEM.m_BankITEM.m_cType,m_pRecvPacket->m_gsv_MOVE_ITEM.m_BankITEM.m_nItemNo,m_pRecvPacket->m_gsv_MOVE_ITEM.m_BankITEM.GetQuantity(),m_pRecvPacket->m_gsv_MOVE_ITEM.m_nBankIDX );
 		g_pAVATAR->SetBankItem( m_pRecvPacket->m_gsv_MOVE_ITEM.m_nBankIDX, m_pRecvPacket->m_gsv_MOVE_ITEM.m_BankITEM );
+	}
 
 	// If the packet size == gsv_MOVE_ITEM storage => Inventory moves
 	// Packet size == gsv_MOVE_ITEM + sizeof (__int64) surface inventory => storage, m_iCurMoney [0] contains the money that
@@ -4871,24 +4924,31 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 	//									// Exception) CRAFT_UPGRADE_SUCCESS, CRAFT_UPGRADE_FAILED If the
 	//									// m_sInvITEM [m_btOutCNT-1]. m_uiQuantity example of the success that the calculated value is
 	//} ;
-
+	ClientLog (LOG_NORMAL, "Craft Reply switch value %i", m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btRESULT );
 	switch( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btRESULT )
 	{
-	case	CRAFT_GEMMING_SUCCESS:		//	0x01
+		case	CRAFT_GEMMING_SUCCESS:		//	0x01
 		{
-			//PY: Fix gemming later
-			/*
+			ClientLog (LOG_NORMAL, "Gemming the item. %i items in the packet", m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT );
+			tagITEM*	pItem = NULL;
 			g_pAVATAR->SetWaitUpdateInventory( true );
 			for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT; i++ )
 			{
+				
+				pItem = &m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM;
+				if( !pItem->IsEnableDupCNT() )
+				{
+					m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM.m_uiQuantity = 1;
+				}
+				tag_SET_INVITEM tmpItem = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ];
+				ClientLog (LOG_NORMAL, "Gemming Success. Item %i: type: %i: number:  %i: Slot: %i Created: %i GemNo: %i Appraised: %i HasSlot: %i Refine: %i Count: %i", i + 1, tmpItem.m_ITEM.m_cType, tmpItem.m_ITEM.m_nItemNo, tmpItem.m_btInvIDX, tmpItem.m_ITEM.m_bCreated, tmpItem.m_ITEM.m_nGEM_OP, tmpItem.m_ITEM.m_bIsAppraisal, tmpItem.m_ITEM.m_bHasSocket, tmpItem.m_ITEM.m_cGrade, tmpItem.m_ITEM.m_uiQuantity );
+					
 				int iPartIdx = CInventory::GetBodyPartByEquipSlot( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX );
 
 				if( g_pAVATAR )
 				{
-					g_pAVATAR->SetPartITEM( iPartIdx,
-						m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM );
-					g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX,
-						m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM );
+					g_pAVATAR->SetPartITEM( iPartIdx, m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM );
+					g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX,	m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM );
 					/// Because packets are carried Equip Property seems unnecessary.
 					/// Doeldeut updated only when the item slot.
 					g_pAVATAR->Update();
@@ -4899,21 +4959,25 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 
 
 			g_itMGR.AppendChatMsg( STR_GEMMING_SUCCESS, IT_MGR::CHAT_TYPE_SYSTEM );					
-			*/
+			
+			break;
 		}
-		break;
-	case	CRAFT_GEMMING_NEED_SOCKET:	//	0x02	// No sockets.
+		
+		case	CRAFT_GEMMING_NEED_SOCKET:	//	0x02	// No sockets.
 		{
-			g_itMGR.AppendChatMsg( STR_GEMMING_NEED_SOCKET, IT_MGR::CHAT_TYPE_SYSTEM );					
+			g_itMGR.AppendChatMsg( STR_GEMMING_NEED_SOCKET, IT_MGR::CHAT_TYPE_SYSTEM );	
+			break;
 		}
-		break;
-	case	CRAFT_GEMMING_USED_SOCKET:	//	0x03	// If jammed, and more ....
-		break;
+		
+		case	CRAFT_GEMMING_USED_SOCKET:	//	0x03	// If jammed, and more ....
+		{
+			break;
+		}
 
-	case	CRAFT_BREAKUP_SUCCESS_GEM:	//	0x04	// Jewelry separate success
+		case	CRAFT_BREAKUP_SUCCESS_GEM:	//	0x04	// Jewelry separate success
 		{
 			//PY: fix later
-			/*
+			
 			if( g_pAVATAR )
 			{
 				g_pAVATAR->SetWaitUpdateInventory( true );
@@ -4942,14 +5006,15 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 
 				SE_SuccessSeparate( g_pAVATAR->Get_INDEX() );
 			}
-			*/
+			
 
 			break;
 		}
-	case	CRAFT_BREAKUP_DEGRADE_GEM:	//	0x05	// Jewelry separate success, jewelery rating downgrade
+
+		case	CRAFT_BREAKUP_DEGRADE_GEM:	//	0x05	// Jewelry separate success, jewelery rating downgrade
 		{
 			//PY: fix later
-			/*
+			
 			if( g_pAVATAR )
 			{
 				g_pAVATAR->SetWaitUpdateInventory( true );
@@ -4977,13 +5042,14 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 				SE_SuccessSeparate( g_pAVATAR->Get_INDEX() );
 				g_itMGR.OpenMsgBox(STR_CRAFT_BREAKUP_DEGRADE_GEM);
 			}
-			*/
+			
 			break;
 		}
-	case	CRAFT_BREAKUP_CLEARED_GEM:	//	0x06	// Jewelry separate successful, jewelry deleted
+
+		case	CRAFT_BREAKUP_CLEARED_GEM:	//	0x06	// Jewelry separate successful, jewelry deleted
 		{
 			//PY: Fix later
-			/*
+			
 			if( g_pAVATAR )
 			{
 				g_pAVATAR->SetWaitUpdateInventory( true );
@@ -5012,31 +5078,29 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 				g_itMGR.OpenMsgBox(STR_CRAFT_BREAKUP_CLEARED_GEM);
 				SE_SuccessSeparate( g_pAVATAR->Get_INDEX() );
 			}
-			*/
+			
 			break;
 		}
 
-	case	CRAFE_BREAKUP_SUCCESS:		//	0x07	// Items disassembly success
+		case	CRAFE_BREAKUP_SUCCESS:		//	0x07	// Items disassembly success
 		{
 
 			if( g_pAVATAR )
 			{
 				ClientLog (LOG_NORMAL, "Breaking the item. Giving %i items ", m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT );
-
 				CSeparate& Separate = CSeparate::GetInstance();
-
 				switch( Separate.GetType() )
 				{
-				case CSeparate::TYPE_SKILL:
-					//06. 01. 1 :Kim, Joo - Hyun - New version of the disassembly, so the skill MP consumption by not getting the basic skills.
-					break;
+					case CSeparate::TYPE_SKILL:
+						//06. 01. 1 :Kim, Joo - Hyun - New version of the disassembly, so the skill MP consumption by not getting the basic skills.
+						break;
 
-				case CSeparate::TYPE_NPC:
-					g_pAVATAR->Set_MONEY( g_pAVATAR->Get_MONEY() - Separate.GetRequireMoney() );
-					break;
+					case CSeparate::TYPE_NPC:
+						g_pAVATAR->Set_MONEY( g_pAVATAR->Get_MONEY() - Separate.GetRequireMoney() );
+						break;
 
-				default:
-					break;
+					default:
+						break;
 				}
 
 				Separate.ClearResultItemSet();
@@ -5046,59 +5110,40 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 				//		m_sInvITEM last m_ITEM be zero filled. attention.
 				for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT; i++ )
 				{
+					tag_SET_INVITEM tmpItem = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ];
+					ClientLog (LOG_NORMAL, "Disassembly Success. Item %i: type: %i: number:  %i: Slot: %i Created: %i Appraised: %i HasSlot: %i Refine: %i Count: %i", i + 1, tmpItem.m_ITEM.m_cType, tmpItem.m_ITEM.m_nItemNo, tmpItem.m_btInvIDX, tmpItem.m_ITEM.m_bCreated, tmpItem.m_ITEM.m_bIsAppraisal, tmpItem.m_ITEM.m_bHasSocket, tmpItem.m_ITEM.m_cGrade, tmpItem.m_ITEM.m_uiQuantity );
 					
-					tag_SET_INVITEM tmpItem;
-					tmpItem.m_btInvIDX = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[i].py_Slot;
-					short ThisType = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].py_ItemType;
-					short ThisNo = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].py_ItemNum;
-					byte ItemCnt = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM [i ].py_ItemCnt;
-					ClientLog (LOG_NORMAL, "Item %i: type: %i: number:  %i: Slot: %i: Count: %i", i + 1, ThisType, ThisNo, tmpItem.m_btInvIDX, ItemCnt );
-					if(ThisType >= ITEM_TYPE_USE && ThisType < ITEM_TYPE_RIDE_PART)	//It's stackable Type 10, 11, 12, 13.  
-					{
-						tmpItem.m_ITEM.SetItemNo(ThisNo);
-						tmpItem.m_ITEM.SetType1(ThisType);
-						tmpItem.m_ITEM.SetQuantity1(ItemCnt);
-					}
-					else	//It's an equip
-					{
-						tmpItem.m_ITEM.SetItemNo(ThisNo);
-						tmpItem.m_ITEM.SetType(ThisType);
-						ItemCnt = 1;
-					}
-					//Maybe we need to send it this function a number of times equal to the item count
-					//for( int j=0; j< ItemCnt; j++)
-					//{
-						//ClientLog (LOG_NORMAL, "Sending item %i of %i",j,ItemCnt);
-						Separate.AddResultItemSet( tmpItem );
-					//}
-					//Separate.AddResultItemSet( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ] );
+					Separate.AddResultItemSet( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ] );
 				}
 				ClientLog (LOG_NORMAL, "Finished adding the items");
 				Separate.SetResult(m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btRESULT );
 				ClientLog (LOG_NORMAL, "Finished SetResult");
-
 			}
 			break;
-
 		}
-	case	CRAFE_INVALID_ITEM:  // Something went wrong!
+
+		case	CRAFE_INVALID_ITEM:  // 0x08	Something went wrong!
 		{
 #ifdef _NEWINTERFACEKJH
 			g_itMGR.OpenMsgBox( "CRAFT_INVALID_ITEM_ERROR" );
 #endif
+			break;
 		}
-		break;
-	case	CRAFT_UPGRADE_SUCCESS:		//	0x10	// Jaeryeon success
+		
+		case	CRAFT_UPGRADE_SUCCESS:		//	0x10	// Jaeryeon success
 		{
-			//PY: fix later
-			/*
+			
 			if( g_pAVATAR )
 			{
 				CUpgrade& Upgrade = CUpgrade::GetInstance();
 				Upgrade.ClearResultItemSet();
 
 				for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT - 1; i++ )
+				{
+					tag_SET_INVITEM tmpItem = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ];
+					ClientLog (LOG_NORMAL, "Upgrade Success. Item %i: type: %i: number:  %i: Slot: %i Created: %i Appraised: %i HasSlot: %i Refine: %i Count: %i", i + 1, tmpItem.m_ITEM.m_cType, tmpItem.m_ITEM.m_nItemNo, tmpItem.m_btInvIDX, tmpItem.m_ITEM.m_bCreated, tmpItem.m_ITEM.m_bIsAppraisal, tmpItem.m_ITEM.m_bHasSocket, tmpItem.m_ITEM.m_cGrade, tmpItem.m_ITEM.m_uiQuantity );
 					Upgrade.AddResultItemSet( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ] );
+				}
 
 				Upgrade.SetResultSuccessProb( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT - 1].m_ITEM.m_uiQuantity );
 				Upgrade.SetResult( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btRESULT  );
@@ -5115,19 +5160,22 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 					break;
 				}
 			}
-			*/
 			break;
 		}
-	case	CRAFT_UPGRADE_FAILED:		//	0x11	// Failure jaeryeon
+
+		case	CRAFT_UPGRADE_FAILED:		//	0x11	// Failure jaeryeon
 		{
-			//PY: fix later
-			/*
+			
 			if( g_pAVATAR )
 			{
 				CUpgrade& Upgrade = CUpgrade::GetInstance();
 				Upgrade.ClearResultItemSet();
 				for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT - 1; i++ )
+				{
+					tag_SET_INVITEM tmpItem = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ];
+					ClientLog (LOG_NORMAL, "Upgrade failed. Item %i: type: %i: number:  %i: Slot: %i Created: %i Appraised: %i HasSlot: %i Refine: %i Count: %i", i + 1, tmpItem.m_ITEM.m_cType, tmpItem.m_ITEM.m_nItemNo, tmpItem.m_btInvIDX, tmpItem.m_ITEM.m_bCreated, tmpItem.m_ITEM.m_bIsAppraisal, tmpItem.m_ITEM.m_bHasSocket, tmpItem.m_ITEM.m_cGrade, tmpItem.m_ITEM.m_uiQuantity );
 					Upgrade.AddResultItemSet( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ] );
+				}
 
 				Upgrade.SetResultSuccessProb( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT - 1].m_ITEM.m_uiQuantity );
 
@@ -5149,20 +5197,18 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 					break;
 				}
 			}
-			*/
 			break;
 		}
-		break;		//PY: why is this break here and not above where i added one?
-	case	CRAFT_UPGRADE_INVALID_MAT:	//	0x12	// Material items are wrong.
+		
+		case	CRAFT_UPGRADE_INVALID_MAT:	//	0x12	// Material items are wrong.
 		{
 			CUpgrade::GetInstance().SetResult( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btRESULT  );
 			break;
 		}
 	
-	case	CRAFT_GIFTBOX_SUCCESS:		// 0x13		// Gift box disassembly
+		case	CRAFT_GIFTBOX_SUCCESS:		// 0x13		// Gift box disassembly
 		{
-			//PY: fix later
-			/*
+			//ClientLog (LOG_NORMAL, "CRAFT_GIFTBOX_SUCCESS packet received");
 			if( g_pAVATAR )
 			{
 				tagITEM		ItemData;
@@ -5171,11 +5217,13 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 				CreateMsgBoxData MsgBoxData;
 				MsgBoxData.strMsg = STR_GETTING_GIFTBOX;
 				CIconItem* pItemIcon = NULL;
-
+				//ClientLog (LOG_NORMAL, "CRAFT_GIFTBOX_SUCCESS delivering %i items", m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT );
 				g_pAVATAR->SetWaitUpdateInventory( true );
 				for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT; i++ )
 				{
 					pItem = &m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM;
+					tag_SET_INVITEM tmpItem = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ];
+					ClientLog (LOG_NORMAL, "Giftbox success. Item %i: type: %i: number:  %i: Slot: %i Created: %i Appraised: %i HasSlot: %i Refine: %i Count: %i", i + 1, tmpItem.m_ITEM.m_cType, tmpItem.m_ITEM.m_nItemNo, tmpItem.m_btInvIDX, tmpItem.m_ITEM.m_bCreated, tmpItem.m_ITEM.m_bIsAppraisal, tmpItem.m_ITEM.m_bHasSocket, tmpItem.m_ITEM.m_cGrade, tmpItem.m_ITEM.m_uiQuantity );
 					if( !pItem->IsEmpty() )
 					{
 						if( !pItem->IsEnableDupCNT() )
@@ -5204,73 +5252,83 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 				g_itMGR.OpenMsgBox2(MsgBoxData);
 				SE_SuccessGiftBox( g_pAVATAR->Get_INDEX() );
 			}
-			*/
+			else
+			{
+				ClientLog (LOG_NORMAL, "Apparently NOT the avatar. Weird");
+			}
 			break;
 		}
-	case  CRAFT_DRILL_SOCKET_SUCCESS	:    //Socket create success
+
+		case  CRAFT_DRILL_SOCKET_SUCCESS:    // 0x20	Socket create success
 		{
-			//fix later
-			/*
+			
 			g_pAVATAR->SetWaitUpdateInventory( true );
 			for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT; i++ )
 			{
-				g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX,
-					m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM );
+				tag_SET_INVITEM tmpItem = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ];
+				ClientLog (LOG_NORMAL, "Drill Socket Success. Item %i: type: %i: number:  %i: Slot: %i Created: %i Appraised: %i HasSlot: %i Refine: %i Count: %i", i + 1, tmpItem.m_ITEM.m_cType, tmpItem.m_ITEM.m_nItemNo, tmpItem.m_btInvIDX, tmpItem.m_ITEM.m_bCreated, tmpItem.m_ITEM.m_bIsAppraisal, tmpItem.m_ITEM.m_bHasSocket, tmpItem.m_ITEM.m_cGrade, tmpItem.m_ITEM.m_uiQuantity );
+				g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX, m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM );
 			}
 			g_pAVATAR->SetWaitUpdateInventory( false );
 			g_pAVATAR->UpdateInventory();
 			CGame::GetInstance().EndMakeSocket(); 
 			g_itMGR.OpenMsgBox( STR_MAKESOCKET_SUCCESS );
-			*/
+			SE_SuccessUpgrade( g_pAVATAR->Get_INDEX() );
+			break;
 		}
-		SE_SuccessUpgrade( g_pAVATAR->Get_INDEX() );
-		break;
-	case  CRAFT_DRILL_CLEAR_USEITME      :    // Only items, we disappeared.
+		
+		case  CRAFT_DRILL_CLEAR_USEITME:    // 0x21	Failed to drill. Remove drill item anyway
 		{
-			/*
+			
 			g_pAVATAR->SetWaitUpdateInventory( true );
 			for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT; i++ )
 			{
-				g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX,
-					m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM );
+				tag_SET_INVITEM tmpItem = m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ];
+				ClientLog (LOG_NORMAL, "Drill Failure. Item %i: type: %i: number:  %i: Slot: %i Created: %i Appraised: %i HasSlot: %i Refine: %i Count: %i", i + 1, tmpItem.m_ITEM.m_cType, tmpItem.m_ITEM.m_nItemNo, tmpItem.m_btInvIDX, tmpItem.m_ITEM.m_bCreated, tmpItem.m_ITEM.m_bIsAppraisal, tmpItem.m_ITEM.m_bHasSocket, tmpItem.m_ITEM.m_cGrade, tmpItem.m_ITEM.m_uiQuantity );
+				g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX,	m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM );
 			}
 			g_pAVATAR->SetWaitUpdateInventory( false );
 			g_pAVATAR->UpdateInventory();
 			CGame::GetInstance().EndMakeSocket();
 			g_itMGR.OpenMsgBox( STR_MAKESOCKET_FAILED );
-			*/
+			
+			SE_FailUpgrade( g_pAVATAR->Get_INDEX() );
+			break;
 		}
-		SE_FailUpgrade( g_pAVATAR->Get_INDEX() );
-		break;
-	case CRAFE_DRILL_INVALID_USEITEM   :    //Item is not a drill.
+		
+		case CRAFE_DRILL_INVALID_USEITEM:	  // 0x22		Item is not a drill.
 		{
 			int k=0;
+			break;
 		}
-		break;
-	case	CRAFT_DRILL_EXIST_SOCKET	        :	  // The socket is already.
+		
+		case	CRAFT_DRILL_EXIST_SOCKET:	  // 0x23		The socket is already.
 		{
 			int k=0;
-
+			break;
 		}
-		break;
-	case	CRAFT_DRILL_INVALID_TITEM	    :	  //Items that can not penetrate the socket ...
+		
+		case	CRAFT_DRILL_INVALID_TITEM:	  // 0x24		Items that can not penetrate the socket ... Too low grade?
 		{
 			int k=0;
-
+			break;
 		}
-		break;
-	case CRAFE_NOT_ENOUGH_MONEY:
+		
+		case CRAFE_NOT_ENOUGH_MONEY:		// 0x09
 		{
 			g_itMGR.OpenMsgBox( STR_NOT_ENOUGH_MONEY );
 			break;
 		}
-	case CRAFE_NOT_ENOUGH_MP:
+		case CRAFE_NOT_ENOUGH_MP:			// 0x0a
 		{
 			g_itMGR.OpenMsgBox( STR_NOT_ENOUGH_MANA);
 			break;
 		}
-	default:
-		break;
+		default:
+		{
+			ClientLog (LOG_NORMAL, "Craft did not find a valid case from server packet");
+			break;
+		}
 	}
 }
 
@@ -5281,7 +5339,7 @@ void CRecvPACKET::Recv_gsv_USED_ITEM_TO_REPAIR()
 	if( g_pAVATAR )
 		g_pAVATAR->UpdateAbility();
 }
-void CRecvPACKET::Recv_gsv_REPAIRED_FROM_NPC()
+void CRecvPACKET::Recv_gsv_REPAIRED_FROM_NPC()		//0x07cd
 {
 	Recv_gsv_SET_MONEYnINV();
 
@@ -5351,9 +5409,11 @@ void CRecvPACKET::Recv_gsv_REWARD_ITEM()
 	}
 }
 
-void CRecvPACKET::Recv_gsv_REWARD_ADD_ABILITY()
+void CRecvPACKET::Recv_gsv_REWARD_ADD_ABILITY()			//0x0720		stat rewards
 {
-	g_QuestRewardQueue.PushAddAbility( m_pRecvPacket->m_gsv_SET_ABILITY );
+	//g_QuestRewardQueue.PushAddAbility( m_pRecvPacket->m_gsv_SET_ABILITY );  //Why queue it? just give the stat immediately
+	ClientLog (LOG_NORMAL, "Stat Reward stat: %i Value: %i",m_pRecvPacket->m_gsv_SET_ABILITY.m_wAbilityTYPE,m_pRecvPacket->m_gsv_SET_ABILITY.m_iValue);
+	g_QuestRewardQueue.AddAbility( m_pRecvPacket->m_gsv_SET_ABILITY );
 }
 
 void CRecvPACKET::Recv_gsv_REWARD_SET_ABILITY()
@@ -5571,17 +5631,28 @@ void CRecvPACKET::Recv_gsv_CHAR_HPMP_INFO()
 //PY: Adding a new packet structure to receive stat information beyond HP and MP	0x07ed
 void CRecvPACKET::Recv_gsv_CHAR_STAT_INFO()
 {
-	if( g_pAVATAR )
+	CObjAVT *pCHAR = g_pObjMGR->Get_ClientCharAVT( m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_wObjectIDX, false );
+	if ( pCHAR ) 
 	{
-		g_pAVATAR->m_Battle.m_nATT = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurAP;
-		g_pAVATAR->m_Battle.m_nDEF = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurDef;
-		g_pAVATAR->m_Battle.m_nHIT = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurAccuracy;
-		g_pAVATAR->m_Battle.m_nAVOID = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurDodge;
-		g_pAVATAR->m_Battle.m_nRES = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurMDef;
-		g_pAVATAR->m_Battle.m_iCritical = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurCrit;
-		g_pAVATAR->m_Battle.m_nMaxWEIGHT = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurMaxWeight;
-
-		//To Do Add move speed modification here
+		if( pCHAR->IsUSER() )
+		{
+			((CObjAVT*)pCHAR)->SetOri_RunSPEED( m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurMSPD );	//update move speed for all in visible range
+			ClientLog (LOG_NORMAL, " 0x07ed Avatar move speed set to %i", pCHAR->GetOri_RunSPEED());
+			((CObjAVT*)pCHAR)->Update_ANI_SPEED();		//PY Animation speed only
+			ClientLog (LOG_NORMAL, " 0x07ed Avatar move speed after Update_SPEED: %i", pCHAR->GetOri_RunSPEED());
+			if( pCHAR->IsA( OBJ_USER ) && g_pAVATAR ) //pCHAR is my avatar. I'm the only one who needs to see this stuff
+			{
+				//pCHAR->SetWeightRate(m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurMaxWeight);
+				g_pAVATAR->m_Battle.m_nMaxWEIGHT = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurMaxWeight;
+				g_pAVATAR->m_Battle.m_nATT = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurAP;
+				g_pAVATAR->m_Battle.m_nDEF = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurDef;
+				g_pAVATAR->m_Battle.m_nHIT = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurAccuracy;
+				g_pAVATAR->m_Battle.m_nAVOID = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurDodge;
+				g_pAVATAR->m_Battle.m_nRES = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurMDef;
+				g_pAVATAR->m_Battle.m_iCritical = m_pRecvPacket->m_gsv_CHAR_STAT_INFO.m_CurCrit;
+			}
+		}
+		//To Do 
 		//Possibly add things such as attack speed also. not sure if it's needed yet
 	}
 }
@@ -6342,7 +6413,7 @@ void CRecvPACKET::Recv_gsv_CLANWAR_BOSS_HP()
 //=======================================================================================
 
 
-void CRecvPACKET::Recv_gsv_ITEM_RESULT_REPORT()
+void CRecvPACKET::Recv_gsv_ITEM_RESULT_REPORT()				//0x07d8 crafting packet
 {
 	WORD wObjectIdx = m_pRecvPacket->m_gsv_ITEM_RESULT_REPORT.m_wObjectIDX;
 	if( CObjAVT* pAvt = g_pObjMGR->Get_ClientCharAVT( wObjectIdx, false ) )
@@ -6373,7 +6444,7 @@ void CRecvPACKET::Recv_gsv_ITEM_RESULT_REPORT()
 	}
 }
 
-void CRecvPACKET::Recv_gsv_MALL_ITEM_REPLY()
+void CRecvPACKET::Recv_gsv_MALL_ITEM_REPLY()		//0x07d9
 {
 	switch( m_pRecvPacket->m_gsv_MALL_ITEM_REPLY.m_btReplyTYPE )
 	{

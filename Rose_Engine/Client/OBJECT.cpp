@@ -599,19 +599,24 @@ int CObjectMANAGER::Add_NpcCHAR( WORD wServerObjectIndex, short nCharIdx, const 
 	int iObjSlot;
 
 	iObjSlot = Get_EmptySlot ();
-	if ( !iObjSlot ) {
-		LogString (LOG_DEBUG, "Out of object slot ... in add npc char \n");
+	if ( !iObjSlot ) 
+	{
+		//ClientLog (LOG_NORMAL, "Add_NpcCHAR:: Could not get an object slot");
+		//LogString (LOG_DEBUG, "Out of object slot ... in add npc char \n");
 		return 0;
 	}
 
 	CObjNPC *pCHAR = new CObjNPC;
-	if ( NULL == pCHAR ) {
-		LogString (LOG_DEBUG, "Out of memory ... in add mob npc \n");
+	if ( NULL == pCHAR ) 
+	{
+		//ClientLog (LOG_NORMAL, "Add_NpcCHAR:: New NPC object failed");
+		//LogString (LOG_DEBUG, "Out of memory ... in add mob npc \n");
 		return 0;
 	}
 	
 	if ( !pCHAR->Create( nCharIdx, Position, nQuestIDX, (NPC_WALK_SPEED( nCharIdx )==0)?false:true) ) {
-		LogString (LOG_DEBUG, "mob char create failed \n");
+		//ClientLog (LOG_NORMAL, "Add_NpcCHAR:: New NPC object created");
+		//LogString (LOG_DEBUG, "mob char create failed \n");
 		delete pCHAR;
 		return 0;
 	}

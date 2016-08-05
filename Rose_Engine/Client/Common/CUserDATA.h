@@ -490,6 +490,8 @@ public:
 	int	  GetCur_SkillPOINT ()		{	return	this->m_GrowAbility.m_nSkillPoint;	}
 	BYTE  GetCur_HeadSIZE()			{	return	this->m_GrowAbility.m_btHeadSIZE;	}
 	BYTE  GetCur_BodySIZE()			{	return	this->m_GrowAbility.m_btBodySIZE;	}
+	void  SetCur_HeadSIZE(short nValue) { this->m_GrowAbility.m_btHeadSIZE = nValue; }
+	void  SetCur_BodySIZE(short nValue) { this->m_GrowAbility.m_btBodySIZE = nValue; }
 	
 	short	GetCur_PatHP();
 	void	SetCur_PatHP( short nPatHP );

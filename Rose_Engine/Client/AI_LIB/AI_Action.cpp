@@ -424,7 +424,7 @@ struct AIACT16
 {
 	DWORD	dwSize;		/// The size of this structure
 	AITYPE	Type;		/// Type = AIACT_16 . Escape
-	int		iDistance ;	/// Within a few meters away and the spawn point
+	int		iDistance ;	/// Within a few meters away from the spawn point
 };
 */
 	AIACT16 *pAct = (AIACT16*)pActDATA;

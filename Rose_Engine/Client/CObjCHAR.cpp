@@ -1772,8 +1772,8 @@ void CObjCHAR::Dead ()
 			}
 
 			m_btMoveMODE = MOVE_MODE_RUN;
-			//PY: this is just for setting animation rates. WTF do they share teh same damn function name?
-			pAVT->Update_SPEED();
+			//PY: this is just for setting animation rates. 
+			pAVT->Update_ANI_SPEED();
 		}
 		else
 		{
@@ -4693,15 +4693,15 @@ bool CObjMOB::Create (short nCharIdx, const D3DVECTOR& Position, short nQuestIDX
 
 
 	m_nCharIdx = nCharIdx;
-	//if(nMonSize == 0)
-	//{
-	//	m_fScale = NPC_SCALE( nCharIdx ) / 100.f;
-	//}
-	//else
-	//{
-	m_fScale = nMonSize / 100.f;
+	if(nMonSize == 0)
+	{
+		m_fScale = NPC_SCALE( nCharIdx ) / 100.f;
+	}
+	else
+	{
+		m_fScale = nMonSize / 100.f;
 		//ClientLog (LOG_NORMAL, "CObjMOB::Create set a value of %f for monster size %i", m_fScale, nMonSize );
-	//}
+	}
 	if ( CObjCHAR::CreateCHAR (szName, pMODEL, pMODEL->GetPartCNT(), Position) )
 	{
 		this->m_iHP = NPC_HP( m_nCharIdx );

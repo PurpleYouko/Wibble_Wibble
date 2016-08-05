@@ -232,7 +232,7 @@ void CUserDATA::Cal_BattleAbility ()
 			case CLASS_MERCHANT_421	:	// 2차 부즈주아
 			case CLASS_MERCHANT_422	:	// 2차 아티쟌
 				this->m_Battle.m_nMaxHP += 300;			//PY: Looks like just increased stuff for if you have a job. Totally not needed any more
-				this->m_Battle.m_nATT   += 30;				//PY:	left this along for now since I'm only working on HP and MaxHP
+				this->m_Battle.m_nATT   += 30;				
 				this->m_Battle.m_nDEF   += 25;
 				this->m_Battle.m_nRES   += 20;
 				SetDef_IMMUNITY( 30 );
@@ -1287,13 +1287,12 @@ bool CUserDATA::Set_AbilityValue (WORD nType, int iValue)
 		case AT_BONUSPOINT	:
 		case AT_SKILLPOINT	:
 		case AT_CHAOS	:
-		case AT_PK_LEV	:		
-
-		case AT_HEAD_SIZE :		
-		case AT_BODY_SIZE :		
+		case AT_PK_LEV	:
 		// case AT_BATTLE_LEV :
 			break;
 		*/
+		case AT_HEAD_SIZE :	SetCur_HeadSIZE( iValue );			return true;
+		case AT_BODY_SIZE :	SetCur_BodySIZE( iValue );			return true;
 
 		case AT_PK_FLAG :	SetCur_PK_FLAG( iValue );			return true;
 		case AT_TEAM_NO :	SetCur_TeamNO( iValue );			return true;	
@@ -1320,6 +1319,7 @@ bool CUserDATA::Set_AbilityValue (WORD nType, int iValue)
 
 void CUserDATA::Add_AbilityValue (WORD wType, int iValue)
 {
+	ClientLog (LOG_NORMAL, "Add_AbilityValue stat: %i Value: %i",wType,iValue);
 	switch( wType ) {
 		/*
 		case AT_BIRTHSTONE :

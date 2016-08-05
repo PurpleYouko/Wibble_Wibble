@@ -62,7 +62,7 @@ void CQuestRewardQueue::PushSetAbility( gsv_SET_ABILITY& sSetAbility )
 	m_SetAbilityList.push_back( sSetAbility );
 }
 
-void CQuestRewardQueue::PushAddAbility( gsv_SET_ABILITY& sAddAbility )
+void CQuestRewardQueue::PushAddAbility( gsv_SET_ABILITY& sAddAbility )	//0x0720
 {
 	m_AddAbilityList.push_back( sAddAbility );
 }

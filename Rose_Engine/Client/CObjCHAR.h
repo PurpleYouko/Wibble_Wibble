@@ -1303,7 +1303,7 @@ public :
 	/// > virtual function of CObjAVT
 	/// >
 
-	virtual void				Update_SPEED ()			//PY: I think this is just for animation purposes
+	virtual void				Update_ANI_SPEED ()			//PY: I think this is just for animation purposes
 	{	
 		m_nAtkAniSPEED = Cal_AtkAniSPEED( this->GetPartITEM(BODY_PART_WEAPON_R) );
 		m_fRunAniSPEED = Cal_RunAniSPEED( m_nRunSPEED );

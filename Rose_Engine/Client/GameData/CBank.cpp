@@ -29,14 +29,14 @@ void CBank::SetItem( int iIndex, tagITEM& Item )
 {
 	std::map< int, CItem* >::iterator iter;
 	
-	CItem* pItem = NULL;
+	CItem* pItem; // = NULL; should not be necessary to NULL it now that we have a constructor in the CItem class
 	iter = m_Items.find( iIndex );
 	if( iter != m_Items.end() )
 	{
 		pItem = iter->second;
 
 		tagITEM TempItem;
-		TempItem.Clear();
+		TempItem.Clear(); //added abunch more initializers into this fucntion
 		pItem->SetItem( TempItem );
 
 		SetChanged();

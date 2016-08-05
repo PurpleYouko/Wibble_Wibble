@@ -136,11 +136,14 @@ void tagBaseITEM::Init(int iItem, unsigned int uiQuantity)
 		return;
 	this->m_cType    = (char)(iItem / ITEMTYPE_SERPERATE);
 	this->m_nItemNo  = iItem % ITEMTYPE_SERPERATE;
-	if ( this->IsEnableDupCNT() ) {
+	if ( this->IsEnableDupCNT() ) 
+	{
 		if ( uiQuantity > MAX_DUP_ITEM_QUANTITY )
 			uiQuantity = 1;
 		this->m_uiQuantity = uiQuantity;
-	} else {
+	} 
+	else 
+	{
 		this->m_nLife	    = MAX_ITEM_LIFE;		// 기본 수명은 1000으로 ..
 		this->m_cDurability = ITEM_DURABITY( this->m_cType, this->m_nItemNo );
 	}

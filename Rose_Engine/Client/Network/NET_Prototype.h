@@ -1193,6 +1193,7 @@ struct gsv_CHAR_HPMP_INFO:public t_PACKETHEADER			//0x07ec packet. HP and MP sen
 
 struct gsv_CHAR_STAT_INFO:public t_PACKETHEADER			//0x07ed packet. Attack, Dodge, Def etc. sent from server		///PY: added to give server full control
 {
+	WORD m_wObjectIDX;		//Client ID
 	short m_CurAP;			//Attack Power
 	short m_CurDef;			//Defense
 	short m_CurAccuracy;	//Accuracy
@@ -2956,29 +2957,35 @@ struct cli_CRAFT_DRILL_SOCKET_REQ : public cli_CRAFT_ITEM_REQ
 #define CRAFT_GIFTBOX_SUCCESS		0X13	// Gift box decomposition
 
 //Socket drill system. ..                   Heo Jae-Young (2005.10.27)
-#define CRAFT_DRILL_SOCKET_SUCCESS	0x20    //Small cat creation success
-#define CRAFT_DRILL_CLEAR_USEITME      0x21    // Drill items disappeared ...
-#define CRAFE_DRILL_INVALID_USEITEM   0x22    //Drill items.
-#define	CRAFT_DRILL_EXIST_SOCKET	        0x23	  // The socket is already in.
-#define	CRAFT_DRILL_INVALID_TITEM	    0x24	  //Sockets, impenetrable items ...
+#define CRAFT_DRILL_SOCKET_SUCCESS	0x20    // Success socket created
+#define CRAFT_DRILL_CLEAR_USEITME   0x21    // Fail but Drill items removed anyway
+#define CRAFE_DRILL_INVALID_USEITEM 0x22    // This is not a drill
+#define	CRAFT_DRILL_EXIST_SOCKET	0x23	// The socket is already in.
+#define	CRAFT_DRILL_INVALID_TITEM	0x24	// Sockets, impenetrable items ... Drill grade too low?
 
 struct tmp_InvItem
 {
 	byte py_Slot;
 	short py_ItemType;
 	short py_ItemNum;
-	byte py_ItemCnt;
+	short py_GemNum;
+	short py_Slotted;
+	short py_Appraised;
+	short py_Dura;
+	short py_Life;
+	short py_Grade;		//refine level
+	short py_ItemCnt;
 };
 
 struct gsv_CRAFT_ITEM_REPLY : public t_PACKETHEADER 
 {
 	BYTE			m_btRESULT;
 	BYTE			m_btOutCNT;			// Change the number of items
-	//tag_SET_INVITEM	m_sInvITEM[ 0 ];	// For as long as the number is changed ... 
+	tag_SET_INVITEM	m_sInvITEM[ 0 ];	// For as long as the number is changed ... 
 										// CRAFT_UPGRADE_SUCCESS, CRAFT_UPGRADE_FAILED, exception) if
 										// m_sInvITEM[ m_btOutCNT-1 ].m_iQuantity It also contains the calculated value of the success in the
 	//PY: trying this instead. The above code doesn't seem to transfer the itemtype and number
-	tmp_InvItem		m_sInvITEM[ 0 ];
+	//tmp_InvItem		m_sInvITEM[ 0 ];
 } ;
 
 

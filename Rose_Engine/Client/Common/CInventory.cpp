@@ -419,11 +419,15 @@ short CInventory::Add_CatchITEM (short nListRealNO, tagITEM &sITEM, short &nCurW
 /// Real table 에 아이템을 추가하고, Lookup table 갱신
 short CInventory::AppendITEM (short nListRealNO, tagITEM &sITEM, short &nCurWeight)
 {
-	_ASSERT( sITEM.GetTYPE() );
-
-	if ( sITEM.IsEmpty() ) {
-		return -1;
+	_ASSERT( sITEM.GetTYPE() );		// PY: this makes it crash when we disassemble an item. type and number are both zero at this point so adding a new conditional
+	if ( sITEM.m_cType == 0)
+	{
+		ClientLog (LOG_NORMAL, "AppendITEM:: Item Type = 0 so returning -1");
+		return -1;						// PY: Just commenting the above line returns a valid slot number and causes further problems. Hopefully returning -1 rather than a valid slot number might fix it
 	}
+
+	if ( sITEM.IsEmpty() ) 
+		return -1;
 
 	if ( ITEM_TYPE_MONEY == sITEM.m_cType ) {
 		// 돈아이템일 경우 현재 돈과 더한다..

@@ -27,7 +27,7 @@ CVFS_Manager::CVFS_Manager ()
 	m_fpIDX			= NULL;
 	m_sIdxFileName	= "";
 	// strcpy ((char *)m_wStdVersion, VERSION_STR);	
-	m_wStdVersion[ 0 ] = VERSION_DEF_WDVALUE; /// Since the initialization
+	m_wStdVersion[ 0 ] = VERSION_DEF_WDVALUE; /// 버젼을 초기화
 	m_wStdVersion[ 1 ] = VERSION_DEF_WDVALUE;
 	m_wCurVersion[ 0 ] = VERSION_DEF_WDVALUE;
 	m_wCurVersion[ 1 ] = VERSION_DEF_WDVALUE;
@@ -48,7 +48,7 @@ CVFS_Manager::~CVFS_Manager ()
 
 
 /******************************************************************************************
- * Make empty index file header for the File,
+ * 빈 index 파일를 위한 파일 헤더를 만든다
  */
 bool CVFS_Manager::__WriteBlankIndexFile (void)
 {
@@ -63,9 +63,9 @@ bool CVFS_Manager::__WriteBlankIndexFile (void)
 		m_wCurVersion[ 1 ] = VERSION_DEF_WDVALUE;
 
 		fseek (m_fpIDX, 0, SEEK_SET);
-		fwrite (m_wStdVersion	, sizeof (WORD)	, 2, m_fpIDX);	/// Since standard file write
-		fwrite (m_wCurVersion	, sizeof (WORD)	, 2, m_fpIDX);	/// Write the current file version
-		fwrite (&m_dwNumOfEntry	, sizeof (DWORD), 1, m_fpIDX);	/// The number of VEntry = 0 Writing to a file
+		fwrite (m_wStdVersion	, sizeof (WORD)	, 2, m_fpIDX);	/// 기준 파일 버젼을 쓴다
+		fwrite (m_wCurVersion	, sizeof (WORD)	, 2, m_fpIDX);	/// 현재 파일 버젼을 쓴다
+		fwrite (&m_dwNumOfEntry	, sizeof (DWORD), 1, m_fpIDX);	/// VEntry의 갯수 = 0 을 파일에 Writing
 
 		return ( fflush (m_fpIDX) == 0 );
 	}
@@ -75,7 +75,7 @@ bool CVFS_Manager::__WriteBlankIndexFile (void)
 
 
 /******************************************************************************************
- * Index File Header Read
+ * Index File Header를 읽는다
  */
 bool CVFS_Manager::__ReadVEntry (void)
 {
@@ -83,10 +83,10 @@ bool CVFS_Manager::__ReadVEntry (void)
 	VEntry *pVE = NULL;
 	short sLength = 0;
 
-	fseek (m_fpIDX, 0, SEEK_SET);									/// Best move forward
-	fread ((void *)m_wStdVersion	, sizeof (WORD)	, 2, m_fpIDX);	/// Read the standard version
-	fread ((void *)m_wCurVersion	, sizeof (WORD)	, 2, m_fpIDX);	/// Read the current version
-	fread ((void *)&m_dwNumOfEntry	, sizeof (DWORD), 1, m_fpIDX);	/// Read the number of VEntry
+	fseek (m_fpIDX, 0, SEEK_SET);									/// 제일 앞쪽으로 이동
+	fread ((void *)m_wStdVersion	, sizeof (WORD)	, 2, m_fpIDX);	/// 기준 버젼을 읽는다
+	fread ((void *)m_wCurVersion	, sizeof (WORD)	, 2, m_fpIDX);	/// 현재 버젼을 읽는다
+	fread ((void *)&m_dwNumOfEntry	, sizeof (DWORD), 1, m_fpIDX);	/// VEntry의 갯수 읽는다
 
 	for(DWORD i = 0; i < m_dwNumOfEntry; i++)
 	{
@@ -95,18 +95,18 @@ bool CVFS_Manager::__ReadVEntry (void)
 			fread ((void *)&sLength, sizeof (short), 1, m_fpIDX);
 			if((buff = new char[ sLength ]))
 			{
-				/// Read the file name
+				/// 파일명을 읽는다
 				ZeroMemory (buff, sLength);
-				fread ((void *)buff, sizeof (char), sLength, m_fpIDX);	/// sLength = Including the number of NULL until after
+				fread ((void *)buff, sizeof (char), sLength, m_fpIDX);	/// sLength = 뒤에 NULL까지 포함한 갯수
 				pVE->sVFSName = buff;
 			
-				delete [] buff; /// ==>  The original release, but does not need to be turned off. If you are just using one string seems to heap.
+				delete [] buff; /// ==>  원래는 해제해 주어야 하지만 해제 하지 않는다. string은 heap일 경우 그냥 사용하는 것 같다.
 
-				/// Read the offset of the start of the index
+				/// 인덱스의 시작 오프셋을 읽는다
 				// fread ((void *)&pVE->dwNum,			sizeof (DWORD)	, 1, m_fpIDX);
 				fread ((void *)&pVE->lStartOfEntry, sizeof (long)	, 1, m_fpIDX);
 
-				/// CVFS vfs file and creates an instance of the entry to open the
+				/// CVFS인스턴스를 만들고 해당 엔트리와 vfs파일을 오픈한다
 				long lCurPos = ftell (m_fpIDX);
 				pVE->pVFS = new CVFS ();
 				if(pVE->pVFS)
@@ -119,7 +119,7 @@ bool CVFS_Manager::__ReadVEntry (void)
 							, m_strIdxOpenMode.c_str ()
 							);
 
-					if(bPackOpened) /// If successful, tucked Vector neotgo
+					if(bPackOpened) /// 성공하면 Vector에 집어넛고
 						m_vecVFS.push_back (pVE); 
 					else if( pVE->sVFSName != "ROOT.VFS" )
 						return false;
@@ -215,18 +215,18 @@ void CVFS_Manager::__CheckOpenMode ( const char * InputMode, char ModifiedMode[ 
 
 
 /******************************************************************************************
- * Index Open the file
- * @param IndexFile Filename column index
- * @param Mode Properties. "r" read only, "w" write-only (not Use), "w +" create + write + read,
- *                  "r +" read + write (generated sequence)
+ * Index 파일을 오픈한다
+ * @param IndexFile 열 인덱스 파일명
+ * @param Mode 속성. "r" 읽기 전용, "w" 쓰기전용(사용못함), "w+" 생성 + 쓰기 + 읽기, 
+ *                   "r+" 읽기 + 쓰기(생성 못함)
  */
 bool CVFS_Manager::Open (const char *IndexFile, const char * __Mode)
 {
 	m_sIdxFileName = IndexFile;
-	m_sBasePath = GetDirectory (m_sIdxFileName.c_str ()); /// "\" Character, including
-    /// Binary Mode Made
+	m_sBasePath = GetDirectory (m_sIdxFileName.c_str ()); /// "\"문자까지 포함
+    /// Binary Mode로 만든다
 	_fmode = _O_BINARY;
-	/// If you open in write mode
+	/// 쓰기 모드로 오픈했을 경우
 
 	char Mode[ 16 ];
 	__CheckOpenMode ( __Mode, Mode );
@@ -236,16 +236,16 @@ bool CVFS_Manager::Open (const char *IndexFile, const char * __Mode)
 	if(strcmp (Mode, "w+") == 0)
 	{
 		CFileMode::CheckMode (IndexFile, CFileMode::MODE_READWRITE, true) ;
-		if( (m_fpIDX = fopen (IndexFile, Mode)) )	/// "w +" entry is always modified to open
+		if( (m_fpIDX = fopen (IndexFile, Mode)) )	/// "w+"로 열어야 엔트리는 항상 수정됨
 		{
 			m_vecVFS.clear ();
 
-			return __WriteBlankIndexFile (); // Just make an empty one Ventry
+			return __WriteBlankIndexFile (); // 그냥 빈 Ventry를 하나 만든다
 		}
 	}
 	else if(strcmp (Mode, "mr") == 0 || strcmp (Mode, "mr+") == 0 )
 	{
-		/// If you do not read to reading to examine and change the permissions
+		/// 읽기 퍼미션을 검사하고 없으면 읽기로 바꾼다
 		CFileMode::CheckMode (IndexFile, CFileMode::MODE_READ, true) ;
 
 		if( CFileMode::CheckMode (IndexFile, CFileMode::MODE_EXISTS)  
@@ -269,7 +269,7 @@ bool CVFS_Manager::Open (const char *IndexFile, const char * __Mode)
 		if( !CFileMode::CheckMode (IndexFile, CFileMode::MODE_EXISTS) )
 			return false;
 
-		/// f you do not read to reading to examine and change the permissions
+		/// 읽기 퍼미션을 검사하고 없으면 읽기로 바꾼다
 		CFileMode::CheckMode (IndexFile, CFileMode::MODE_READ, true) ;
 
 		if( (m_fpIDX = fopen (IndexFile, Mode)) )
@@ -284,7 +284,7 @@ bool CVFS_Manager::Open (const char *IndexFile, const char * __Mode)
 
 
 /******************************************************************************************
- * VFS file and close the file Index
+ * Index파일과 VFS파일을 닫는다
  */
 void CVFS_Manager::Close (void)
 {
@@ -312,7 +312,7 @@ void CVFS_Manager::Close (void)
 
 
 /******************************************************************************************
- * Write VEntry
+ * VEntry를 쓴다
  */
 void CVFS_Manager::__WriteVEntry (VEntry * pVE)
 {
@@ -325,7 +325,7 @@ void CVFS_Manager::__WriteVEntry (VEntry * pVE)
 
 
 /******************************************************************************************
- * The size of the file to write to VEntry
+ * 파일에 쓰기 위한 VEntry의 크기
  */
 long CVFS_Manager::__SizeOfVEntry (VEntry *VE)
 {
@@ -334,64 +334,64 @@ long CVFS_Manager::__SizeOfVEntry (VEntry *VE)
 
 
 /******************************************************************************************
- * Seukip VEntry to the
+ * VEntry를 스킾한다
  */
 void CVFS_Manager::__SkipVEntry (VEntry *VE)
 {
-	/// It calculates the size seukip
+	/// 스킾할 사이즈를 계산한다
 	long lSkipSize = (long)VE->sVFSName.size () + 1 + SIZE_VENTRY_EXCEPTSTRING;
 	fseek (m_fpIDX, lSkipSize, SEEK_CUR);
 }
 
 
 /******************************************************************************************
- * Add the VFS file
- * @param VfsName Use uppercase and fix it later ***
+ * VFS파일을 추가한다
+ * @param VfsName 대문자로 변환해서 사용 *** 나중에 고칠것
  */
 bool CVFS_Manager::AddVFS (const char *VfsName)
 {
-	long		lSize = 0;		/// File size
-	long		lVET_Size = 0;	/// The size of the current VEntry Table
-	long		lNewSize = 0;	/// The new file size
-	VEntry *	pVE = NULL;		/// Add to VEntry
+	long		lSize = 0;		/// 파일 사이즈
+	long		lVET_Size = 0;	/// 현재 VEntry Table의 크기
+	long		lNewSize = 0;	/// 새로운 파일 사이즈
+	VEntry *	pVE = NULL;		/// 추가할 VEntry
 	std::vector<VEntry *>::iterator iv;
 	char		uprVfsName[ 1024 ];
 
 	if(VfsName == NULL) 
 		return false;
 	if(VfsExists (VfsName)) 
-		return false;	/// Vfs same name already exists, returns false if
+		return false;	/// 이미 같은 Vfs 이름이 존재하는 경우 false 리턴
 
 	__ConvertPath (VfsName, uprVfsName);
 
 	if((pVE = new VEntry))
 	{
 		lSize = __vfseek (m_fpIDX, 0, SEEK_END);
-		/// Make VEntry
-		pVE->sVFSName		= uprVfsName;							/// vfs file name. Puts the uppercase
-		pVE->lStartOfEntry	= lSize + __SizeOfVEntry (pVE);			/// Starting offset of the new entry table
+		/// VEntry를 만든다
+		pVE->sVFSName		= uprVfsName;							/// vfs파일명. 대문자로 변환해서 집어 넣는다
+		pVE->lStartOfEntry	= lSize + __SizeOfVEntry (pVE);			/// 새로 추가되는 엔트리테이블 시작오프셋
 
-		/// The total size of the index file
+		/// 인덱스파일의 전체 크기
 		lSize = ::__vfseek (m_fpIDX, 0, SEEK_END);
-		/// That is because you need to modify VEntry moves forward
+		/// VEntry도 수정해야 하기 때문에 그 앞쪽으로 이동한다
 		fseek (m_fpIDX, SIZEOF_VFILEHEADER, SEEK_SET);
 		lVET_Size = SIZEOF_VFILEHEADER;
-		/// For adding VEntry calculating position from
+		/// VEntry를 추가하기 위한 위치까지 거리를 계산
 		iv = m_vecVFS.begin ();
-		/// CVFS VEntry front of each instance is modified and corrected
+		/// 앞쪽에 VEntry를 수정하고 각 CVFS인스턴스도 수정한다
 		for(; iv != m_vecVFS.end (); iv++) 
 		{ 
 			(*iv)->lStartOfEntry += __SizeOfVEntry (pVE);
 			lVET_Size += __SizeOfVEntry (*iv); 
 			__WriteVEntry (*iv);
-			(*iv)->pVFS->SetStartOfEntry ((*iv)->lStartOfEntry);		/// It should be also modified in CVFS
+			(*iv)->pVFS->SetStartOfEntry ((*iv)->lStartOfEntry);		/// CVFS안에도 수정해 주어야 한다
 		}
-		long lInsertedPos = ftell (m_fpIDX);							/// Where you want to add VEntry
-		::__MakeFileHole (lInsertedPos, __SizeOfVEntry (pVE), m_fpIDX, true);	/// To make room for the additional
-		fseek (m_fpIDX, lInsertedPos, SEEK_SET);						/// Position to write the file header VEntry
-		__WriteVEntry (pVE);											/// Write to file
+		long lInsertedPos = ftell (m_fpIDX);							/// VEntry를 추가할 위치
+		::__MakeFileHole (lInsertedPos, __SizeOfVEntry (pVE), m_fpIDX, true);	/// 추가하기 위한 공간을 만든다
+		fseek (m_fpIDX, lInsertedPos, SEEK_SET);						/// 파일헤더 VEntry 쓸 위치로 이동
+		__WriteVEntry (pVE);											/// 파일에 Write
 		fflush (m_fpIDX);
-		/// Create an instance VFS
+		/// VFS인스턴스를 만든다
 		if((pVE->pVFS = new CVFS))
 		{ 
 			if((pVE->pVFS->Open (m_fpIDX, pVE->lStartOfEntry, pVE->sVFSName.c_str (), m_sBasePath.c_str (), "w+")))
@@ -421,45 +421,45 @@ bool CVFS_Manager::AddVFS (const char *VfsName)
 
 
 /******************************************************************************************
- * RemoveVFS : Remove the VFS
- * @param VfsName Vfs file name to be removed
+ * RemoveVFS : VFS를 제거한다
+ * @param VfsName 제거할 vfs파일 이름
  */
 bool CVFS_Manager::RemoveVFS (const char *VfsName)
 {
 	DWORD		iDelIndex = -1;
 	VEntry *	pVE = NULL;
-	long		lDelSize = 0;	/// The size of the area to disappear
+	long		lDelSize = 0;	/// 없어지는 영역의 크기
 	std::vector<VEntry *>::iterator iv;
 
 	fseek (m_fpIDX, SIZEOF_VFILEHEADER, SEEK_SET);
 	if((iDelIndex = __FindEntryIndex (VfsName)) >= 0)
 	{
 		pVE = *(m_vecVFS.begin () + iDelIndex);
-		lDelSize = __SizeOfVEntry (pVE);										/// Subtracting all these, but the front has
+		lDelSize = __SizeOfVEntry (pVE);										/// 앞쪽에는 이만큼만 빼 주면 된다
 		for(; iv != m_vecVFS.begin () + iDelIndex; iv++)
 		{
 			(*iv)->lStartOfEntry -= lDelSize;
 			(*iv)->pVFS->SetStartOfEntry ((*iv)->lStartOfEntry);
 			__WriteVEntry (*iv);
 		}
-		/// Overwrite the deleted region
-		lDelSize += pVE->pVFS->SizeOfEntryTable ();								/// Ttaenggyeo at the back should be the jeomankeum
-		pVE->pVFS->Close ();													/// Close CVFS
-		delete pVE->pVFS;														/// Release the instance CVFS
-		delete pVE;																/// File entry is removed from memory
-		/// Advances come again cleared
+		/// 지워질 영역은 덮어쓰기한다
+		lDelSize += pVE->pVFS->SizeOfEntryTable ();								/// 뒷쪽은 저만큼씩 땡겨야한다
+		pVE->pVFS->Close ();													/// CVFS를 닫는다
+		delete pVE->pVFS;														/// CVFS 인스턴스를 해제한다
+		delete pVE;																/// 파일엔트리 메모리에서 삭제
+		/// 지워지니까 한번 더 전진
 		iv++;
-		/// VEntry is updated after the
+		/// 뒤에 있는 VEntry도 갱신한다
 		for(; iv != m_vecVFS.end (); iv++)
 		{
 			(*iv)->lStartOfEntry -= __SizeOfVEntry (pVE);
 			(*iv)->pVFS->SetStartOfEntry ((*iv)->lStartOfEntry);
 			__WriteVEntry (*iv);
 		}
-		m_vecVFS.erase (m_vecVFS.begin () + iDelIndex);							/// Erase vector
-		m_dwNumOfEntry--;														/// Reduce the number one
-		__WriteIndexHeader (VERSION_STR, m_dwNumOfEntry);						/// Index rewrites the header of the file
-		::__ftruncate (::__vfseek (m_fpIDX, 0, SEEK_END) - lDelSize, m_fpIDX);	/// Index to adjust the size of the file
+		m_vecVFS.erase (m_vecVFS.begin () + iDelIndex);							/// 벡터에서 지운다
+		m_dwNumOfEntry--;														/// 갯수를 하나 줄인다
+		__WriteIndexHeader (VERSION_STR, m_dwNumOfEntry);						/// Index파일의 헤더를 다시 쓴다
+		::__ftruncate (::__vfseek (m_fpIDX, 0, SEEK_END) - lDelSize, m_fpIDX);	/// Index파일의 크기를 조정한다
 	}
 
 	return false;
@@ -467,23 +467,23 @@ bool CVFS_Manager::RemoveVFS (const char *VfsName)
 
 
 /******************************************************************************************
- * Write the file header
+ * 파일 헤더를 쓴다
  */
 void CVFS_Manager::__WriteIndexHeader (char * Version, DWORD dwNum)
 {
 	DWORD dwStdVersion;
 	dwStdVersion = atoi (Version);
 	fseek (m_fpIDX, 0, SEEK_SET);
-	fwrite ((void *)&dwStdVersion, sizeof (WORD), 2, m_fpIDX);		/// Standard version
-	fwrite ((void *)m_wCurVersion, sizeof (WORD), 2, m_fpIDX);	/// The current version
-	fwrite ((void *)&dwNum,  sizeof (DWORD), 1, m_fpIDX);		/// The number of Ventry
+	fwrite ((void *)&dwStdVersion, sizeof (WORD), 2, m_fpIDX);		/// 기준 버젼
+	fwrite ((void *)m_wCurVersion, sizeof (WORD), 2, m_fpIDX);	/// 현재 버젼
+	fwrite ((void *)&dwNum,  sizeof (DWORD), 1, m_fpIDX);		/// Ventry의 갯수
 	fflush (m_fpIDX);
 }
 
 
 /******************************************************************************************
- * VFS file searches for the presence of an entry for
- * @param FileName VFS find the file name
+ * VFS파일에 대한 엔트리가 존재하는 검색한다
+ * @param FileName 찾을 VFS파일명
  */
 VEntry * CVFS_Manager::__FindEntry (const char *FileName)
 {
@@ -491,7 +491,7 @@ VEntry * CVFS_Manager::__FindEntry (const char *FileName)
 
 	for(; iv != m_vecVFS.end (); iv++)
 	{
-		/// VEntry * Returns the file name are the same,
+		/// 파일 이름이 같으면 VEntry * 를 리턴
 		if((*iv)->sVFSName == FileName) 
 			return *iv;
 	}
@@ -501,8 +501,8 @@ VEntry * CVFS_Manager::__FindEntry (const char *FileName)
 
 
 /******************************************************************************************
- * VFS provides a file entry is returned in a search the index. Entry information in the header information useful
- * @param FileName VFS find the file name
+ * VFS파일에 대한 엔트리가 존재하는 검색하고 인덱스를 리턴. 헤더에 있는 엔트리정보를 정보를 유용
+ * @param FileName 찾을 VFS파일명
  */
 DWORD CVFS_Manager::__FindEntryIndexWithFile (const char *FileName)
 {
@@ -511,7 +511,7 @@ DWORD CVFS_Manager::__FindEntryIndexWithFile (const char *FileName)
 
 	for(; iv != m_vecVFS.end (); iv++)
 	{
-		/// VEntry * Returns the file name are the same
+		/// 파일 이름이 같으면 VEntry * 를 리턴
 		if((*iv)->pVFS->FileExists (FileName))
 			return dwRet;
 
@@ -523,8 +523,8 @@ DWORD CVFS_Manager::__FindEntryIndexWithFile (const char *FileName)
 
 
 /******************************************************************************************
- * VFS provides a file entry is returned in a search the index. Entry information in the header information useful
- * @param FileName VFS find the file name
+ * VFS파일에 대한 엔트리가 존재하는 검색하고 인덱스를 리턴. 헤더에 있는 엔트리정보를 정보를 유용
+ * @param FileName 찾을 VFS파일명
  */
 long CVFS_Manager::__FindEntryIndex (const char *FileName)
 {
@@ -533,7 +533,7 @@ long CVFS_Manager::__FindEntryIndex (const char *FileName)
 	std::vector<VEntry *>::iterator iv = m_vecVFS.begin ();
 	for(; iv != m_vecVFS.end (); iv++)
 	{
-		/// VEntry * Returns the file name are the same,
+		/// 파일 이름이 같으면 VEntry * 를 리턴
 		if((*iv)->sVFSName == FileName) { return dwRet; }
 		dwRet++;
 	}
@@ -543,9 +543,9 @@ long CVFS_Manager::__FindEntryIndex (const char *FileName)
 
 
 /******************************************************************************************
- * Add the file to the vfs
- * @param dwNum			The number of files to be added to
- * @param TargetName	Registered in the name.
+ * vfs에 파일을 추가한다
+ * @param dwNum			추가될 파일의 갯수
+ * @param TargetName	이 이름으로 등록된다. 
  */
 short CVFS_Manager::AddFile (const char *VfsName
 							, const char *FileName
@@ -562,37 +562,37 @@ short CVFS_Manager::AddFile (const char *VfsName
 	char uprVfsName[ 1024 ];
 	char uprTargetName[ 1024 ];
 	
-	/// Path of capital letters, spaces before and after removal
+	/// 경로를 대문자 , 앞뒤 공백제거
 	__ConvertPath (VfsName, uprVfsName);
 	__ConvertPath (TargetName, uprTargetName);
 
 	
-	/// If there is an entry corresponding to VfsName add
+	/// VfsName에 해당하는 엔트리가 존재하면 추가한다
 	if((pVE = __FindEntry (uprVfsName))) 
 	{ 
-		lOldSize = pVE->pVFS->SizeOfEntryTable ();						/// Table entries before the size of the file
+		lOldSize = pVE->pVFS->SizeOfEntryTable ();						/// 이전 파일엔트리 Table의 크기
 		short nAddResult = pVE->pVFS->AddFile (FileName
 								, uprTargetName
 								, dwVersion
 								, dwCrc
 								, btEncType
 								, btCompres
-								, bUseDel);		/// Add a file
+								, bUseDel);		/// 파일을 추가한다
 
 		if(nAddResult != VADDFILE_SUCCESS)						
 			return nAddResult;
 
-		lNewSize = pVE->pVFS->SizeOfEntryTable ();						/// After adding the size of the file table entry
-		/// All you have to update the table VEntry
+		lNewSize = pVE->pVFS->SizeOfEntryTable ();						/// 추가하고 나서 파일엔트리 테이블의 크기
+		/// VEntry 테이블 갱신은 여기서 해야 한다
 		int iIndex = __FindEntryIndex (uprVfsName);
-		/// File Indicator VEntry Table to Table to modify moves forward.
+		/// VEntry Table을 수정하기 File Indicator를 Table앞쪽으로 이동시킨다. 
 		fseek (m_fpIDX, SIZEOF_VFILEHEADER, SEEK_SET);
-		/// There is no change off the front. 
+		/// 앞쪽에는 변경할 꺼 없음. 
 		for(iv = m_vecVFS.begin (); iv <= m_vecVFS.begin () + iIndex; iv++)
 		{
 			__SkipVEntry (*iv);
 		}
-		/// VEntry an entry corresponding to the rear of the table offset is pushed
+		/// 뒤쪽은 VEntry에 해당하는 엔트리테이블의 오프셋은 밀려난다
 		for(; iv != m_vecVFS.end (); iv++)
 		{
 			(*iv)->lStartOfEntry += lNewSize - lOldSize;
@@ -610,7 +610,7 @@ short CVFS_Manager::AddFile (const char *VfsName
 
 
 /******************************************************************************************
- * VEntry pack look for the file name in the
+ * pack안에 있는 파일이름으로 VEntry를 찾는다
  */
 VEntry * CVFS_Manager::__FindVEntryWithFile (const char *FileName)
 {
@@ -619,7 +619,7 @@ VEntry * CVFS_Manager::__FindVEntryWithFile (const char *FileName)
 	std::vector<VEntry *>::iterator iv = m_vecVFS.begin ();
 	for(; iv != m_vecVFS.end (); iv++)
 	{
-		/// VEntry * Returns the file name are the same,
+		/// 파일 이름이 같으면 VEntry * 를 리턴
 		if((*iv)->pVFS->FileExists (FileName))
 		{  
 			return *iv;
@@ -631,9 +631,9 @@ VEntry * CVFS_Manager::__FindVEntryWithFile (const char *FileName)
 
 
 /******************************************************************************************
- * Pack locate files, one file is removed.
- * @param File	pack File in the File Name
- * @return VRMVFILE_XXXXX , If successful, returns VRMVFILE_SUCCESS
+ * Pack파일에 찾아서, 파일을 한개 제거한다.
+ * @param File	pack 파일안의 파일 이름
+ * @return VRMVFILE_XXXXX , 성공하면 VRMVFILE_SUCCESS를 리턴
  */
 short CVFS_Manager::RemoveFile (const char *FileName)
 {
@@ -645,12 +645,12 @@ short CVFS_Manager::RemoveFile (const char *FileName)
 	DWORD		iIndex = -1;
 	short		i = 0;
 	
-	/// Change the name to the correct path to the target
+	/// 타겟이름을 올바른 경로로 바꾼다
 	__ConvertPath (FileName, uprTargetName);
 
 	szNEW = uprTargetName;
 
-	/// If you have to find and delete the entry
+	/// 엔트리를 찾아서 있으면 지운다
 	pVE = __FindVEntryWithFile (uprTargetName);
 	if(pVE)
 	{
@@ -672,10 +672,10 @@ short CVFS_Manager::RemoveFile (const char *FileName)
 				for(; i < (signed)m_dwNumOfEntry; i++)
 				{
 					std::vector<VEntry *>::iterator iv = m_vecVFS.begin () + i;
-					if(iv != m_vecVFS.end ())	/// If you do not have a vfs file. vfs file is written to the file number and the number is different from the
+					if(iv != m_vecVFS.end ())	/// vfs파일이 없는 경우. vfs파일의 갯수와 파일에 기록된 갯수가 다를 경우
 					{
 						VEntry * pVEtoModify = *iv;
-						/// VEntry modify the entry table and re-write the Start Offset
+						/// VEntry의 엔트리테이블의 Start Offset을 수정하고 다시쓴다
 						pVEtoModify->lStartOfEntry -= (lOldSize - lNewSize);
 						__WriteVEntry (pVEtoModify);
 					}
@@ -686,16 +686,16 @@ short CVFS_Manager::RemoveFile (const char *FileName)
 				return VRMVFILE_SUCCESS;
 			}
 			
-			return bRet; // Which returns false if the delete right
+			return bRet; // 있는데 삭제 못 하면 false 리턴
 		}
 	}
 
-	return VRMVFILE_INVALIDVFS; // If you do not try to delete the file and returns true
+	return VRMVFILE_INVALIDVFS; // 없는 파일을 삭제 시도했을 경우 true를 리턴
 }
 
 
 /******************************************************************************************
- * Remove multiple files. Just leave a blank space
+ * 파일 여러개 제거하고. 그냥 빈공간으로 남겨두기
  */
 bool CVFS_Manager::RemoveFiles (const char *VfsName, const char **Files, int iNum)
 {
@@ -704,7 +704,7 @@ bool CVFS_Manager::RemoveFiles (const char *VfsName, const char **Files, int iNu
 	DWORD		iIndex = -1;
 	short		i = 0;
 
-	/// If you have to find and delete the entry
+	/// 엔트리를 찾아서 있으면 지운다
 	if((pVE = __FindEntry (VfsName)) && (iIndex = __FindEntryIndex (VfsName)) >= 0)
 	{
 		lOldSize = pVE->pVFS->SizeOfEntryTable ();
@@ -717,7 +717,7 @@ bool CVFS_Manager::RemoveFiles (const char *VfsName, const char **Files, int iNu
 
 			for(; i < (signed)m_dwNumOfEntry; i++)
 			{
-				/// VEntry modify the entry table and re-write the Start Offset
+				/// VEntry의 엔트리테이블의 Start Offset을 수정하고 다시쓴다
 				(*(m_vecVFS.begin () + i))->lStartOfEntry -= (lOldSize - lNewSize);
 				__WriteVEntry (*(m_vecVFS.begin () + i));
 			}
@@ -730,7 +730,7 @@ bool CVFS_Manager::RemoveFiles (const char *VfsName, const char **Files, int iNu
 }
 
 
-/// Fflush the index file.
+/// 인덱스 파일을 fflush한다.
 void CVFS_Manager::__FlushIdxFile (void)
 {
 	if(m_fpIDX)
@@ -739,8 +739,8 @@ void CVFS_Manager::__FlushIdxFile (void)
 
 
 /******************************************************************************************
- * Open the file in the vfs file
- * When I open the index in a different directory may be a problem. ==> Modify
+ * vfs파일에서 파일을 오픈한다
+ * 다른 디렉토리에서 인덱스를 열어 버리면 문제 발생할 수 있다. ==> 수정
  */
 VFileHandle * CVFS_Manager::OpenFile (const char *FileName)
 {
@@ -750,7 +750,7 @@ VFileHandle * CVFS_Manager::OpenFile (const char *FileName)
 	if(FileName == NULL) { return NULL; }
 
 	
-	if( FileExistsInVfs( FileName ) ) // If you open it first in the vfs. And the existence of an external file search
+	if( FileExistsInVfs( FileName ) ) // vfs 안에 있으면 그걸 먼저 open 한다. 그리고 외부 파일로 존재 여부 검색
 	{
 		char rightName[1024];
 		::__ConvertPath (FileName, rightName);
@@ -774,7 +774,7 @@ VFileHandle * CVFS_Manager::OpenFile (const char *FileName)
 				pVF->lStartOff		= 0;
 				pVF->lEndOff		= __vfseek (pVF->fp, 0, SEEK_END);
 				pVF->sFileName		= FileName;
-				pVF->btFileType		= 1;									/// If only one file
+				pVF->btFileType		= 1;									/// 밖에 있는 파일일 경우 1
 				pVF->hVFS			= NULL;
 				pVF->pData			= NULL;
 
@@ -785,25 +785,25 @@ VFileHandle * CVFS_Manager::OpenFile (const char *FileName)
 		}
 	}
 
-	return NULL; /// Not found, NULL is returned on pVF
+	return NULL; /// 발견하지 못하면 pVF에NULL이 리턴
 }
 
 
 /******************************************************************************************
- * Close the file opened by OpenFile
- * Are simply a function to release memory, but ...
+ * OpenFile로 오픈한 파일을 닫는다
+ * 현재는 단순히 메모리를 해제하는 기능만...
  */
 void CVFS_Manager::CloseFile (VFileHandle *pVFH)
 {
-	/// In general, if you call VCloseFile VCloseFile and close the file, make sure
+	/// VCloseFile을 호출할 경우 VCloseFile안에 일반 파일인지 확인하고 닫는다
 	if(pVFH->btFileType) { fclose (pVFH->fp); }
-	/// Now just simply put a function to release memory
+	/// 지금은 단순히 메모리를 해제하는 기능만 넣는다
 	delete pVFH;
 }
 
 
 /******************************************************************************************
- * VFS Searches for the file in the file name
+ * VFS 파일에서 파일이름을 검색한다
  */
 DWORD CVFS_Manager::GetFileNames (const char *VfsName, char **pFiles, DWORD nFiles, int nMaxPath)
 {
@@ -815,43 +815,43 @@ DWORD CVFS_Manager::GetFileNames (const char *VfsName, char **pFiles, DWORD nFil
 
 
 /******************************************************************************************
- * To find out the file size
- * @return If you can not find the file and return 0. (The actual file size is 0 degrees)
+ * 파일 크기를 알아낸다
+ * @return 파일을 발견하지 못하면 0을 리턴한다. (실제 파일의 크기가 0인 경우도)
  */
 long CVFS_Manager::GetFileLength (const char *FileName)
 {
 	VFileHandle * pVF	= NULL;
 	long lFileSize		= 0;
 
-	/// Even if there is only one file, the file size returned.
+	/// 밖에 존재하는 파일일 경우에도 파일 크기를 리턴한다.
 	struct _stat file_stat;	
 	if (_stat(FileName, &file_stat) == 0) 
 		lFileSize = (long)file_stat.st_size;
 	else
 	{
 		std::vector<VEntry *>::iterator iv = m_vecVFS.begin ();
-		/// Vfs file is not much in the index file, so it is acceptable to just shall saenggakdoem for loop
+		/// 인덱스 파일안에 많지 않은 vfs파일이 있으므로 그냥 for loop로 해도 무방하리라 생각됨
 		for(; iv != m_vecVFS.end (); iv++)
 		{
 			lFileSize = (*iv)->pVFS->GetFileLength (FileName);	
-			if(lFileSize >= 0) /// Returns the size of the discovery. Find out by using the map size clearance
+			if(lFileSize >= 0) /// 발견하면 크기를 리턴. 맵을 이용해서 찾아서 크기 알아냄
 				break;
 		}
 	}
 
-	return lFileSize; /// Returns -1 if not found
+	return lFileSize; /// 발견하지 못하면 -1을 리턴
 }
 
 
 /******************************************************************************************
- * To find out the number of files
+ * 파일갯수를 알아낸다
  */
 DWORD CVFS_Manager::GetFileCount (const char *VfsName)
 {
 	VEntry * pVE = NULL;
-	if(pVE = __FindEntry (VfsName))			/// If you search for files
+	if(pVE = __FindEntry (VfsName))			/// 파일을 검색해서 있으면
 	{
-		return pVE->pVFS->GetFileCount ();	/// Returns the number
+		return pVE->pVFS->GetFileCount ();	/// 갯수를 리턴
 	}
 
 	return 0;
@@ -859,7 +859,7 @@ DWORD CVFS_Manager::GetFileCount (const char *VfsName)
 
 
 /******************************************************************************************
- * The total number of files in the index file to find out.
+ * 인덱스파일안에 있는 파일의 총갯수를 알아낸다.
  */
 DWORD CVFS_Manager::GetFileTotCount (void)
 {
@@ -870,7 +870,7 @@ DWORD CVFS_Manager::GetFileTotCount (void)
 	int iCnt = 0;
 	for(; iv != m_vecVFS.end (); iv++)
 	{
-		if(*iv) /// Enter the appropriate value iterator malgeot think that.
+		if(*iv) /// iterator에 적합한 값이 들어가 있다고 생각지 말것.
 		{
 			iCnt += (*iv)->pVFS->GetFileCount ();
 		}
@@ -881,7 +881,7 @@ DWORD CVFS_Manager::GetFileTotCount (void)
 
 
 /******************************************************************************************
- * The index number in a file bundle file is examined
+ * 이 인덱스파일에 있는 묶음 파일의 갯수를 조사한다
  */
 DWORD CVFS_Manager::GetVFSCount (void)
 {
@@ -890,10 +890,10 @@ DWORD CVFS_Manager::GetVFSCount (void)
 
 
 /******************************************************************************************
- * GetVfsNames : Index File in the survey as the name of the bundle file
- * @param ppFiles Buffer to store the file name
- * @param dwNum number of strings stored in ppFiles
- * @param dwMaxPath Maximum length of the string
+ * GetVfsNames : Index File안에 있는 묶음 파일의 이름을 조사함
+ * @param ppFiles 파일이름을 저장할 버퍼
+ * @param dwNum ppFiles에 저장할 스트링갯수
+ * @param dwMaxPath 스트링의 최고 길이
  */
 DWORD CVFS_Manager::GetVfsNames (char **ppFiles, DWORD dwNum, short dwMaxPath)
 {
@@ -912,15 +912,15 @@ DWORD CVFS_Manager::GetVfsNames (char **ppFiles, DWORD dwNum, short dwMaxPath)
 
 
 /******************************************************************************************
- * Pack Jyeoteuna removed from the file the number of files that are not clean yet investigated
+ * Pack 파일에서 지워졌으나 아직 정리되지 않은 파일의 갯수를 조사한다
  */
 DWORD CVFS_Manager::GetDelCnt (const char *VfsName)
 {
 	VEntry * pVE = NULL;
 
-	if(pVE = __FindEntry (VfsName))			/// If you search for files
+	if(pVE = __FindEntry (VfsName))			/// 파일을 검색해서 있으면
 	{
-		return pVE->pVFS->GetDelCnt ();		/// Returns the number
+		return pVE->pVFS->GetDelCnt ();		/// 갯수를 리턴
 	}
 
 	return 0;
@@ -934,16 +934,16 @@ DWORD CVFS_Manager::GetFileCntWithHole (const char *VfsName)
 {
 	VEntry * pVE = NULL;
 
-	if(pVE = __FindEntry (VfsName))					/// If you search for files
+	if(pVE = __FindEntry (VfsName))					/// 파일을 검색해서 있으면
 	{
-		return pVE->pVFS->GetFileCntWithHole ();	/// Returns the number
+		return pVE->pVFS->GetFileCntWithHole ();	/// 갯수를 리턴
 	}
 
 	return 0;
 }
 
 
-/// Clear the space
+/// 공백을 지운다
 bool CVFS_Manager::ClearBlank (const char * VfsName )
 {
 	long		lOldSize = 0 , lNewSize = 0;
@@ -952,34 +952,34 @@ bool CVFS_Manager::ClearBlank (const char * VfsName )
 	std::vector<VEntry *>::iterator iv;
 	long		lFileSize = 0;
 
-	if(pVE = __FindEntry (VfsName))						/// If you search for files
+	if(pVE = __FindEntry (VfsName))						/// 파일을 검색해서 있으면
 	{
-		lFileSize = __vfseek (m_fpIDX, 0, SEEK_END);	/// File Size
-		lOldSize = pVE->pVFS->SizeOfEntryTable ();		/// Changes in the size table to find out the size change
+		lFileSize = __vfseek (m_fpIDX, 0, SEEK_END);	/// 파일 크기
+		lOldSize = pVE->pVFS->SizeOfEntryTable ();		/// 테이블 크기 변화로 크기변화를 알아낸다
 		if(pVE->pVFS->ClearBlank ())
 		{
 			lNewSize = pVE->pVFS->SizeOfEntryTable ();
-			/// Pull back of
+			/// 뒷부분을 당긴다
 			::__MoveFileBlock (pVE->lStartOfEntry + lOldSize
 				, lFileSize - (pVE->lStartOfEntry + lOldSize)
 				, pVE->lStartOfEntry + lNewSize, 1000000, m_fpIDX, false);
 
 			fflush (m_fpIDX);
-			/// Adjust the size of the file
+			/// 파일크기를 조정한다
 			::__ftruncate (lFileSize - (lOldSize - lNewSize), m_fpIDX);
 
 			iIndex = __FindEntryIndex (VfsName);
 			iv = m_vecVFS.begin ();
-			/// VEntry Table moved forward in order to modify the
+			/// VEntry Table을 수정하기 위해 앞쪽으로 이동한다
 			fseek (m_fpIDX, SIZEOF_VFILEHEADER, SEEK_SET);
-			/// Prior to just seukip
+			/// 이전까지는 그냥 스킾
 			for(; iv <= m_vecVFS.begin () + iIndex; iv++)
 			{
 				__SkipVEntry (*iv);
 			}
-			/// This skips
-			/// iv++;   /// <== Not because it is not skipping delete
-			/// Subtracted from the back again as deleted
+			/// 여기는 건너뛰고
+			/// iv++;   /// <== 삭제가 아니기 때문에 건너 뛰면 안 됨
+			/// 뒷쪽부터 다시 삭제된 만큼 뺀다
 			for(; iv != m_vecVFS.end (); iv++)
 			{
 				(*iv)->lStartOfEntry -= lOldSize - lNewSize;
@@ -995,7 +995,7 @@ bool CVFS_Manager::ClearBlank (const char * VfsName )
 }
 
 
-/// Pack deletes all spaces in file
+/// 모든 Pack파일의 공백을 지운다
 bool CVFS_Manager::ClearBlankAll (VCALLBACK_CLEARBLANKALL CallBackProc)
 {
 
@@ -1031,34 +1031,34 @@ bool CVFS_Manager::ClearBlankAll (VCALLBACK_CLEARBLANKALL CallBackProc)
 	{
 		VfsName = (*il)->sVFSName.c_str ();
 
-		if(pVE = __FindEntry (VfsName))						/// If you search for files
+		if(pVE = __FindEntry (VfsName))						/// 파일을 검색해서 있으면
 		{
-			lFileSize = __vfseek (m_fpIDX, 0, SEEK_END);	/// File Size
-			lOldSize = pVE->pVFS->SizeOfEntryTable ();		/// Changes in the size table to find out the size change
+			lFileSize = __vfseek (m_fpIDX, 0, SEEK_END);	/// 파일 크기
+			lOldSize = pVE->pVFS->SizeOfEntryTable ();		/// 테이블 크기 변화로 크기변화를 알아낸다
 			if(pVE->pVFS->ClearBlank ())
 			{
 				lNewSize = pVE->pVFS->SizeOfEntryTable ();
-				/// Pull back of
+				/// 뒷부분을 당긴다
 				::__MoveFileBlock (pVE->lStartOfEntry + lOldSize
 					, lFileSize - (pVE->lStartOfEntry + lOldSize)
 					, pVE->lStartOfEntry + lNewSize, 1000000, m_fpIDX, false);
 				CBlankInfo::DoStep ();
 				fflush (m_fpIDX);
-				/// Adjust the size of the file
+				/// 파일크기를 조정한다
 				::__ftruncate (lFileSize - (lOldSize - lNewSize), m_fpIDX);
 
 				iIndex = __FindEntryIndex (VfsName);
 				iv = m_vecVFS.begin ();
-				/// VEntry Table moved forward in order to modify the
+				/// VEntry Table을 수정하기 위해 앞쪽으로 이동한다
 				fseek (m_fpIDX, SIZEOF_VFILEHEADER, SEEK_SET);
-				/// Prior to just seukip
+				/// 이전까지는 그냥 스킾
 				for(; iv <= m_vecVFS.begin () + iIndex; iv++)
 				{
 					__SkipVEntry (*iv);
 				}
-				/// This skips
-				/// iv++;   /// <== Not because it is not skipping delete
-				/// Subtracted from the back again as deleted
+				/// 여기는 건너뛰고
+				/// iv++;   /// <== 삭제가 아니기 때문에 건너 뛰면 안 됨
+				/// 뒷쪽부터 다시 삭제된 만큼 뺀다
 				for(; iv != m_vecVFS.end (); iv++)
 				{
 					(*iv)->lStartOfEntry -= lOldSize - lNewSize;
@@ -1086,12 +1086,12 @@ bool CVFS_Manager::ClearBlankAll (VCALLBACK_CLEARBLANKALL CallBackProc)
 
 
 /****************************************************************************************
- * Vfs Name exists investigates
+ * Vfs Name이 존재하는지 조사한다
  */
 bool CVFS_Manager::VfsExists (const char *VfsName)
 {
 	char uprVfsName[ 1024 ];
-	__ConvertPath (VfsName, uprVfsName); /// Uppercase and search
+	__ConvertPath (VfsName, uprVfsName); /// 대문자로 변환해서 검색
 
 	std::vector<VEntry *>::iterator iv = m_vecVFS.begin ();
 	for(;iv != m_vecVFS.end (); iv++)
@@ -1105,24 +1105,24 @@ bool CVFS_Manager::VfsExists (const char *VfsName)
 
 
 /*********************************************************************************
- * Check if a file exists
- * Note: First, check out the files in the. And, Pack file check
- * Pack the file number is not too much to turn the for loop because ignorant
+ * 파일존재하는지 검사
+ * 주의 : 바깥에 있는 파일 먼저 검사. 그리고, Pack파일 검사
+ * Pack파일의 갯수는 그리 많지 않기 때문에 무식하게 for loop를 돌린다
  */
 bool CVFS_Manager::FileExists (const char * FileName)
 {
 	std::vector<VEntry *>::iterator iv;
 	char uprFileName[ 1024 ];
 
-	/// FileName is NULL, return false immediately
+	/// FileName이 NULL이면 바로 false를 리턴
 	if(FileName == NULL) 
 		return false;
 
-	/// Even if there is only one file that returns true
+	/// 밖에 존재하는 파일일 경우에도 true를 리턴한다
 	if(_access (FileName, 0) == 0) 
 		return true;
 
-	__ConvertPath (FileName, uprFileName); /// Pack Checked file name of the file should be capitalized halttaeneun
+	__ConvertPath (FileName, uprFileName); /// Pack파일내를 검사할때는 대문자 파일 이름을 사용해야 한다
 
 	iv = m_vecVFS.begin ();
 
@@ -1142,13 +1142,13 @@ bool CVFS_Manager::FileExists (const char * FileName)
 	return false;
 }
 
-/// Check if a file exists only in Pack File
+/// Pack파일안에서만 파일존재하는지 검사
 bool CVFS_Manager::FileExistsInVfs (const char * FileName)
 {
 	std::vector<VEntry *>::iterator iv;
 	char uprFileName[ 1024 ];
 	
-	__ConvertPath (FileName, uprFileName); /// Pack Checked file name of the file should be capitalized halttaeneun
+	__ConvertPath (FileName, uprFileName); /// Pack파일내를 검사할때는 대문자 파일 이름을 사용해야 한다
 	
 	iv = m_vecVFS.begin ();
 	for(; iv != m_vecVFS.end (); iv++)
@@ -1161,7 +1161,7 @@ bool CVFS_Manager::FileExistsInVfs (const char * FileName)
 }
 
 /***********************************************************************************
- * Find out information about a file
+ * 파일에 대한 정보를 알아낸다
  */
 void CVFS_Manager::GetFileInfo (const char * FileName, VFileInfo * pFileInfo, bool bCalCrc)
 {
@@ -1186,7 +1186,7 @@ void CVFS_Manager::GetFileInfo (const char * FileName, VFileInfo * pFileInfo, bo
 
 
 /***********************************************************************************
- * Find out information about a file
+ * 파일에 대한 정보를 알아낸다
  */
 bool CVFS_Manager::SetFileInfo (const char * FileName, VFileInfo * pFileInfo)
 {
@@ -1205,7 +1205,7 @@ bool CVFS_Manager::SetFileInfo (const char * FileName, VFileInfo * pFileInfo)
 
 
 /***********************************************************************************
- * Since the index file and find out the criteria for
+ * 인덱스 파일에 대한 기준버젼을 알아낸다
  */
 DWORD CVFS_Manager::GetStdVersion (void)
 {
@@ -1219,7 +1219,7 @@ DWORD CVFS_Manager::GetStdVersion (void)
 
 
 /***********************************************************************************
- * Since the index file to set the criteria for
+ * 인덱스 파일에 대한 기준버젼을 설정한다
  */
 void CVFS_Manager::SetStdVersion (DWORD dwVersion)
 {
@@ -1237,7 +1237,7 @@ void CVFS_Manager::SetStdVersion (WORD wHiVer, WORD wLoVer)
 
 
 /***********************************************************************************
- * Applied to get a clearance version
+ * 적용된 버젼 알아냄
  */
 DWORD CVFS_Manager::GetCurVersion (void)
 {
@@ -1251,7 +1251,7 @@ DWORD CVFS_Manager::GetCurVersion (void)
 
 
 /***********************************************************************************
- * Since bn applied
+ * 적용된 버젼 기록함
  */
 void CVFS_Manager::SetCurVersion (DWORD dwVersion)
 {
@@ -1269,8 +1269,8 @@ void CVFS_Manager::SetCurVersion (WORD wHiVer, WORD wLoVer)
 
 
 /***********************************************************************************
- * To examine the size of the empty space.
- * Returns: the size of the space at the end of successful research. This file has no Pack also returns 0
+ * 빈공간의 크기를 조사한다.
+ * 리턴 : 성공적으로 조사가 끝나면 공백의 크기. Pack파일이 하나도 없으도 0을 리턴
  */
 DWORD CVFS_Manager::GetSizeOfBlankArea (void)
 {
@@ -1281,7 +1281,7 @@ DWORD CVFS_Manager::GetSizeOfBlankArea (void)
 	int iSum = 0;
 	for(; iv != m_vecVFS.end (); iv++)
 	{
-		if(*iv) /// Enter the appropriate value iterator malgeot think that
+		if(*iv) /// iterator에 적합한 값이 들어가 있다고 생각지 말것.
 		{
 			///
 			VEntry * pVEntry = *iv;
@@ -1293,7 +1293,7 @@ DWORD CVFS_Manager::GetSizeOfBlankArea (void)
 }
 
 
-// FileName The index data matches the real data is checked and
+// FileName 이 인덱스데이터와 실제 데이터가 일치하는지 체크한다
 short CVFS_Manager::TestFile (const char * FileName)
 {
 
@@ -1305,7 +1305,7 @@ short CVFS_Manager::TestFile (const char * FileName)
 		if(pVF && pVEntry)
 		{
 			VfsInfo VfsRange ;
-			if(GetVfsInfo ( pVEntry->sVFSName.c_str (), &VfsRange) ) // GetVEntryWF Success should also succeeded GetVfsInfo
+			if(GetVfsInfo ( pVEntry->sVFSName.c_str (), &VfsRange) ) // GetVEntryWF 성공했다면 GetVfsInfo 도 성공해야 한다
 			{
 				if (pVF->lStartOff < VfsRange.lStartOff || pVF->lEndOff > VfsRange.lEndOff )
 				{
@@ -1378,10 +1378,10 @@ short CVFS_Manager::TestFile (const char * FileName)
 
 /***************************************************************
  *
- * VFS Research on the
+ * VFS 에 대해서 조사한다
  *
  */
-// Vfs Examine the file name of the VFS Entry
+// Vfs 파일 이름으로 VFS Entry를 조사한다
 VEntry * CVFS_Manager::GetVEntry ( const char * VfsName )
 {
 	std::vector<VEntry *>::iterator iv = m_vecVFS.begin ();
@@ -1396,7 +1396,7 @@ VEntry * CVFS_Manager::GetVEntry ( const char * VfsName )
 	return NULL;
 }
 
-// VFS Present in the VFS Entry searches
+// VFS 안에 존재하는 VFS Entry를 검색한다
 VEntry * CVFS_Manager::GetVEntryWF ( const char * FileName )
 {
 	std::vector<VEntry *>::iterator iv = m_vecVFS.begin ();
@@ -1430,7 +1430,7 @@ bool CVFS_Manager::GetVfsInfo (const char * VfsName, VfsInfo * VI )
 	return false;
 }
 
-// Also included in the external file
+// 외부 파일도 포함된다
 DWORD CVFS_Manager::ComputeCrc ( const char * FileName)
 {
 	DWORD dwCrc = 0;

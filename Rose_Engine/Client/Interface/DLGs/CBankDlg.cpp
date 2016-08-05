@@ -59,7 +59,7 @@ void CBankDlg::SetInterfacePos_After()
 		}
 	}
 
-	//창고 344
+	//Warehouse	344
 	//GetCaption()->SetString( LIST_STRING(344) );
 	
 	if(pCtrl = Find(IID_BTN_TAB1))
@@ -76,23 +76,23 @@ void CBankDlg::SetInterfacePos_After()
 	}
 	if(pCtrl = Find(IID_BTN_TAB4))
 	{
-//홍근 빌링 수정
+//Hong Keun billing modification
 #ifdef __JAPAN_BILL		
 		pCtrl->SetText(CStr::Printf("%s%d", LIST_STRING(344), 4));
 #else
-		//플레티넘 590
+		//Flying over the retie 590
 		pCtrl->SetText( LIST_STRING(590) );
 #endif
 		
 	}
 	if(pCtrl = Find(IID_BTN_SAVE))
 	{
-		//보관 642
+		//Archive 642
 		pCtrl->SetText( LIST_STRING(642) );
 	}
 	if(pCtrl = Find(IID_BTN_WITHDRAW))
 	{
-		//꺼내기 643
+		//Eject 643
 		pCtrl->SetText( LIST_STRING(643) );
 	}
 	
@@ -216,7 +216,7 @@ void CBankDlg::Draw()
 }
 
 /**
-* 은행원( 은행을 열수 있는 NPC )와 일정거리 이상이 되엇을경우 창을 닫는다.
+* Banker (NPC that can be opened with the Bank) and greater than or equal to a certain distance if you close the window switching.
 */
 void CBankDlg::Update( POINT ptMouse )
 {
@@ -229,7 +229,7 @@ void CBankDlg::Update( POINT ptMouse )
 	}
 
 	CObjCHAR* pObjChar = g_pObjMGR->Get_CharOBJ( CBank::GetInstance().GetNpcClientIndex(), false );
-	///Object가 없거나 거리가 일정이상이면 닫아버려라.
+	///Close the Object does not exist or if you are over a certain distance.
 	if( pObjChar == NULL )
 		Hide();
 	else if( g_pAVATAR->Get_DISTANCE( pObjChar ) >= 1000 )
@@ -359,22 +359,22 @@ void CBankDlg::Update( CObservable* pObservable, CTObject* pObj )
 	int iPage = pItem->GetIndex() / g_iSlotCountPerPage;
 	int iSlot = pItem->GetIndex() % g_iSlotCountPerPage;
 
-	if( Item.IsEmpty() )///삭제
+	if( Item.IsEmpty() )///Delete
 	{
 		if( m_Slots[iPage][iSlot].GetIcon() == NULL )
 		{
-			assert( 0 && "빈 슬롯을 다시 비우려고 합니다 @CBankDlg::Update" );
+			assert( 0 && "Will attempt to free up the empty slot on the back @CBankDlg::Update" );
 		}
 		else
 		{
 			m_Slots[iPage][iSlot].DetachIcon();
 		}
 	}
-	else///추가
+	else///Add
 	{
 		if( m_Slots[iPage][iSlot].GetIcon() )
 		{
-			assert( 0 && "비워있지 않은 슬롯에 Item을 넣을려고 합니다 @CBankDlg::Update" );
+			assert( 0 && "Empty Item slot is not trying to put @CBankDlg::Update" );
 		}
 		else
 		{
