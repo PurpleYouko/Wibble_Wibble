@@ -97,7 +97,7 @@ void CTButton::Draw()
 			if( m_iDisableGrahicID )
 				m_pDraw->Draw( m_sPosition.x, m_sPosition.y, m_iModuleID, m_iDisableGrahicID );
 			else
-				m_pDraw->Draw( m_sPosition.x, m_sPosition.y, m_iModuleID, m_iNormalGraphicID );
+				m_pDraw->Draw( m_sPosition.x, m_sPosition.y, m_iModuleID, m_iOverGraphicID ); //PY: changed from iNormalGraphicID hger as normal is returning as -1 and crashing
 		}
 		else
 		{
@@ -110,7 +110,9 @@ void CTButton::Draw()
 				m_pDraw->Draw( m_sPosition.x, m_sPosition.y, m_iModuleID, m_iOverGraphicID );
 				break;
 			default:
-				m_pDraw->Draw( m_sPosition.x, m_sPosition.y, m_iModuleID, m_iNormalGraphicID );
+				//m_pDraw->Draw( m_sPosition.x, m_sPosition.y, m_iModuleID, m_iNormalGraphicID );
+				//PY: m_iNormalGraphicID is returning -1 so not drawing it until I can figure this out
+				m_pDraw->Draw( m_sPosition.x, m_sPosition.y, m_iModuleID, m_iOverGraphicID );
 				break;
 			}
 		}

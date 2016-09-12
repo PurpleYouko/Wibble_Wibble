@@ -3,9 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TriggerInfo", "TriggerInfo.vcxproj", "{DE7958CD-934E-4AF9-8A22-CCE329B364FB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "viewinfo", "sample\viewinfo\viewinfo.vcxproj", "{4130C2E5-4078-4AFD-95FD-0DBC754C6BC4}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DE7958CD-934E-4AF9-8A22-CCE329B364FB} = {DE7958CD-934E-4AF9-8A22-CCE329B364FB}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

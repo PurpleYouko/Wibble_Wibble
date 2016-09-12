@@ -1,12 +1,12 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+# Visual C++ Express 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "max_export", "..\..\maxexp\max_export.vcproj", "{03D1047D-75C3-46B2-B31A-2ACED001EE2E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{423F6727-70C6-4D7A-97BA-97C72FBC169B} = {423F6727-70C6-4D7A-97BA-97C72FBC169B}
+	EndProjectSection
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{423F6727-70C6-4D7A-97BA-97C72FBC169B} = {423F6727-70C6-4D7A-97BA-97C72FBC169B}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "znzin", "znzin\znzin.vcxproj", "{423F6727-70C6-4D7A-97BA-97C72FBC169B}"
@@ -31,7 +31,8 @@ Global
 		{03D1047D-75C3-46B2-B31A-2ACED001EE2E}.max9release|Win32.ActiveCfg = max9release|Win32
 		{03D1047D-75C3-46B2-B31A-2ACED001EE2E}.max9release|Win32.Build.0 = max9release|Win32
 		{03D1047D-75C3-46B2-B31A-2ACED001EE2E}.Release|Win32.ActiveCfg = Release|Win32
-		{423F6727-70C6-4D7A-97BA-97C72FBC169B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{423F6727-70C6-4D7A-97BA-97C72FBC169B}.Debug|Win32.ActiveCfg = Release|Win32
+		{423F6727-70C6-4D7A-97BA-97C72FBC169B}.Debug|Win32.Build.0 = Release|Win32
 		{423F6727-70C6-4D7A-97BA-97C72FBC169B}.libdebug|Win32.ActiveCfg = libdebug|Win32
 		{423F6727-70C6-4D7A-97BA-97C72FBC169B}.libdebug|Win32.Build.0 = libdebug|Win32
 		{423F6727-70C6-4D7A-97BA-97C72FBC169B}.librelease|Win32.ActiveCfg = librelease|Win32

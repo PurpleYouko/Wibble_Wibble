@@ -25,6 +25,14 @@
       <Configuration>max9hybrid</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="MyRose|Win32">
+      <Configuration>MyRose</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MyZnZin|Win32">
+      <Configuration>MyZnZin</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -64,6 +72,10 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MyZnZin|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -95,43 +107,50 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='MyZnZin|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../../bins/$(Platform)/$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../../objs/$(Platform)/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\bins\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MyZnZin|Win32'">..\..\..\..\..\..\Triggersoft\MyOwnROSE\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\objs\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MyZnZin|Win32'">..\..\..\objs\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ROSE_ROOT)/bins/$(Platform)/$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ROSE_ROOT)/objs/$(Platform)/$(Configuration)/$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MyZnZin|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../../bins/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../../../objs/$(Platform)/$(Configuration)/$(ProjectName)\</IntDir>
     <PreBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</PreBuildEventUseInBuild>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='librelease|Win32'">$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='librelease|Win32'">$(Configuration)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='libdebug|Win32'">$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='libdebug|Win32'">$(Configuration)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='max6release|Win32'">$(ROSE_ROOT)/libs/$(Platform)/Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='max6release|Win32'">$(ROSE_ROOT)/objs/$(Platform)/$(Configuration)/$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='max6release|Win32'">../../../libs/$(Platform)/Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='max6release|Win32'">../../../objs/$(Platform)/$(Configuration)/$(ProjectName)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='debug_release|Win32'">$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='debug_release|Win32'">$(Configuration)\</IntDir>
     <PreBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='debug_release|Win32'">true</PreBuildEventUseInBuild>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='debug_release|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='max9hybrid|Win32'">$(ROSE_ROOT)/libs/$(Platform)/Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='max9hybrid|Win32'">$(ROSE_ROOT)/objs/$(Platform)/$(Configuration)/$(ProjectName)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">znzin</TargetName>
-    <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</PostBuildEventUseInBuild>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">znzin</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='max6release|Win32'">znzin_max</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='max9hybrid|Win32'">znzin_max9</TargetName>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='max9hybrid|Win32'">../../../libs/$(Platform)/Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='max9hybrid|Win32'">../../../objs/$(Platform)/$(Configuration)/$(ProjectName)\</IntDir>
+    <PreLinkEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</PreLinkEventUseInBuild>
+    <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</PostBuildEventUseInBuild>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.dll</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
-      <Message>Lua Compilation </Message>
-      <Command>cd "$(SolutionDir)\Engine\include"
-"$(SolutionDir)\bins\$(Platform)\tools\lua5.exe" -e debug=1 $(SolutionDir)\Engine\include\zz_build_count.lua</Command>
+      <Message>Lua Compilation</Message>
+      <Command>cd "..\..\..\include"
+"..\..\bins\$(Platform)\$(Configuration)\lua5.exe" -e debug=1 "zz_build_count.lua"
+	  
+		</Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../../DX_SDK;..\..\..\include;../../../../TOOLS/TriggerVFS/src;../../../../3rdparty/nvtristrip/include;../../../../3rdparty/zlib123;../../../../3rdparty/zlib123/contrib/minizip;../../../../3rdparty/lua-5.0/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\include;../../../../TOOLS/TriggerVFS/src;../../../../3rdparty/nvtristrip/include;../../../../3rdparty/zlib123;../../../../3rdparty/zlib123/contrib/minizip;../../../../3rdparty/lua-5.0/include;$(ProjectDir);../../../../DX_SDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ZZ_DLL_EXPORT;XXXZZ_MEM_ON;D3D_DEBUG_INFO;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -140,29 +159,66 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)znzin.pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <AdditionalDependencies>lua500.lib;TSVFS.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName).dll</OutputFile>
-      <AdditionalLibraryDirectories>../../../../DX_SDK/Lib;../../../../libs/$(Platform)/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
+      <AdditionalLibraryDirectories>../../../../libs/$(Platform)/$(Configuration);../../../../DX_SDK/Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <BaseAddress>0x68000000</BaseAddress>
-      <ImportLibrary>../../../../libs/$(Platform)/$(Configuration)/$(TargetName).lib</ImportLibrary>
-      <TargetMachine>MachineX86</TargetMachine>
+      <ImportLibrary>../../../libs/$(Platform)/$(Configuration)/$(TargetName).lib</ImportLibrary>
+      <TargetMachine>NotSet</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetPath)" "..\..\..\..\RAW"</Command>
-      <Message>Copying to RAW...</Message>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MyZnZin|Win32'">
+    <PreBuildEvent>
+      <Message>Lua Compilation</Message>
+      <Command>cd "..\..\..\include"
+"..\..\bins\$(Platform)\$(Configuration)\lua5.exe" -e debug=1 "zz_build_count.lua"
+</Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\include;../../../TOOLS/TriggerVFS/src;../../../3rdparty/nvtristrip/include;../../../3rdparty/zlib123;../../../3rdparty/zlib123/contrib/minizip;../../../3rdparty/lua-5.0/include;$(ProjectDir);../../../../DX_SDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ZZ_DLL_EXPORT;XXXZZ_MEM_ON;D3D_DEBUG_INFO;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ProgramDataBaseFileName>$(OutDir)znzin.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>lua500.lib;TSVFS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
+      <AdditionalLibraryDirectories>../../../libs/$(Platform)/$(Configuration);../../../../DX_SDK/Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <BaseAddress>0x68000000</BaseAddress>
+      <ImportLibrary>../../../libs/$(Platform)/$(Configuration)/$(TargetName).lib</ImportLibrary>
+      <TargetMachine>NotSet</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Message>Lua Compilation - Debug=1 need to be changed if needed</Message>
-      <Command>cd "$(ROSE_ROOT)\Engine\include"
-"$(ROSE_ROOT)\bins\$(Platform)\tools\lua5.exe" -e debug=1 "$(ROSE_ROOT)\Engine\include\zz_build_count.lua"</Command>
+      <Message>Lua Compilation</Message>
+      <Command>cd "..\..\..\include"
+"..\..\bins\$(Platform)\tools\lua5.exe" -e debug=1 zz_build_count.lua
+</Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -176,7 +232,7 @@
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>$(ROSE_ROOT)/DX_SDK;..\..\..\include;$(ROSE_ROOT)/TOOLS/TriggerVFS/src;$(ROSE_ROOT)/3rdparty/nvtristrip/include;$(ROSE_ROOT)/3rdparty/zlib123;$(ROSE_ROOT)/3rdparty/zlib123/contrib/minizip;$(ROSE_ROOT)/3rdparty/lua-5.0/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\DX_SDK;..\..\..\..\Engine\include;../../../../TOOLS/TriggerVFS/src;../../../../3rdparty/nvtristrip/include;../../../../3rdparty/zlib123;../../../../3rdparty/zlib123/contrib/minizip;../../../../3rdparty/lua-5.0/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ZZ_DLL_EXPORT;ZZ_LOG_DISABLE;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -186,18 +242,17 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <ResourceCompile>
       <ResourceOutputFileName>$(IntDir)znzin.res</ResourceOutputFileName>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>lua500.lib;TSVFS.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName).dll</OutputFile>
-      <AdditionalLibraryDirectories>$(ROSE_ROOT)/DX_SDK/Lib;$(ROSE_ROOT)/libs/$(Platform)/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
+      <AdditionalLibraryDirectories>../../../../DX_SDK/Lib;../../../../libs/$(Platform)/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <HeapReserveSize>0</HeapReserveSize>
       <HeapCommitSize>0</HeapCommitSize>
@@ -206,28 +261,28 @@
       <EnableCOMDATFolding>
       </EnableCOMDATFolding>
       <BaseAddress>0x68000000</BaseAddress>
-      <ImportLibrary>$(ROSE_ROOT)/libs/$(Platform)/$(Configuration)/$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>../../../../libs/$(Platform)/$(Configuration)/$(TargetName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <FixedBaseAddress>
       </FixedBaseAddress>
     </Link>
     <PostBuildEvent>
       <Message>Copying to RAW....</Message>
-      <Command>copy /Y "$(TargetPath)" "$(ROSE_ROOT)\RAW"</Command>
+      <Command>copy $(TargetPath) ../../..\RAW</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='librelease|Win32'">
     <PreBuildEvent>
-      <Message>버전 스트링 출력</Message>
-      <Command>cd "$(ROSE_ROOT)\Engine\include"
-"$(ROSE_ROOT)\bins\$(Platform)\tools\lua5.exe" -e debug=1 $(ROSE_ROOT)\Engine\include\zz_build_count.lua
+      <Message>Version string output</Message>
+      <Command>cd "..\..\..\include"
+"..\..\bins\$(Platform)\tools\lua5.exe" -e debug=1 zz_build_count.lua
 </Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\..\..\include;$(ROSE_ROOT)/TOOLS/TriggerVFS/src;$(ROSE_ROOT)/3rdparty/nvtristrip/include;$(ROSE_ROOT)/3rdparty/zlib123;$(ROSE_ROOT)/3rdparty/zlib123/contrib/minizip;$(ROSE_ROOT)/3rdparty/lua-5.0/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\include;../../../../TOOLS/TriggerVFS/src;../../../../3rdparty/nvtristrip/include;../../../../3rdparty/zlib123;../../../../3rdparty/zlib123/contrib/minizip;../../../../3rdparty/lua-5.0/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;ZZ_STATIC_USE;ZZ_USE_UNITTEST;ZZ_IGNORE_TRIGGERVFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -242,14 +297,14 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='libdebug|Win32'">
     <PreBuildEvent>
-      <Message>버전 스트링 출력</Message>
-      <Command>cd "$(ROSE_ROOT)\Engine\include"
-"$(ROSE_ROOT)\bins\$(Platform)\tools\lua5.exe" -e debug=1 $(ROSE_ROOT)\Engine\include\zz_build_count.lua
+      <Message>Version string output</Message>
+      <Command>cd "..\..\..\include"
+"..\..\bins\$(Platform)\tools\lua5.exe" -e debug=1 zz_build_count.lua
 </Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\include;$(ROSE_ROOT)/TOOLS/TriggerVFS/src;$(ROSE_ROOT)/3rdparty/nvtristrip/include;$(ROSE_ROOT)/3rdparty/zlib123;$(ROSE_ROOT)/3rdparty/zlib123/contrib/minizip;$(ROSE_ROOT)/3rdparty/lua-5.0/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\include;../../../TOOLS/TriggerVFS/src;../../../3rdparty/nvtristrip/include;../../../3rdparty/zlib123;../../../3rdparty/zlib123/contrib/minizip;../../../3rdparty/lua-5.0/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ZZ_STATIC_USE;ZZ_USE_UNITTEST;XXXZZ_MEM_ON;ZZ_IGNORE_TRIGGERVFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -272,22 +327,22 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='max6release|Win32'">
     <PreBuildEvent>
-      <Message>버전 스트링 출력</Message>
-      <Command>cd "$(ROSE_ROOT)\Engine\include"
-"$(ROSE_ROOT)\bins\$(Platform)\tools\lua5.exe" -e debug=1 $(ROSE_ROOT)\Engine\include\zz_build_count.lua
+      <Message>Version string output</Message>
+      <Command>cd "..\..\..\include"
+"..\..\bins\$(Platform)\tools\lua5.exe" -e debug=1 zz_build_count.lua
 </Command>
     </PreBuildEvent>
     <ClCompile>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>../../../../DX_SDK;..\..\..\include;$(ROSE_ROOT)/TOOLS/TriggerVFS/src;$(ROSE_ROOT)/3rdparty/nvtristrip/include;$(ROSE_ROOT)/3rdparty/zlib123;$(ROSE_ROOT)/3rdparty/zlib123/contrib/minizip;$(ROSE_ROOT)/3rdparty/lua-5.0/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\include;../../../TOOLS/TriggerVFS/src;../../../3rdparty/nvtristrip/include;../../../3rdparty/zlib123;../../../3rdparty/zlib123/contrib/minizip;../../../3rdparty/lua-5.0/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;ZZ_STATIC_USE;ZZ_USE_UNITTEST;ZZ_IGNORE_TRIGGERVFS;ZZ_LOG_FILE_OFF;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DebugInformationFormat>
       </DebugInformationFormat>
     </ClCompile>
     <Lib>
-      <OutputFile>$(OutDir)$(TargetName).lib</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)_max.lib</OutputFile>
     </Lib>
     <PostBuildEvent>
       <Command>
@@ -296,7 +351,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_release|Win32'">
     <PreBuildEvent>
-      <Message>버전 스트링 출력</Message>
+      <Message>Version string output</Message>
       <Command>del $(TargetDir)*.xxx
 cd $(SolutionDir)..\..\include\
 $(SolutionDir)..\..\lua500\bin\lua.exe $(SolutionDir)..\..\include\zz_build_count.lua
@@ -327,7 +382,7 @@ rem "$(VCInstallDir)bin\rc.exe" /fo"Release/znzin.res" $(SolutionDir)znzin\versi
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <PreLinkEvent>
-      <Message>링크전 이벤트 수행중...</Message>
+      <Message>Performing pre-link event...</Message>
       <Command>rem dada</Command>
     </PreLinkEvent>
     <Link>
@@ -347,7 +402,7 @@ rem "$(VCInstallDir)bin\rc.exe" /fo"Release/znzin.res" $(SolutionDir)znzin\versi
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Message>파일 복사</Message>
+      <Message>File copy</Message>
       <Command>copy $(TargetPath) $(SolutionDir)..\..\..\data\
 copy $(TargetPath) $(SolutionDir)..\..\bin\
 copy $(TargetPath) $(SolutionDir)..\..\lib\
@@ -363,22 +418,22 @@ copy $(TargetPath) f:\data\
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='max9hybrid|Win32'">
     <PreBuildEvent>
-      <Message>버전 스트링 출력</Message>
-      <Command>cd "$(ROSE_ROOT)\Engine\include"
-"$(ROSE_ROOT)\bins\$(Platform)\tools\lua5.exe" -e debug=1 $(ROSE_ROOT)\Engine\include\zz_build_count.lua
+      <Message>Version string output</Message>
+      <Command>cd "..\..\..\include"
+"..\..\bins\$(Platform)\tools\lua5.exe" -e debug=1 zz_build_count.lua
 </Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>../../../../DX_SDK;..\..\..\include;$(ROSE_ROOT)/TOOLS/TriggerVFS/src;$(ROSE_ROOT)/3rdparty/nvtristrip/include;$(ROSE_ROOT)/3rdparty/zlib123;$(ROSE_ROOT)/3rdparty/zlib123/contrib/minizip;$(ROSE_ROOT)/3rdparty/lua-5.0/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\include;../../../../TOOLS/TriggerVFS/src;../../../../3rdparty/nvtristrip/include;../../../../3rdparty/zlib123;../../../../3rdparty/zlib123/contrib/minizip;../../../../3rdparty/lua-5.0/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;ZZ_STATIC_USE;ZZ_USE_UNITTEST;ZZ_IGNORE_TRIGGERVFS;ZZ_LOG_FILE_OFF;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Lib>
-      <OutputFile>$(OutDir)$(TargetName).lib</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)_max.lib</OutputFile>
     </Lib>
     <PostBuildEvent>
       <Command>
@@ -683,44 +738,50 @@ copy $(TargetPath) f:\data\
     <None Include="..\..\..\include\zz_build_count.lua" />
     <CustomBuild Include="..\..\..\include\zz_script_lua.lua">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">zz_script_lua.inc</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd "$(ROSE_ROOT)\Engine\include"
-"$(ROSE_ROOT)\bins\$(Platform)\$(Configuration)\lua5.exe" %(FullPath)
+      <Message Condition="'$(Configuration)|$(Platform)'=='MyZnZin|Win32'">zz_script_lua.inc</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd "..\..\..\include"
+"..\..\bins\$(Platform)\$(Configuration)\lua5.exe" %(FullPath)
 </Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ROSE_ROOT)\Engine\include\zz_interface.h;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ROSE_ROOT)\Engine\include\zz_script_lua.inc;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">zz_scrit_lua.inc 파일 생성</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd "$(ROSE_ROOT)\Engine\include"
-"$(ROSE_ROOT)\bins\$(Platform)\tools\lua5.exe" %(FullPath)
+      <Command Condition="'$(Configuration)|$(Platform)'=='MyZnZin|Win32'">cd "..\..\..\include"
+"..\..\bins\$(Platform)\$(Configuration)\lua5.exe" %(FullPath)
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\include\zz_interface.h;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MyZnZin|Win32'">..\..\..\include\zz_interface.h;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\include\zz_script_lua.inc;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MyZnZin|Win32'">..\..\..\include\zz_script_lua.inc;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">zz_script_lua.inc File generation</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd "..\..\..\include"
+"..\..\bins\$(Platform)\tools\lua5.exe" %(FullPath)
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\include\zz_interface.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\include\zz_script_lua.inc;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='debug_release|Win32'">zz_scrit_lua.inc 파일 생성</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='debug_release|Win32'">cd "$(ROSE_ROOT)\Engine\include"
-"$(ROSE_ROOT)\bins\$(Platform)\tools\lua5.exe" %(FullPath)
+      <Message Condition="'$(Configuration)|$(Platform)'=='debug_release|Win32'">zz_script_lua.inc File generation</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='debug_release|Win32'">cd "..\..\..\include"
+"..\..\bins\$(Platform)\tools\lua5.exe" %(FullPath)
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='debug_release|Win32'">$(SolutionDir)..\..\include\zz_interface.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='debug_release|Win32'">$(SolutionDir)..\..\include\zz_script_lua.inc;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='libdebug|Win32'">zz_scrit_lua.inc 파일 생성</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='libdebug|Win32'">cd "$(ROSE_ROOT)\Engine\include"
-"$(ROSE_ROOT)\bins\$(Platform)\tools\lua5.exe" %(FullPath)
+      <Message Condition="'$(Configuration)|$(Platform)'=='libdebug|Win32'">zz_script_lua.inc File generation</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='libdebug|Win32'">cd "..\..\..\include"
+"..\..\bins\$(Platform)\tools\lua5.exe" %(FullPath)
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='libdebug|Win32'">$(SolutionDir)..\..\include\zz_interface.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='libdebug|Win32'">$(SolutionDir)..\..\include\zz_script_lua.inc;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='librelease|Win32'">zz_scrit_lua.inc 파일 생성</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='librelease|Win32'">cd "$(ROSE_ROOT)\Engine\include"
-"$(ROSE_ROOT)\bins\$(Platform)\tools\lua5.exe" %(FullPath)
+      <Message Condition="'$(Configuration)|$(Platform)'=='librelease|Win32'">zz_script_lua.inc File generation</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='librelease|Win32'">cd "..\..\..\include"
+"..\..\bins\$(Platform)\tools\lua5.exe" %(FullPath)
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='librelease|Win32'">$(SolutionDir)..\..\include\zz_interface.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='librelease|Win32'">$(SolutionDir)..\..\include\zz_script_lua.inc;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='max6release|Win32'">zz_scrit_lua.inc 파일 생성</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='max6release|Win32'">cd "$(ROSE_ROOT)\Engine\include"
-"$(ROSE_ROOT)\bins\$(Platform)\tools\lua5.exe" %(FullPath)
+      <Message Condition="'$(Configuration)|$(Platform)'=='max6release|Win32'">zz_script_lua.inc File generation</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='max6release|Win32'">cd "..\..\..\include"
+"..\..\bins\$(Platform)\tools\lua5.exe" %(FullPath)
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='max6release|Win32'">$(SolutionDir)..\..\include\zz_interface.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='max6release|Win32'">$(SolutionDir)..\..\include\zz_script_lua.inc;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='max9hybrid|Win32'">zz_scrit_lua.inc 파일 생성</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='max9hybrid|Win32'">cd "$(ROSE_ROOT)\Engine\include"
-"$(ROSE_ROOT)\bins\$(Platform)\tools\lua5.exe" %(FullPath)
+      <Message Condition="'$(Configuration)|$(Platform)'=='max9hybrid|Win32'">zz_script_lua.inc File generation</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='max9hybrid|Win32'">cd "..\..\..\include"
+"..\..\bins\$(Platform)\tools\lua5.exe" %(FullPath)
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='max9hybrid|Win32'">$(SolutionDir)..\..\include\zz_interface.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='max9hybrid|Win32'">$(SolutionDir)..\..\include\zz_script_lua.inc;%(Outputs)</Outputs>
@@ -743,14 +804,6 @@ copy $(TargetPath) f:\data\
     <ProjectReference Include="..\..\..\..\TOOLS\TriggerInfo\TriggerInfo.vcxproj">
       <Project>{de7958cd-934e-4af9-8a22-cce329b364fb}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\TOOLS\TriggerVFS\TriggerVFS.vcxproj">
-      <Project>{3d8fb37b-21f3-4def-9b78-6fe270c73494}</Project>
-      <Private>true</Private>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

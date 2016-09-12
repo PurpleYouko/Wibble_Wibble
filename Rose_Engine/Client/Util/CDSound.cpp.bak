@@ -458,7 +458,7 @@ void CDSOUND::PlaySound (t_sounddata *pData, long lVolume, long lPan, DWORD dwFl
     static t_sounddata *pSound;
     static short		nMixCnt;
 
-	//홍근 : 볼륨이 최소이면 리턴.
+	//return the minimum volume
 	if( lVolume <= SOUND_VOLUME_MIN )
 	{
 		return;
@@ -633,8 +633,8 @@ t_sounddata* CD3DSOUND::CreateSoundData (t_wavedata *pWave, DWORD dwCreationFlag
 		pSound->m_pDS3DBuffer->GetAllParameters( &m_dsBufferParams );
 
 		// Set new 3D buffer parameters
-		m_dsBufferParams.flMaxDistance = SOUND_DEFAULT_MAX_DISTANCE; // 여기까지만 볼륨적용
-		m_dsBufferParams.flMinDistance = SOUND_DEFAULT_MIN_DISTANCE; //  여기까지는 최대 볼륨 적용
+		m_dsBufferParams.flMaxDistance = SOUND_DEFAULT_MAX_DISTANCE; // This applies only to the volume
+		m_dsBufferParams.flMinDistance = SOUND_DEFAULT_MIN_DISTANCE; //  This applies until the maximum volume
 		m_dsBufferParams.dwMode = DS3DMODE_NORMAL;
 		pSound->m_pDS3DBuffer->SetAllParameters( &m_dsBufferParams, DS3D_DEFERRED );
 	}
@@ -676,8 +676,8 @@ typedef struct _DS3DLISTENER
 	
 	// m_dsListenerParams.
 
-	// DS3D_DEFERRED	: 애플리케이션이 IDirectSound3DListener8::CommitDeferredSettings 메서드를 호출할 때까지, 설정은 적용되지 않는다. 복수의 설정을 변경한 후, 1 회의 재계산으로 그것들을 적용할 수 있다.  
-	// DS3D_DEFERRED	: 설정을 즉시 적용해, 시스템은 모든 3D 사운드 버퍼의 3D 좌표를 재계산한다.  
+	// DS3D_DEFERRED	: until you call method IDirectSound3DListener8::CommitDeferredSettings, the application does not apply settings. After changing the set plurality of them may be applied in a single recalculation.  
+	// DS3D_DEFERRED	: Apply your settings immediately, recalculate the 3D coordinates of all the 3D sound buffer system. 
     m_pDSListener->SetAllParameters( &m_dsListenerParams, DS3D_DEFERRED );
 }
 
@@ -735,7 +735,7 @@ bool CD3DSOUND::UpdateListener ( const CCamera * pCamera )
 	if ( 0 == getCameraDir( hCamera, dirFront ) ) return false;
 	if ( 0 == getCameraUp( hCamera, dirTop ) ) return false;
 
-	// 아바타의 위치로 리스너 위치 세팅
+	// Setting the position of the listener position avatar
 	//if ( FAILED( SetListenerPosition( g_pAVATAR->Get_CurPOS() ) ) ) {
 	//	return false;
 	//}

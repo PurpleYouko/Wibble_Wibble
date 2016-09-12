@@ -79,12 +79,12 @@ inline bool Check_QuestOP( BYTE btOP, dType1 iLeft, dType2 iRight)
 #ifndef	__SERVER
 	if ( !bResult ) 
 	{
-		char *szOP[] = { "==", ">", ">=", "<", "<=" };
-		char *szMsg = CStr::Printf ("		[QST] Comparison operations fails = = d% s% d "%, > 
-							(int)iLeft, szOP[ btOP ], (int)iRight );
+		//char *szOP[] = { "==", ">", ">=", "<", "<=" };
+		//char *szMsg = CStr::Printf ("		[QST] Comparison operations fails = = d% s% d "%, > 
+		//					(int)iLeft, szOP[ btOP ], (int)iRight );
 
 		//--------------------------------------------------------------------------------
-		LOGWAR( "Check_QuestOP( ... ) FAILED[ %s ] ", szMsg );
+		//LOGWAR( "Check_QuestOP( ... ) FAILED[ %s ] ", szMsg );
 		//--------------------------------------------------------------------------------
 	}
 #endif

@@ -1076,6 +1076,18 @@ bool zz_visible::test_intersection_box_level (const vec3& min_in, const vec3& ma
 	}
 
 	if (!minmax) return false; // not in scene
+	//PY sometimes minmax is not initialized properly even though it's set. maybe it just wasn't deleted after previous use
+	//seems like this function is only ever called from 2 places in the same function. In both cases collision_level = 2
+	//let's try a little error catching
+	//this is a horrible way to address the problem but it will have to do for now
+	try
+	{
+		float x = minmax[0].x;	//if mimax is invalid this will trhow an error
+	}
+	catch(int err_code)
+	{
+		return false;		//all we need to do is return false since minmax is obvioulsy not valid so the object is not in the scene
+	}
 
 	if (zz_bounding_aabb::intersect(minmax[0], minmax[1], min_in, max_in) == zz_bounding_aabb::OUTSIDE) return false;
 	return true;

@@ -4931,6 +4931,7 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 		{
 			ClientLog (LOG_NORMAL, "Gemming the item. %i items in the packet", m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT );
 			tagITEM*	pItem = NULL;
+			int ThisGem = 0;
 			g_pAVATAR->SetWaitUpdateInventory( true );
 			for( int i = 0; i < m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_btOutCNT; i++ )
 			{
@@ -4944,11 +4945,31 @@ void CRecvPACKET::Recv_gsv_CRAFT_ITEM_REPLY()
 				ClientLog (LOG_NORMAL, "Gemming Success. Item %i: type: %i: number:  %i: Slot: %i Created: %i GemNo: %i Appraised: %i HasSlot: %i Refine: %i Count: %i", i + 1, tmpItem.m_ITEM.m_cType, tmpItem.m_ITEM.m_nItemNo, tmpItem.m_btInvIDX, tmpItem.m_ITEM.m_bCreated, tmpItem.m_ITEM.m_nGEM_OP, tmpItem.m_ITEM.m_bIsAppraisal, tmpItem.m_ITEM.m_bHasSocket, tmpItem.m_ITEM.m_cGrade, tmpItem.m_ITEM.m_uiQuantity );
 					
 				int iPartIdx = CInventory::GetBodyPartByEquipSlot( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX );
+				
+				//PY for some reason this code is not reading the lifespan, Gem number or durability for the item so I'm going to force it
+				if( i == 0 ) // it's the gem
+				{
+					ThisGem = tmpItem.m_ITEM.m_nItemNo;
+				}
+				if( i == 1 ) // it's the item
+				{
+					tmpItem.m_ITEM.m_nGEM_OP = ThisGem;
+					tmpItem.m_ITEM.m_cDurability = 1000;
+					tmpItem.m_ITEM.m_nLife = 100;
+				}
+				//PY end force code
+
+				ClientLog (LOG_NORMAL, "Gemming Success. Item %i: type: %i: number:  %i: Slot: %i Created: %i GemNo: %i Durability: %i lifespan: %i HasSlot: %i Appraised: %i Refine: %i Count: %i ", i + 1, tmpItem.m_ITEM.m_cType, tmpItem.m_ITEM.m_nItemNo, tmpItem.m_btInvIDX, tmpItem.m_ITEM.m_bCreated, tmpItem.m_ITEM.m_nGEM_OP, tmpItem.m_ITEM.m_cDurability, tmpItem.m_ITEM.m_nLife, tmpItem.m_ITEM.m_bHasSocket, tmpItem.m_ITEM.m_bIsAppraisal, tmpItem.m_ITEM.m_cGrade, tmpItem.m_ITEM.m_uiQuantity );
+				//ClientLog (LOG_NORMAL, "Gemming Success. Index value: %i. PartIDX: %i", m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[i].m_btInvIDX, iPartIdx);
+				
 
 				if( g_pAVATAR )
 				{
-					g_pAVATAR->SetPartITEM( iPartIdx, m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM );
-					g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX,	m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM );
+					
+					//g_pAVATAR->SetPartITEM( iPartIdx, m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM ); 
+					g_pAVATAR->SetPartITEM( iPartIdx, tmpItem.m_ITEM );
+					//g_pAVATAR->Set_ITEM( m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_btInvIDX,	m_pRecvPacket->m_gsv_CRAFT_ITEM_REPLY.m_sInvITEM[ i ].m_ITEM );
+					g_pAVATAR->Set_ITEM( tmpItem.m_btInvIDX, tmpItem.m_ITEM );
 					/// Because packets are carried Equip Property seems unnecessary.
 					/// Doeldeut updated only when the item slot.
 					g_pAVATAR->Update();

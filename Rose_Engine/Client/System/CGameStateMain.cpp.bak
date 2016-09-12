@@ -526,7 +526,7 @@ int CGameStateMain::ProcKeyboardInput(UINT uiMsg, WPARAM wParam, LPARAM lParam )
 						pSkill->Execute();
 				}
 				break;
-#pragma message("Changing the folder path that was entered")
+#pragma message("일본어의 경우 변환키와 중복되지 않는지 테스트해보아야 한다")
 			case 192://` : 줍기
 				if( IsApplyNewVersion() && 
 					CTControlMgr::GetInstance()->GetKeyboardInputType() == CTControlMgr::INPUTTYPE_NORMAL &&
@@ -1102,7 +1102,7 @@ void CGameStateMain::Pick_POSITION (/*LPARAM	lParam*/)
 
 	D3DXVECTOR3 PosPICKTerrain;
 
-#pragma message( " TODO : The simultaneous collision of the terrain and the objects is strange " )
+#pragma message( " TODO : 이동시의 지형과 오브젝트 충돌 이상하다" )
 
 	float fDistanceTerrain = g_fMaxDistance;
 	float fDistanceObject = g_fMaxDistance;
@@ -1194,7 +1194,7 @@ void CGameStateMain::UpdateCheckFrame()
 		
 		/// 현재 마우스 커서를 갱신한다.
 
-		// 피킹이 제대로 수행됬는지�?함께 체크.
+		// 피킹이 제대로 수행됬는지도 함께 체크.
 		// this->m_iPickedOBJ 이 0이라면 유효하지 않은 건가?
 		// - 2004.01.17.zho
 		// - 2004.02.25.nAvy : 현재 마우스가 인터페이스에서 사용중일때는 Default

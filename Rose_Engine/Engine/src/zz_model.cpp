@@ -1238,7 +1238,8 @@ void zz_model::expand_scene_minmax (vec3& scene_min_out, vec3& scene_max_out)
 	// expand from children
 	zz_visible * child;
 	const vec3 * child_minmax;
-	for (zz_item_list::iterator it = items.begin(), it_end = items.end(); it != it_end; ++it) {
+	for (zz_item_list::iterator it = items.begin(), it_end = items.end(); it != it_end; ++it) 
+	{
 		child = (*it);
 		child_minmax = child->get_minmax();
 

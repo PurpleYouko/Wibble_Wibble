@@ -207,9 +207,9 @@ void CCamera::Add_Distance (float fDistance)
 
 	::setCameraFollowDistance( m_hNODE, m_fDistance );
 
-#ifdef _DEBUG
-	g_itMGR.AppendChatMsg( CStr::Printf( "Camera Dist: %f", m_fDistance ), IT_MGR::CHAT_TYPE_SYSTEM );
-#endif
+//#ifdef _DEBUG
+//	g_itMGR.AppendChatMsg( CStr::Printf( "Camera Dist: %f", m_fDistance ), IT_MGR::CHAT_TYPE_SYSTEM );
+//#endif
 }
 
 

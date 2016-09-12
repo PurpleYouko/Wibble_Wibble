@@ -2376,6 +2376,7 @@
     <None Include="Res\Wheel.cur">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc">
