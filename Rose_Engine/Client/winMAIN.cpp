@@ -73,30 +73,38 @@ bool Init_DEVICE (void)
 	bool bRet = false;
 
 	//--------------------------[ engine related ]-----------------------//
+	ClientLog(LOG_DEBUG,"winMAIN  initializing Znzin");
 	::initZnzin();
+	ClientLog(LOG_DEBUG,"winMAIN  opening data.idx");
 	::openFileSystem("data.idx");
 
-
+	ClientLog(LOG_DEBUG,"winMAIN  doscript lua stuff");
 	::doScript("scripts/init.lua");
 
+	ClientLog(LOG_DEBUG,"winMAIN  setting resolution");
 	t_OptionResolution Resolution = g_ClientStorage.GetResolution();
+	ClientLog(LOG_DEBUG,"winMAIN  setting display quality");
 	::setDisplayQualityLevel( c_iPeformances[g_ClientStorage.GetVideoPerformance()] );
-
+	ClientLog(LOG_DEBUG,"winMAIN  applying anti-aliasing");
 	g_ClientStorage.ApplyAntiAliasingOption( g_ClientStorage.GetVideoAntiAliasing() );
 
 	if(!g_pCApp->IsFullScreenMode())
 	{
+		ClientLog(LOG_DEBUG,"winMAIN  it's not full screen mode. Running znzin::setscreen");
 		RECT ClientRt;
 		GetClientRect(g_pCApp->GetHWND(),&ClientRt);
 		::setScreen(ClientRt.right, ClientRt.bottom, Resolution.iDepth, g_pCApp->IsFullScreenMode() );
 	}
 	else
+	{
+		ClientLog(LOG_DEBUG,"winMAIN  it's full screen mode. running znzin::setscreen");
 		::setScreen(g_pCApp->GetWIDTH(), g_pCApp->GetHEIGHT(), Resolution.iDepth, g_pCApp->IsFullScreenMode() );
 
-
+	}
+	ClientLog(LOG_DEBUG,"winMAIN  running znzin::attachWindow");
 	bRet = ::attachWindow((const void*)g_pCApp->GetHWND());
 
-
+	ClientLog(LOG_DEBUG,"winMAIN  initializing CD3DUtil");
 	CD3DUtil::Init( );
 
 	g_pSoundLIST = new CSoundLIST( g_pCApp->GetHWND() );
@@ -375,27 +383,35 @@ int APIENTRY WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	//-------------------------------------------------------------------------------
 	g_TblResolution.Load2( "3DDATA\\STB\\RESOLUTION.STB",	false, false );
 	g_TblCamera.Load2( "3DDATA\\STB\\LIST_CAMERA.STB" ,false, false );
-
+	ClientLog(LOG_DEBUG,"winMAIN LIST_CAMERA loaded");
 	//-------------------------------------------------------------------------------
 	/// Load the Data stored on the client.
 	//-------------------------------------------------------------------------------
 	g_ClientStorage.Load();
-
+	ClientLog(LOG_DEBUG,"winMAIN g_ClientStorage loaded");
 	//-------------------------------------------------------------------------------
 	///The index of the adjusted previous option to import the resolution referring to g_TblResolution
 	///The resolution is adjusted.
 	//-------------------------------------------------------------------------------
 #pragma message("You can run the stored resolution is determined by testing and initializing the message box does not work TriggerDetect Shall run")
 	t_OptionResolution Resolution = g_ClientStorage.GetResolution();
+	ClientLog(LOG_DEBUG,"winMAIN resolution set");
 	/// Check range values
 	UINT iFullScreen = g_ClientStorage.GetVideoFullScreen();
+	ClientLog(LOG_DEBUG,"winMAIN iFullScreen initialized");
 
 	g_pCApp->SetFullscreenMode( iFullScreen );
-
+	ClientLog(LOG_DEBUG,"winMAIN iFullScreen set");
 	if(!CGame::GetInstance().GetCurVersion().empty())
+	{
 		g_pCApp->CreateWND ("classCLIENT", CStr::Printf("%s [Ver. %s]", __BUILD_REGION_NAME, CGame::GetInstance().GetCurVersion().c_str()) , Resolution.iWidth, Resolution.iHeight,Resolution.iDepth, hInstance);
+		ClientLog(LOG_DEBUG,"winMAIN instance empty created a new one");
+	}
 	else
+	{
 		g_pCApp->CreateWND ("classCLIENT", __BUILD_REGION_NAME, Resolution.iWidth, Resolution.iHeight,Resolution.iDepth, hInstance);
+		ClientLog(LOG_DEBUG,"winMAIN instance already exists. make new one");
+	}
 
 
 
@@ -409,12 +425,13 @@ int APIENTRY WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	// *-------------------------------------------------------------------* //
 	g_pObjMGR = CObjectMANAGER::Instance ();
 	g_pCApp->ResetExitGame();
-
+	ClientLog(LOG_DEBUG,"winMAIN  Device initialization about to be called");
 	bool bDeviceInitialized = Init_DEVICE();
-	ClientLog(LOG_DEBUG,"Device initialization called");
+	ClientLog(LOG_DEBUG,"winMAIN  Device initialization called");
 
 	if ( bDeviceInitialized ) 
 	{
+		ClientLog(LOG_DEBUG,"winMAIN  game loop starting");
 		CGame::GetInstance().GameLoop();		//game loop started. CGame.cpp
 	}
 	else

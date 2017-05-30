@@ -69,7 +69,7 @@ bool CVFSManager::InitVFS( int iVFSType, int iReserveCount /*=10*/)  //iReserved
 			g_pCApp->ErrorBOX( "First, set VFS hash", "ERROR" );
 		return false;
 	}
-	return true; //PY don't run any of this crap.  It's complete bollox. we don't need a stck of filesystems
+	return true; //PY don't run any of this crap.  It's complete bollox. we don't need a stack of filesystems
 
 	CFileSystem* pFileSystem = NULL;				//create a new empty CFileSystem object
 	for( int i =0 ; i < iReserveCount; i++ )		//so 10 times around the loop we go

@@ -58,15 +58,22 @@ int	CGameStatePrepareMain::Update( bool bLostFocus )
 
 int CGameStatePrepareMain::Enter( int iPrevStateID )
 {
+	ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter started. previous state %i",iPrevStateID);
 	m_iPrevStateID = iPrevStateID;
 
 	///외부메뉴에서 사용되었던 Data & Resource를 Unload한다.
+	ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter getting instance from CGameDataCreateAvatar");
 	CGameDataCreateAvatar::GetInstance().Clear();
-	LogString( LOG_NORMAL, "FreeZone(%d)\n", g_pTerrain->GetZoneNO() );
+	ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter instance acquired");
+	ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter FreeZone(%d)", g_pTerrain->GetZoneNO() );
+	//LogString( LOG_NORMAL, "FreeZone(%d)\n", g_pTerrain->GetZoneNO() );
 	g_pTerrain->FreeZONE();
-
+	ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter called g_pTerrain->FreeZONE()");
+	ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter calling resetScreen()");
 	resetScreen();
+	ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter called resetScreen() successfully");
 	CCursor::GetInstance().ReloadCursor();
+	ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter reloaded cursor");
 //	m_hThread = (HANDLE)_beginthreadex( NULL, 0, &ThreadFunc, NULL, CREATE_SUSPENDED, NULL );
 ////	SetThreadPriority( m_hThread,THREAD_PRIORITY_HIGHEST  );
 //
@@ -76,14 +83,16 @@ int CGameStatePrepareMain::Enter( int iPrevStateID )
 //	}
 //	else///Thread 생성 실패시 메인쓰레드에서 로딩하고 State를 바꾸어 준다.
 	{
+		ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter creating gsv_TELEPORT_REPLY Reply");
 		gsv_TELEPORT_REPLY Reply;
+		ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter getting instance loading data");
 		CGame::GetInstance().GetLoadingData( Reply );
-
+		ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter setting event loading table");
 		m_EventLoading = g_Loading.GetEventLoadingTable();
 
 
 #define	MAX_OBJ_VAR_CNT		20
-
+		ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter defining struct tagObjVAR");
 		struct tagObjVAR 
 		{
 			union 
@@ -93,7 +102,8 @@ int CGameStatePrepareMain::Enter( int iPrevStateID )
 					int			m_iNextCheckTIME;
 					t_HASHKEY	m_HashNextTrigger;
 					int			m_iPassTIME;
-					union {
+					union 
+					{
 						short	m_nEventSTATUS;
 						short	m_nAI_VAR[ MAX_OBJ_VAR_CNT ];
 					} ;
@@ -103,7 +113,7 @@ int CGameStatePrepareMain::Enter( int iPrevStateID )
 		};
 
 		tagObjVAR* pObjVAR = (tagObjVAR*)Reply.m_pDATA;
-
+		ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter starting event loading loop");
 		for(int i = 0; i < m_EventLoading.EventLoadingCount; i++)
 		{
 			for( int j = 0 ; j < MAX_OBJ_VAR_CNT; ++j )
@@ -115,7 +125,7 @@ int CGameStatePrepareMain::Enter( int iPrevStateID )
 				}
 			}
 		}
-
+		ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter completed event loading loop");
 		if(m_bswitchImage == true)
 		{
 			g_Loading.LoadTexture( m_mMapLoadingImageTableByEvent );
@@ -125,15 +135,16 @@ int CGameStatePrepareMain::Enter( int iPrevStateID )
 			g_Loading.LoadTexture( Reply.m_nZoneNO, ZONE_PLANET_NO( Reply.m_nZoneNO ) );
 		}		
 
-	
+		ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter calling draw()");
 		Draw();
 		ThreadFunc(NULL);
 		CGame::GetInstance().ChangeState( CGame::GS_MAIN );
 	}
+	ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter calling StopScrrenFadeInOut()");
 	::StopScreenFadeInOut();
 
 	m_bswitchImage = false;
-
+	ClientLog(LOG_DEBUG,"CGameStatePrepareMain::Enter completed");
 	return 0;
 }
 

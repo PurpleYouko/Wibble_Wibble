@@ -1286,7 +1286,7 @@ void CRecvPACKET::Recv_gsv_NPC_CHAR ()
 	}
 }
 
-void CRecvPACKET::Recv_gsv_MOB_CHAR ()
+void CRecvPACKET::Recv_gsv_MOB_CHAR ()  //spawn a monster
 {
 	CObjCHAR* pChar = NULL;
 	int iSkillOwner = 0;
@@ -1308,6 +1308,7 @@ void CRecvPACKET::Recv_gsv_MOB_CHAR ()
 	/// Is your pet?
 	if( m_pRecvPacket->m_gsv_MOB_CHAR.m_dwStatusFALG & FLAG_ING_DEC_LIFE_TIME )
 	{
+		//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: Seems to be a pet");
 		short nOffset = sizeof( gsv_MOB_CHAR );
 
 		short *nSTATUS = ( short* )( &( m_pRecvPacket->m_pDATA[ nOffset ] ) );
@@ -1359,6 +1360,7 @@ void CRecvPACKET::Recv_gsv_MOB_CHAR ()
 	/// Appeared normal mobs.
 	{
 
+		//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: normal mob spawned");
 		D3DVECTOR PosCUR;
 
 		PosCUR.x = m_pRecvPacket->m_gsv_MOB_CHAR.m_PosCUR.x;
@@ -1370,6 +1372,7 @@ void CRecvPACKET::Recv_gsv_MOB_CHAR ()
 
 		if ( NPC_TYPE( m_pRecvPacket->m_gsv_MOB_CHAR.m_nCharIdx ) != 999 ) 
 		{
+			//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: NOT an NPC");
 			nCObj = g_pObjMGR->Add_MobCHAR( m_pRecvPacket->m_gsv_MOB_CHAR.m_wObjectIDX, 
 				m_pRecvPacket->m_gsv_MOB_CHAR.m_nCharIdx, 
 				PosCUR, 
@@ -1443,18 +1446,22 @@ void CRecvPACKET::Recv_gsv_MOB_CHAR ()
 					{
 						((CObjMOB*)pMobChar)->Set_MaxHP( iMaxHP );
 					}
-				}else
+				}
+				else
 				{
 					assert( 0 && "This is summoned mob, but don't have owner" );
 				}
 			}
-		} else 
+		}
+		else 
 		{
+			//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: must be an NPC. Returning");
 			Recv_gsv_NPC_CHAR ();
 			return;
 			//		_ASSERT( 0 );
 		}
 	}
+	//ClientLog (LOG_NORMAL, "Recv_gsv_NPC_CHAR:: End function");
 }
 
 //-------------------------------------------------------------------------------------------------

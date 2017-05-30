@@ -85,16 +85,18 @@ bool CLoading::InitLoadingImageManager()
 		return true;
 	}
 
-
+	ClientLog(LOG_DEBUG,"Image Manager initiation complete");
 	return false;
 }
 
 bool CLoading::LoadTexture( int iZoneNo, int iPlanetNO )
 {
+	ClientLog(LOG_DEBUG,"CLoading:: Load texture for planet %i.",iPlanetNO);
 	if( !m_bInitLoadingImageManager )
 	{
 		if( InitLoadingImageManager() == false )
 		{			
+			ClientLog(LOG_DEBUG,"CLoading:: Load texture failure for planet %i.",iPlanetNO);
 			return false;
 		}
 	}
@@ -210,10 +212,12 @@ bool CLoading::LoadTexture( int iZoneNo, int iPlanetNO )
 
 bool	CLoading::LoadTexture( std::vector < std::string >	m_mMapEventLoadingTable )
 {
+	ClientLog(LOG_DEBUG,"CLoading:: Load texture for map event table.");
 	if( !m_bInitLoadingImageManager )
 	{
 		if( InitLoadingImageManager() == false )
 		{			
+			ClientLog(LOG_DEBUG,"CLoading:: Load texture failure for map event table.");
 			return false;
 		}
 	}
@@ -247,6 +251,7 @@ bool	CLoading::LoadTexture( std::vector < std::string >	m_mMapEventLoadingTable 
 	setDelayedLoad(1);
 	if( m_hTexture == NULL )
 	{
+		ClientLog(LOG_DEBUG,"CLoading.cpp tm_hTextrure is NULL" );
 #ifdef _DEBUG
 		g_pCApp->ErrorBOX( "Loading image load failed !!", "File open error" );
 #endif
@@ -326,6 +331,7 @@ HNODE CLoading::GetLoadingImageCustom( int tp, int iCustomID )
 //------------------------------------------------------------------------
 bool CLoading::LoadImageTable( char* strSTBName )
 {
+	ClientLog(LOG_DEBUG,"CLoading:: Loading image table for file %s.",strSTBName);
 	CGameSTB fSTB;
 	int iImageZoneNO = 0;
 	int iNpcNO = 0;
@@ -391,9 +397,10 @@ bool CLoading::LoadImageTable( char* strSTBName )
 		fSTB.Close ();
 	
 		m_EventTable.EventLoadingCount = m_iCountNPCNO;
+		ClientLog(LOG_DEBUG,"CLoading:: Load Image Table success.");
 		return true;
 	}
-
+	ClientLog(LOG_DEBUG,"CLoading:: Load Image Table failure.");
 	return false;
 }
 

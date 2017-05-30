@@ -22,6 +22,7 @@ CGameStateMoveMain::~CGameStateMoveMain(void)
 
 void CGameStateMoveMain::ServerDisconnected()
 {
+	ClientLog(LOG_DEBUG,"CGameStateMoveMain::ServerDisconnected");
 	g_pCApp->SetExitGame();
 }
 
@@ -102,6 +103,7 @@ int	CGameStateMoveMain::Update( bool bLostFocus )
 
 int	CGameStateMoveMain::Enter( int iPrevStateID )
 {
+	ClientLog(LOG_DEBUG,"CGameStateMoveMain::Enter");
 	CSystemProcScript::GetSingleton().CallLuaFunction( "EnterMoveMain", ZZ_PARAM_END );
 
 	InputInterruptTime = 0;
@@ -166,6 +168,7 @@ int	CGameStateMoveMain::Enter( int iPrevStateID )
 	}		
 
 	m_bswitchImage = false;
+	ClientLog(LOG_DEBUG,"CGameStateMoveMain::Enter completed");
 	return 0;
 }
 

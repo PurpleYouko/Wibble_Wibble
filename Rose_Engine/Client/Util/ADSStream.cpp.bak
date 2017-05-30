@@ -587,6 +587,8 @@ bool AOggSTREAM::OpenFile (char *szOGGFile, int iBufferingSec, int iBufferBlock)
 	m_pOVF = new OggVorbis_File;
 
 	// int ov_open(FILE *f,OggVorbis_File *vf,char *initial,long ibytes);
+	// Garnet: The fonction just set the sound file to NULL and return fall on debug...let's comment it
+	/**
 #ifndef _DEBUG
 	if ( ::ov_open( m_fp, m_pOVF, NULL, 0 ) ) {
 #endif
@@ -599,6 +601,20 @@ bool AOggSTREAM::OpenFile (char *szOGGFile, int iBufferingSec, int iBufferBlock)
 #endif
 
 	return true;
+	**/
+
+
+	// Garnet: Code for getting sound on debug. Didn't remove the old code, may add _NOSOUND preprocessor definition later
+	
+	if ( ::ov_open( m_fp, m_pOVF, NULL, 0 ) ) {
+	    delete m_pOVF;
+		m_pOVF = NULL;
+		this->CloseFile ();
+		return false;
+	}
+	return true;
+		
+	
 }
 
 //-------------------------------------------------------------------------------------------------
