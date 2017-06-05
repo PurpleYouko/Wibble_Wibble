@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{eb7b3668-58c1-480a-bca5-68963243b4be}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Network">
+      <UniqueIdentifier>{5d8c94f1-8daa-47cf-85c8-e04a2cba5008}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Network\ArcFour">
+      <UniqueIdentifier>{c11af7d5-0e16-4ec2-b7a9-7505e2d32749}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Thread">
+      <UniqueIdentifier>{8bbfd624-9327-40a9-b210-b3030667d0c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OGG">
+      <UniqueIdentifier>{ee42bbdc-19aa-4d0e-9900-da47c8b2dcdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Trace">
+      <UniqueIdentifier>{506f51dd-0780-4e5a-97fe-17cbf1adc0f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AlphabetCvt">
+      <UniqueIdentifier>{9a9a84d9-320a-4baa-ab5c-ee52fe65e3e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{df84f6e9-b0b0-43d0-a9ed-7f6369eadec9}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CBITArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cdxHPC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classCRC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classHASH.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classHTTP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classIME.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classLOG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classLUA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classMD5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classSTB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classSTR.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classTIME.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classUTIL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CMMPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CRandom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LIB_IJL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CClientSOCKET.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="CPacketCODEC.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="CRawSOCKET.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="CshoSOCKET.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="CSocket.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="CSocketWND.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketHEADER.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Arcfour\Arcfour.cpp">
+      <Filter>Source Files\Network\ArcFour</Filter>
+    </ClCompile>
+    <ClCompile Include="classSYNCOBJ.cpp">
+      <Filter>Source Files\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="classTHREAD.cpp">
+      <Filter>Source Files\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="classOGG.cpp">
+      <Filter>Source Files\OGG</Filter>
+    </ClCompile>
+    <ClCompile Include="classTRACE.cpp">
+      <Filter>Source Files\Trace</Filter>
+    </ClCompile>
+    <ClCompile Include="AlphabetCvt\AlphabetCvt.cpp">
+      <Filter>Source Files\AlphabetCvt</Filter>
+    </ClCompile>
+    <ClCompile Include="classFile.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classSYS.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CProcess.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CRandom.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CClientSOCKET.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="CPacketCODEC.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="CshoSOCKET.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="CSocket.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Arcfour\Arcfour.h">
+      <Filter>Source Files\Network\ArcFour</Filter>
+    </ClInclude>
+    <ClInclude Include="classSYNCOBJ.h">
+      <Filter>Source Files\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="classTHREAD.h">
+      <Filter>Source Files\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="classOGG.h">
+      <Filter>Source Files\OGG</Filter>
+    </ClInclude>
+    <ClInclude Include="classTRACE.h">
+      <Filter>Source Files\Trace</Filter>
+    </ClInclude>
+    <ClInclude Include="AlphabetCvt\AlphabetCvt.h">
+      <Filter>Source Files\AlphabetCvt</Filter>
+    </ClInclude>
+    <ClInclude Include="AStrTABLE.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CBITArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CDLList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CDXHPC.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CFileLIST.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classCRC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classHASH.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classHTTP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classIME.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classLOG.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classMD5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classMD5Defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classSTB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classSTB2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classSTR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classSYS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classTIME.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classUTIL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CMMPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CProcess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CRawSOCKET.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSLList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSocketWND.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CVector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWaveFILE.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLLIST.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ijl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LIB_IJL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LIB_Util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketHEADER.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SLLIST.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
